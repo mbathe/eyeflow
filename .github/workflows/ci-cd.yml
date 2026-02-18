@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./eyeflow/eyeflow-server
+        working-directory: ./eyeflow-server
 
     steps:
       - name: Checkout code
@@ -46,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: ./eyeflow/eyeflow-server/dist
+          path: ./eyeflow-server/dist
           retention-days: 5
 
   # ============================================================================
@@ -58,7 +58,7 @@ jobs:
     needs: lint-and-build
     defaults:
       run:
-        working-directory: ./eyeflow/eyeflow-server
+        working-directory: ./eyeflow-server
 
     steps:
       - name: Checkout code
@@ -81,7 +81,7 @@ jobs:
         uses: codecov/codecov-action@v4
         if: always()
         with:
-          files: ./eyeflow/eyeflow-server/coverage/coverage-final.json
+          files: ./eyeflow-server/coverage/coverage-final.json
           flags: unittests
           name: codecov-umbrella
 
@@ -94,7 +94,7 @@ jobs:
     needs: lint-and-build
     defaults:
       run:
-        working-directory: ./eyeflow/eyeflow-server
+        working-directory: ./eyeflow-server
 
     services:
       postgres:
@@ -148,7 +148,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./eyeflow/eyeflow-server
+        working-directory: ./eyeflow-server
 
     steps:
       - name: Checkout code
@@ -206,8 +206,8 @@ jobs:
       - name: Build and push NestJS Server image
         uses: docker/build-push-action@v4
         with:
-          context: ./eyeflow/eyeflow-server
-          file: ./eyeflow/eyeflow-server/Dockerfile
+          context: ./eyeflow-server
+          file: ./eyeflow-server/Dockerfile
           push: true
           tags: ${{ steps.meta-server.outputs.tags }}
           labels: ${{ steps.meta-server.outputs.labels }}
@@ -228,8 +228,8 @@ jobs:
       - name: Build and push Python Agent image
         uses: docker/build-push-action@v4
         with:
-          context: ./eyeflow/eyeflow-agent
-          file: ./eyeflow/eyeflow-agent/Dockerfile
+          context: ./eyeflow-agent
+          file: ./eyeflow-agent/Dockerfile
           push: true
           tags: ${{ steps.meta-agent.outputs.tags }}
           labels: ${{ steps.meta-agent.outputs.labels }}
