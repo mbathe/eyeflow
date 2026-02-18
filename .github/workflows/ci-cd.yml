@@ -288,7 +288,7 @@ jobs:
           echo "✅ Services deployed"
 
   # ============================================================================
-  # STAGE 7: Notify Issues
+  # STAGE 7: Notify Issues (Simplified)
   # ============================================================================
   notify-failure:
     name: Notify on Failure
@@ -297,27 +297,15 @@ jobs:
     if: failure()
 
     steps:
-      - name: Create Issue for Failed Pipeline
-        uses: actions/github-script@v6
-        if: github.event_name == 'push'
-        with:
-          script: |
-            const issue = await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `🔴 CI/CD Pipeline Failed - ${context.ref}`,
-              body: `
-              Pipeline failed on commit: ${{ github.sha }}
-              
-              **Failed Jobs:**
-              - Lint & Build: ${{ needs.lint-and-build.result }}
-              - Unit Tests: ${{ needs.unit-tests.result }}
-              - Security Scan: ${{ needs.security-scan.result }}
-              
-              **Action Required:** Check the workflow logs for details.
-              
-              [View Workflow Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-              `,
-              labels: ['🔴 critical', '🐛 bug']
-            });
-            console.log(`Created issue: ${issue.data.number}`);
+      - name: Log Pipeline Failure
+        run: |
+          echo "❌ CI/CD Pipeline FAILED"
+          echo ""
+          echo "Failed Jobs:"
+          echo "  - Lint & Build: ${{ needs.lint-and-build.result }}"
+          echo "  - Unit Tests: ${{ needs.unit-tests.result }}"
+          echo "  - Security Scan: ${{ needs.security-scan.result }}"
+          echo ""
+          echo "View logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo ""
+          echo "Commit: ${{ github.sha }}"
