@@ -975,15 +975,10 @@ export class TasksController {
   async getApprovalStats(
     @Headers('X-User-ID') userId: string,
   ): Promise<any> {
-    // TODO: Implement stats method in RuleApprovalService if needed
+    const stats = await this.ruleApprovalService.getApprovalStats(userId);
     return {
       success: true,
-      stats: {
-        pending: 0,
-        approved: 0,
-        rejected: 0,
-        total: 0,
-      },
+      stats,
     };
   }
 

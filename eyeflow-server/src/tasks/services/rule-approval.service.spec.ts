@@ -156,4 +156,60 @@ describe('RuleApprovalService', () => {
       expect(mockRepository.save).toHaveBeenCalled();
     });
   });
+
+  describe('getApprovalStats', () => {
+    it('should return approval statistics for user', async () => {
+      const rules = [
+        { ...mockRule, approvalStatus: RuleApprovalStatus.PENDING_APPROVAL },
+        { ...mockRule, id: 'rule2', approvalStatus: RuleApprovalStatus.APPROVED },
+        { ...mockRule, id: 'rule3', approvalStatus: RuleApprovalStatus.APPROVED },
+        { ...mockRule, id: 'rule4', approvalStatus: RuleApprovalStatus.REJECTED },
+      ];
+
+      mockRepository.find.mockResolvedValueOnce(rules);
+
+      const result = await service.getApprovalStats(mockUserId);
+
+      expect(result).toHaveProperty('pending');
+      expect(result).toHaveProperty('approved');
+      expect(result).toHaveProperty('rejected');
+      expect(result).toHaveProperty('total');
+      expect(result.pending).toBe(1);
+      expect(result.approved).toBe(2);
+      expect(result.rejected).toBe(1);
+      expect(result.total).toBe(4);
+    });
+  });
+
+  describe('getApprovalFeedback', () => {
+    it('should return approval feedback if exists', async () => {
+      const feedback = { approved: true, feedback: 'Looks good' };
+      const ruleWithFeedback = {
+        ...mockRule,
+        userApprovalFeedback: feedback,
+      };
+
+      jest.clearAllMocks();
+      mockRepository.findOne.mockResolvedValueOnce(ruleWithFeedback);
+
+      const result = await service.getApprovalFeedback(mockRuleId, mockUserId);
+
+      expect(result).toEqual(feedback);
+    });
+
+    it('should return null if no feedback exists', async () => {
+      const ruleWithoutFeedback = {
+        ...mockRule,
+        userApprovalFeedback: null,
+      };
+
+      jest.clearAllMocks();
+      mockRepository.findOne.mockResolvedValueOnce(ruleWithoutFeedback);
+
+      const result = await service.getApprovalFeedback(mockRuleId, mockUserId);
+
+      expect(result).toBeNull();
+    });
+  });
 });
+

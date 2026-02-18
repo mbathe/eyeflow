@@ -182,5 +182,26 @@ export class RuleApprovalService {
       throw new NotFoundException(`Rule ${ruleId} not found`);
     }
 
-    return rule.userApprovalFeedback || null;  }
+    return rule.userApprovalFeedback || null;
+  }
+
+  /**
+   * Get approval statistics for user
+   */
+  async getApprovalStats(userId: string): Promise<any> {
+    const rules = await this.ruleRepository.find({
+      where: { userId },
+    });
+
+    const stats = {
+      pending: rules.filter(r => r.approvalStatus === RuleApprovalStatus.PENDING_APPROVAL).length,
+      approved: rules.filter(r => r.approvalStatus === RuleApprovalStatus.APPROVED).length,
+      rejected: rules.filter(r => r.approvalStatus === RuleApprovalStatus.REJECTED).length,
+      draft: rules.filter(r => r.approvalStatus === RuleApprovalStatus.DRAFT).length,
+      active: rules.filter(r => r.approvalStatus === RuleApprovalStatus.ACTIVE).length,
+      total: rules.length,
+    };
+
+    return stats;
+  }
 }

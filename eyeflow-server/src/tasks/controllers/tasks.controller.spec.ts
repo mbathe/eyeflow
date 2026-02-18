@@ -46,6 +46,14 @@ describe('TasksController - Approval Workflow', () => {
               message: 'Rule rejected',
               rule: { id: mockRuleId, approvalStatus: 'REJECTED' },
             }),
+            getApprovalStats: jest.fn().mockResolvedValue({
+              pending: 0,
+              approved: 0,
+              rejected: 0,
+              draft: 0,
+              active: 0,
+              total: 0,
+            }),
           },
         },
         {
@@ -99,6 +107,8 @@ describe('TasksController - Approval Workflow', () => {
           pending: 0,
           approved: 0,
           rejected: 0,
+          draft: 0,
+          active: 0,
           total: 0,
         },
       });
