@@ -81,7 +81,7 @@ jobs:
         run: npm ci || npm ci --legacy-peer-deps
 
       - name: Run unit tests
-        run: npm run test -- --coverage --passWithNoTests
+        run: npm run test -- --config jest.config.js --coverage --passWithNoTests
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4

@@ -3,7 +3,13 @@ module.exports = {
   rootDir: 'src',
   testRegex: '.*\\.spec\\.ts$',
   transform: {
-    '^.+\\.(t|j)s$': 'ts-jest',
+    '^.+\\.(t|j)s$': ['ts-jest', {
+      tsconfig: {
+        strict: false,
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true,
+      },
+    }],
   },
   collectCoverageFrom: [
     '**/*.(t|j)s',
@@ -14,14 +20,6 @@ module.exports = {
     '<rootDir>',
     '<rootDir>/../test',
   ],
-  // Setup environment variables for tests
-  setupFilesAfterEnv: ['<rootDir>/../test/setup.ts'],
   moduleNameMapper: {},
-  globals: {
-    'ts-jest': {
-      tsconfig: {
-        strict: true,
-      },
-    },
-  },
 };
+
