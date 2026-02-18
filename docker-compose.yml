@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: eyeflow_postgres
+    environment:
+      POSTGRES_USER: eyeflow
+      POSTGRES_PASSWORD: eyeflow_password
+      POSTGRES_DB: eyeflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eyeflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache & Queue
+  redis:
+    image: redis:7-alpine
+    container_name: eyeflow_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Node.js Server
+  eyeflow-server:
+    build:
+      context: ./eyeflow-server
+      dockerfile: Dockerfile
+    container_name: eyeflow_server
+    environment:
+      NODE_ENV: development
+      SERVER_PORT: 3000
+      DATABASE_URL: postgresql://eyeflow:eyeflow_password@postgres:5432/eyeflow
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./eyeflow-server/src:/app/src
+    command: npm run dev
+
+  # Python Agent (Example)
+  eyeflow-agent:
+    build:
+      context: ./eyeflow-agent
+      dockerfile: Dockerfile
+    container_name: eyeflow_agent
+    environment:
+      SERVER_HOST: eyeflow-server
+      SERVER_PORT: 3000
+      AGENT_ID: agent-1
+      AGENT_NAME: "Local Agent 1"
+    depends_on:
+      - eyeflow-server
+    volumes:
+      - ./eyeflow-agent/src:/app/src
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: python -u src/main.py
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: eyeflow_network
