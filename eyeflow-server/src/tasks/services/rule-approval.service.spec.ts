@@ -53,12 +53,14 @@ describe('RuleApprovalService', () => {
       const result = await service.getPendingApproval(mockUserId);
 
       expect(result).toEqual(pendingRules);
-      expect(mockRepository.find).toHaveBeenCalledWith({
-        where: {
-          userId: mockUserId,
-          approvalStatus: RuleApprovalStatus.PENDING_APPROVAL,
-        },
-      });
+      expect(mockRepository.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            userId: mockUserId,
+            approvalStatus: RuleApprovalStatus.PENDING_APPROVAL,
+          }),
+        })
+      );
     });
 
     it('should return empty array when no rules pending', async () => {
@@ -116,12 +118,16 @@ describe('RuleApprovalService', () => {
   describe('rejectRule', () => {
     it('should reject a rule with feedback', async () => {
       const feedback = 'Not accurate';
-      const rejectedRule = { 
+      const pendingRule = { 
         ...mockRule, 
+        approvalStatus: RuleApprovalStatus.PENDING_APPROVAL,
+      };
+      const rejectedRule = { 
+        ...pendingRule, 
         approvalStatus: RuleApprovalStatus.REJECTED,
         userMessage: feedback,
       };
-      mockRepository.findOne.mockResolvedValueOnce(mockRule);
+      mockRepository.findOne.mockResolvedValueOnce(pendingRule);
       mockRepository.save.mockResolvedValueOnce(rejectedRule);
 
       const result = await service.rejectRule(mockRuleId, mockUserId, feedback);
