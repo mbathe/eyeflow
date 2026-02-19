@@ -11,7 +11,7 @@ import { ConnectorsModule } from './connectors/connectors.module';
 import { LlmConfigModule } from './llm-config/llm-config.module';
 import { KafkaModule } from './kafka/kafka.module';
 import { TasksModule } from './tasks/tasks.module';
-import { createNestWinstonConfig } from './common/services/logger.service';
+import { createNestWinstonConfig, logger } from './common/services/logger.service';
 import { RedisCacheService } from './common/services/redis-cache.service';
 import { ExtensibilityModule } from './common/extensibility';
 // DEPRECATED: FrontendModule not needed for Option 1 (Planning→Compilation→Execution)
@@ -70,6 +70,14 @@ const getEnvFile = () => {
     RuntimeModule,
   ],
   controllers: [AppController],
-  providers: [AppService, RedisCacheService],
+  providers: [
+    AppService,
+    RedisCacheService,
+    // Provide a shared LOGGER token across the app so modules that inject 'LOGGER' receive the Winston logger
+    {
+      provide: 'LOGGER',
+      useValue: logger,
+    },
+  ],
 })
 export class AppModule {}

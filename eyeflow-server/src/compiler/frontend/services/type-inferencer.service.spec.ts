@@ -27,6 +27,16 @@ describe('TypeInferencerService', () => {
           provide: ComponentRegistry,
           useValue: componentRegistry,
         },
+        {
+          provide: 'LOGGER',
+          useValue: {
+            child: jest.fn().mockReturnThis(),
+            info: jest.fn(),
+            warn: jest.fn(),
+            error: jest.fn(),
+            debug: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
