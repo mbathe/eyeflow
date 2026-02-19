@@ -1,8 +1,8 @@
-# 🐍 Service Python LLM - Interface & Contrat
+# Service Python LLM - Interface & Contrat
 
 ## Vue d'ensemble
 
-Le service Python LLM s'exécutera en **parallèle** et sera appelé par le backend TypeScript via HTTP.
+Le service Python LLM s'exécutera en**parallèle** et sera appelé par le backend TypeScript via HTTP.
 
 ```
 NestJS Backend (TypeScript)    Python LLM Service
@@ -19,7 +19,7 @@ NestJS Backend (TypeScript)    Python LLM Service
 
 ---
 
-## 📝 Contrat API
+## Contrat API
 
 ### Endpoint 1: Parse Intent
 
@@ -28,14 +28,14 @@ POST http://localhost:8001/parse-intent
 Content-Type: application/json
 
 {
-  "userInput": "Send a Slack message to #alerts saying customer is non-compliant",
+  "userInput": "Send a Slack message to#alerts saying customer is non-compliant",
   "userId": "550e8400-e29b-41d4-a716-446655440000",
   "llmContext": {
-    "connectors": [...],      # All available connectors
-    "functions": [...],       # All available functions
-    "schemas": [...],         # All data schemas
-    "triggers": [...],        # Available triggers
-    "operators": [...]        # Available operators
+    "connectors": [...],# All available connectors
+    "functions": [...],# All available functions
+    "schemas": [...],# All data schemas
+    "triggers": [...],# Available triggers
+    "operators": [...]# Available operators
   },
   "confidenceThreshold": 0.8,
   "llmModel": "gpt-4"
@@ -48,7 +48,7 @@ Content-Type: application/json
   "success": true,
   "confidence": 0.92,
   "intent": {
-    "description": "Send a Slack message to #alerts",
+    "description": "Send a Slack message to#alerts",
     "action": "send_message",
     "actionType": "WRITE"
   },
@@ -194,7 +194,7 @@ Content-Type: application/json
 
 ---
 
-## 🏗️ Structure Python Recommandée
+## ️ Structure Python Recommandée
 
 ```python
 # main.py - FastAPI Server
@@ -218,7 +218,7 @@ class Parameter(BaseModel):
 class Intent(BaseModel):
     description: str
     action: str
-    actionType: str  # 'READ' | 'WRITE' | 'DELETE' | 'EXECUTE'
+    actionType: str# 'READ' | 'WRITE' | 'DELETE' | 'EXECUTE'
 
 class Target(BaseModel):
     connectorId: str
@@ -242,7 +242,7 @@ class Validation(BaseModel):
 
 class LLMIntentParserResponse(BaseModel):
     success: bool
-    confidence: float  # 0-1
+    confidence: float# 0-1
     intent: Intent
     targets: List[Target]
     parameters: List[Parameter]
@@ -284,10 +284,10 @@ class LLMIntentParser:
         """
         
         try:
-            # Step 1: Analyze user input
+# Step 1: Analyze user input
             analysis = self._analyze_input(user_input)
             
-            # Step 2: Match against available functions
+# Step 2: Match against available functions
             matched_functions = self._find_functions(analysis, llm_context)
             
             if not matched_functions:
@@ -305,16 +305,16 @@ class LLMIntentParser:
                     )
                 )
             
-            # Step 3: Map parameters to types using schemas
+# Step 3: Map parameters to types using schemas
             parameters = self._extract_parameters(user_input, matched_functions, llm_context)
             
-            # Step 4: Build missions
+# Step 4: Build missions
             missions = self._build_missions(matched_functions, parameters)
             
-            # Step 5: Calculate confidence
+# Step 5: Calculate confidence
             confidence = self._calculate_confidence(analysis, matched_functions, parameters)
             
-            # Step 6: Validate executability
+# Step 6: Validate executability
             is_executable = confidence >= confidence_threshold
             
             return LLMIntentParserResponse(
@@ -369,7 +369,7 @@ class LLMIntentParser:
         """
         Use LLM (GPT-4) to understand what user wants
         """
-        # TODO: Call OpenAI API
+# TODO: Call OpenAI API
         return {
             "description": user_input,
             "action": "send_message",
@@ -381,7 +381,7 @@ class LLMIntentParser:
         """
         Use structured search to find matching functions from context
         """
-        # Match keywords against available functions
+# Match keywords against available functions
         functions = llm_context.get("functions", [])
         matched = []
         
@@ -390,12 +390,12 @@ class LLMIntentParser:
                 func = func_entry["function"]
                 if keyword.lower() in func["name"].lower():
                     matched.append({
-                        **func,
+**func,
                         "connectorId": func_entry["connectorId"],
                         "connectorName": self._get_connector_name(func_entry["connectorId"], llm_context)
                     })
         
-        return matched[:1]  # Return best match
+        return matched[:1]# Return best match
     
     def _extract_parameters(self, user_input: str, functions: List[Dict], llm_context: Dict) -> List[Parameter]:
         """
@@ -407,7 +407,7 @@ class LLMIntentParser:
             expected_params = func.get("parameters", [])
             
             for param_def in expected_params:
-                # TODO: Extract value from user_input
+# TODO: Extract value from user_input
                 value = self._extract_value_for_param(param_def["name"], user_input)
                 
                 parameters.append(Parameter(
@@ -449,8 +449,8 @@ class LLMIntentParser:
         total_params = len(parameters) or 1
         param_score = resolved_params / total_params
         
-        # Combined score
-        confidence = 0.5 * (1.0) + 0.5 * param_score  # Simplified
+# Combined score
+        confidence = 0.5 * (1.0) + 0.5 * param_score# Simplified
         return min(1.0, max(0.0, confidence))
     
     def _get_connector_name(self, connector_id: str, llm_context: Dict) -> str:
@@ -462,7 +462,7 @@ class LLMIntentParser:
     
     def _extract_value_for_param(self, param_name: str, user_input: str) -> Optional[str]:
         """Try to extract parameter value from user input"""
-        # Simplified - in production use NLP
+# Simplified - in production use NLP
         if "channel" in param_name.lower():
             if "#" in user_input:
                 return user_input.split("#")[1].split()[0]
@@ -493,7 +493,7 @@ async def build_rule(
     llmContext: Dict[str, Any]
 ) -> LLMIntentParserResponse:
     """Build rule from description"""
-    # Similar to parse_intent but specialized for rules
+# Similar to parse_intent but specialized for rules
     return parser.parse_intent(description, llmContext, 0.7)
 
 @app.post("/validate-intent")
@@ -503,7 +503,7 @@ async def validate_intent(
     userId: str
 ) -> Dict[str, Any]:
     """Validate if intent is executable"""
-    # Check all targets exist, types match, etc.
+# Check all targets exist, types match, etc.
     return {
         "valid": True,
         "issues": [],
@@ -522,7 +522,7 @@ if __name__ == "__main__":
 
 ---
 
-## 🔌 Docker Compose Setup
+## Docker Compose Setup
 
 ```yaml
 version: '3.9'
@@ -539,7 +539,7 @@ services:
       - postgres
 
   llm-parser:
-    build: ./llm-parser  # Python service
+    build: ./llm-parser# Python service
     ports:
       - "8001:8001"
     environment:
@@ -556,7 +556,7 @@ services:
 
 ---
 
-## 🚀 Déploiement
+## Déploiement
 
 ### 1. Créer le service Python
 
@@ -569,7 +569,7 @@ mkdir -p app tests
 touch app/__init__.py app/main.py requirements.txt Dockerfile
 ```
 
-### 2. `requirements.txt`
+### 2. requirements.txt`
 
 ```
 fastapi==0.104.1
@@ -579,7 +579,7 @@ openai==1.3.0
 python-dotenv==1.0.0
 ```
 
-### 3. `Dockerfile`
+### 3. Dockerfile`
 
 ```dockerfile
 FROM python:3.11-slim
@@ -602,7 +602,7 @@ docker-compose up llm-parser
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```python
 # test_llm_parser.py
@@ -613,7 +613,7 @@ def test_parse_slack_message():
     parser = LLMIntentParser()
     
     response = parser.parse_intent(
-        user_input="Send a Slack message to #alerts",
+        user_input="Send a Slack message to#alerts",
         llm_context={
             "connectors": [...],
             "functions": [...]
@@ -629,4 +629,4 @@ def test_parse_slack_message():
 
 ---
 
-**Next: Connecter le service Python au backend TypeScript!** ✅
+**Next: Connecter le service Python au backend TypeScript!** 

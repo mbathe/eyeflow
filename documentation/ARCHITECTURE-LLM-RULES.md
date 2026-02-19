@@ -1,16 +1,16 @@
-# 🏗️ Architecture LLM + Rules Engine Complète (Phase 2.0 - Day 3)
+# ️ Architecture LLM + Rules Engine Complète (Phase 2.0 - Day 3)
 
-## 📋 Vue d'ensemble
+## Vue d'ensemble
 
-Tu as maintenant une **architecture complétement décentralisée et puissante** pour:
-1. **Compiler du langage naturel** en tâches exécutables
-2. **Valider que les tâches peuvent s'exécuter** avec les ressources disponibles
-3. **Créer des règles de conformité ariables** (Mode 3)
-4. **Exposer tous les manifestes** pour que le service Python LLM soit ultra-intelligent
+Tu as maintenant une**architecture complétement décentralisée et puissante** pour:
+1.**Compiler du langage naturel** en tâches exécutables
+2.**Valider que les tâches peuvent s'exécuter** avec les ressources disponibles
+3.**Créer des règles de conformité ariables** (Mode 3)
+4.**Exposer tous les manifestes** pour que le service Python LLM soit ultra-intelligent
 
 ---
 
-## 🎯 Les 4 Couches Architecturales
+## Les 4 Couches Architecturales
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -49,9 +49,9 @@ Tu as maintenant une **architecture complétement décentralisée et puissante**
 
 ---
 
-## 📦 Fichiers Créés (Day 3)
+## Fichiers Créés (Day 3)
 
-### 1. **connector-manifest.types.ts** (690+ lignes)
+### 1.**connector-manifest.types.ts** (690+ lignes)
 Type system complet pour décrire les connecteurs:
 
 ```typescript
@@ -144,7 +144,7 @@ interface LLMContext {
 }
 ```
 
-### 2. **connector-registry.service.ts** (500+ lignes)
+### 2.**connector-registry.service.ts** (500+ lignes)
 Registre central de tous les connecteurs avec manifestes:
 
 ```typescript
@@ -165,13 +165,13 @@ export class ConnectorRegistryService {
 ```
 
 **Connecteurs déjà définis:**
-- 🔵 **Slack** - Messages, channels, files
-- 🐘 **PostgreSQL** - Database tables, queries, updates
-- 🌐 **Generic HTTP API** - Any REST endpoint
-- 📨 **Kafka** - Message streaming, topics
-- 💾 **File System** - Local file operations
+-**Slack** - Messages, channels, files
+-**PostgreSQL** - Database tables, queries, updates
+-**Generic HTTP API** - Any REST endpoint
+-**Kafka** - Message streaming, topics
+-**File System** - Local file operations
 
-### 3. **llm-intent-parser.abstraction.ts** (250+ lignes)
+### 3.**llm-intent-parser.abstraction.ts** (250+ lignes)
 Interface abstraite pour le service Python:
 
 ```typescript
@@ -240,7 +240,7 @@ interface LLMIntentParserResponse {
 }
 ```
 
-### 4. **llm-context-builder.service.ts** (155 lignes)
+### 4.**llm-context-builder.service.ts** (155 lignes)
 Construit le contexte riche pour le LLM:
 
 ```typescript
@@ -260,7 +260,7 @@ export class LLMContextBuilderService {
 }
 ```
 
-### 5. **task-validator.service.ts** (300+ lignes)
+### 5.**task-validator.service.ts** (300+ lignes)
 Valide que les tâches/règles peuvent s'exécuter:
 
 ```typescript
@@ -306,23 +306,23 @@ interface ValidationResult {
 
 ---
 
-## 🔌 Nouveaux Endpoints API
+## Nouveaux Endpoints API
 
-### 1. **Expose Manifestes**
+### 1.**Expose Manifestes**
 ```bash
 GET /tasks/manifest/connectors
 # Retourne tous les manifestes des connecteurs
 # Utilisé par: LLM, documentation, UI discovery
 ```
 
-### 2. **LLM Context**
+### 2.**LLM Context**
 ```bash
 GET /tasks/manifest/llm-context
 # Headers: X-User-ID: <user>
 # Retourne contexte complet pour le LLM (connectors, functions, schemas, triggers, operators)
 ```
 
-### 3. **Export JSON**
+### 3.**Export JSON**
 ```bash
 GET /tasks/manifest/llm-context/json
 # Headers: X-User-ID: <user>
@@ -331,11 +331,11 @@ GET /tasks/manifest/llm-context/json
 
 ---
 
-## 🚀 Flux Utilisateur Complet (Mode 2: Direct)
+## Flux Utilisateur Complet (Mode 2: Direct)
 
-### Avant (Ancien) ❌
+### Avant (Ancien) 
 ```
-User Input: "Send a Slack message to #alerts"
+User Input: "Send a Slack message to#alerts"
 ↓
 TaskCompilerService
 ↓
@@ -344,11 +344,11 @@ TaskCompilerService
 Task created without validation
 ```
 
-### Après (Nouveau) ✅
+### Après (Nouveau) 
 ```
-User Input: "Send a Slack message to #alerts"
+User Input: "Send a Slack message to#alerts"
 ↓
-1️⃣ Build LLM Context
+1⃣ Build LLM Context
    - Connectors: [Slack, PostgreSQL, Kafka, HTTP API, FileSystem]
    - Slack Functions: [send_message, list_messages, post_file]
    - Slack Channels as Nodes with datafSchema
@@ -356,12 +356,12 @@ User Input: "Send a Slack message to #alerts"
    - Operators: EQ, CONTAINS, REGEX, etc.
    - User Permissions: [...]
 ↓
-2️⃣ Send to LLM Parser
-   - Input: "Send a Slack message to #alerts"
+2⃣ Send to LLM Parser
+   - Input: "Send a Slack message to#alerts"
    - Context: {manifestes complet}
    - Vérifier confidence threshold
 ↓
-3️⃣ LLM Returns
+3⃣ LLM Returns
    {
      intent: {action: "send_message", actionType: "WRITE"},
      targets: [{connectorId: "slack", functionId: "slack_send_message"}],
@@ -370,14 +370,14 @@ User Input: "Send a Slack message to #alerts"
      validation: {isExecutable: true}
    }
 ↓
-4️⃣ Validator Checks
+4⃣ Validator Checks
    ✓ Slack connector exists
    ✓ send_message function exists
    ✓ Parameters match schema types
    ✓ User has permissions
    ✓ No deprecated connectors
 ↓
-5️⃣ Task Created with Rich Metadata
+5⃣ Task Created with Rich Metadata
    {
      taskId: "uuid",
      status: "PENDING",
@@ -389,7 +389,7 @@ User Input: "Send a Slack message to #alerts"
 
 ---
 
-## 🎓 Mode 3: Règles de Conformité (TRÈS PUISSANT!)
+## Mode 3: Règles de Conformité (TRÈS PUISSANT!)
 
 ### Cas d'Usage: Conformité Client
 
@@ -457,7 +457,7 @@ Action 1: Call compliance-checker.validate_compliance()
   → Result: {compliant: false, issues: [...]}
 ↓
 Action 2 (if compliant=false): Send Slack message
-  → Posted to #alerts
+  → Posted to#alerts
 ↓
 Rule triggered: Total triggers = 1
   lastTriggeredAt = now
@@ -465,13 +465,13 @@ Rule triggered: Total triggers = 1
 
 ---
 
-## 🧠 Que Reçoit le Service Python LLM
+## Que Reçoit le Service Python LLM
 
 Quand le LLM Parser Python est appelé:
 
 ```json
 {
-  "userInput": "Send a Slack message to #alerts",
+  "userInput": "Send a Slack message to#alerts",
   "userId": "550e8400-e29b-41d4-a716...",
   "llmContext": {
     "connectors": [
@@ -545,19 +545,19 @@ Quand le LLM Parser Python est appelé:
 ```
 
 **Le LLM peut maintenant:**
-- ✅ Identifier que c'est une action Slack
-- ✅ Trouver la fonction `send_message`
-- ✅ Savoir que `text` est un paramètre requis (et son type)
-- ✅ Comprendre les canaux Slack disponibles
-- ✅ Valider que tout existe avant execution
+-  Identifier que c'est une action Slack
+-  Trouver la fonction `send_message`
+-  Savoir que `text` est un paramètre requis (et son type)
+-  Comprendre les canaux Slack disponibles
+-  Valider que tout existe avant execution
 
 ---
 
-## 🏃️ Prochaines Étapes
+## Prochaines Étapes
 
 ### Phase 2.0 - Day 3 (Next):
 - [ ] Implémenter le service Python LLM (Flask/FastAPI)
-- [ ] Connecter via HTTP client dans `LLMIntentParserHttpClient`
+- [ ] Connecter via HTTP client dans LLMIntentParserHttpClient`
 - [ ] Tester end-to-end avec langage naturel réel
 - [ ] Migrations database
 
@@ -574,36 +574,36 @@ Quand le LLM Parser Python est appelé:
 
 ---
 
-## 🎯 Résumé du Pouvoir de cette Architecture
+## Résumé du Pouvoir de cette Architecture
 
 | Aspect | Avant | Après |
 |--------|-------|-------|
-| **Parsing** | Mock data (0% réel) | LLM intelligent avec contexte complet |
-| **Validation** | Aucune | 5 niveaux de validation |
-| **Règles** | Rigides | Mode 3 hyper-flexible avec Debounce |
-| **Extensibilité** | Hard-coded | Plug-and-play connectors + manifests |
-| **LLM Input** | Rien | Contexte COMPLET (schemas, functions, triggers, operators) |
-| **Conformité** | Manuelle | Automatisée via event rules |
-| **Documentation** | Manuelle | Auto-generated from manifests |
+|**Parsing** | Mock data (0% réel) | LLM intelligent avec contexte complet |
+|**Validation** | Aucune | 5 niveaux de validation |
+|**Règles** | Rigides | Mode 3 hyper-flexible avec Debounce |
+|**Extensibilité** | Hard-coded | Plug-and-play connectors + manifests |
+|**LLM Input** | Rien | Contexte COMPLET (schemas, functions, triggers, operators) |
+|**Conformité** | Manuelle | Automatisée via event rules |
+|**Documentation** | Manuelle | Auto-generated from manifests |
 
 ---
 
-## 📊 Files Counter
+## Files Counter
 
 **New Files Created (Day 3):**
-- ✅ connector-manifest.types.ts (690 lines)
-- ✅ connector-registry.service.ts (500 lines)
-- ✅ llm-intent-parser.abstraction.ts (250 lines)
-- ✅ llm-context-builder.service.ts (155 lines)
-- ✅ task-validator.service.ts (300 lines)
+-  connector-manifest.types.ts (690 lines)
+-  connector-registry.service.ts (500 lines)
+-  llm-intent-parser.abstraction.ts (250 lines)
+-  llm-context-builder.service.ts (155 lines)
+-  task-validator.service.ts (300 lines)
 
 **Updated Files:**
-- ✅ tasks.module.ts (all services registered)
-- ✅ task-compiler.service.ts (integrated all new services)
-- ✅ tasks.controller.ts (3 new manifest endpoints)
+-  tasks.module.ts (all services registered)
+-  task-compiler.service.ts (integrated all new services)
+-  tasks.controller.ts (3 new manifest endpoints)
 
-**Build Status:** ✅ 0 TypeScript errors
+**Build Status:** 0 TypeScript errors
 
 ---
 
-C'est maintenant une **architecture de niveau enterprise** prête pour un vrai service LLM! 🚀
+C'est maintenant une**architecture de niveau enterprise** prête pour un vrai service LLM! 

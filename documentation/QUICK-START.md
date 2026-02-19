@@ -1,19 +1,19 @@
-# 🚀 Quick Start Guide - Phase 2.0 Integration
+# Quick Start Guide - Phase 2.0 Integration
 
-## 📍 Where We Are
+## Where We Are
 
-✅ **Phase 2.0 Days 1-3: COMPLETE**
+**Phase 2.0 Days 1-3: COMPLETE**
 - 5 TypeScript services built
 - 5 connectors with full manifests
 - 8-step compilation pipeline ready
 - 4 comprehensive documentation files
-- **Build Status**: 0 TypeScript errors
+-**Build Status**: 0 TypeScript errors
 
-🔄 **Current Milestone**: Ready for Python LLM Service Integration
+**Current Milestone**: Ready for Python LLM Service Integration
 
 ---
 
-## ⚡ Quick Integration Checklist
+## Quick Integration Checklist
 
 ### For Python Developer (Days 4-5)
 
@@ -29,7 +29,7 @@ curl http://localhost:3000/tasks/manifest/llm-context/json | jq
 # - All triggers
 ```
 
-**Step 2**: Use the template in `PYTHON-LLM-SERVICE.md`
+**Step 2**: Use the template in PYTHON-LLM-SERVICE.md`
 ```bash
 # Copy-paste the FastAPI template
 # It includes:
@@ -65,8 +65,8 @@ curl -X POST http://localhost:8001/parse-intent \
 ```
 
 **Step 5**: Notify NestJS team to connect
-- Switch `LLMIntentParserMock` to `LLMIntentParserHttpClient`
-- Point to `http://localhost:8001`
+- Switch LLMIntentParserMock` to `LLMIntentParserHttpClient`
+- Point to http://localhost:8001`
 - Add retry + error handling
 
 ---
@@ -128,20 +128,20 @@ npm test -- --testPathPattern="tasks.e2e"
 
 ---
 
-## 📂 File Reference Guide
+## File Reference Guide
 
 ### Architecture & Decision Making
-- **[ARCHITECTURE-LLM-RULES.md](./ARCHITECTURE-LLM-RULES.md)** - Read this first to understand the 4-layer system
-- **[ARCHITECTURE-DIAGRAMS.md](./ARCHITECTURE-DIAGRAMS.md)** - Visual diagrams of data flow
+-**[ARCHITECTURE-LLM-RULES.md](./ARCHITECTURE-LLM-RULES.md)** - Read this first to understand the 4-layer system
+-**[ARCHITECTURE-DIAGRAMS.md](./ARCHITECTURE-DIAGRAMS.md)** - Visual diagrams of data flow
 
 ### Implementation Details
-- **[PYTHON-LLM-SERVICE.md](./PYTHON-LLM-SERVICE.md)** - Python service template (copy-paste ready)
-- **[EXAMPLES-USAGE.md](./EXAMPLES-USAGE.md)** - API examples and demo scripts
+-**[PYTHON-LLM-SERVICE.md](./PYTHON-LLM-SERVICE.md)** - Python service template (copy-paste ready)
+-**[EXAMPLES-USAGE.md](./EXAMPLES-USAGE.md)** - API examples and demo scripts
 
 ### Status & Planning
-- **[STATUS-DASHBOARD.md](./STATUS-DASHBOARD.md)** - Complete pre-deployment checklist
-- **[IMPLEMENTATION-MATRIX.md](./IMPLEMENTATION-MATRIX.md)** - What's done vs. what's pending
-- **[PHASE-2-DAY-3-SUMMARY.md](./PHASE-2-DAY-3-SUMMARY.md)** - Day 3 work summary
+-**[STATUS-DASHBOARD.md](./STATUS-DASHBOARD.md)** - Complete pre-deployment checklist
+-**[IMPLEMENTATION-MATRIX.md](./IMPLEMENTATION-MATRIX.md)** - What's done vs. what's pending
+-**[PHASE-2-DAY-3-SUMMARY.md](./PHASE-2-DAY-3-SUMMARY.md)** - Day 3 work summary
 
 ### Source Code Structure
 ```
@@ -163,13 +163,13 @@ eyeflow-server/src/tasks/
 
 ---
 
-## 🎯 Immediate Actions
+## Immediate Actions
 
 ### TODAY (Next 2 hours)
 - [ ] Read [ARCHITECTURE-LLM-RULES.md](./ARCHITECTURE-LLM-RULES.md) (15 min)
 - [ ] Review [ARCHITECTURE-DIAGRAMS.md](./ARCHITECTURE-DIAGRAMS.md) (10 min)
 - [ ] Check [PYTHON-LLM-SERVICE.md](./PYTHON-LLM-SERVICE.md) for template (20 min)
-- [ ] Try API call: `curl http://localhost:3000/tasks/manifest/llm-context/json`
+- [ ] Try API call: curl http://localhost:3000/tasks/manifest/llm-context/json`
 
 ### THIS WEEK
 - [ ] Python: Start FastAPI service (use template)
@@ -183,14 +183,14 @@ eyeflow-server/src/tasks/
 
 ---
 
-## 🔑 Key Concepts You Need to Know
+## Key Concepts You Need to Know
 
 ### 1. Connector Registry
 The system now knows about all available connectors automatically. Each connector has:
-- **Functions**: What it can do (send_message, insert, query, etc.)
-- **Nodes**: Resources it manages (channels, tables, topics, etc.)
-- **Triggers**: When it can be triggered (ON_CREATE, ON_SCHEDULE, etc.)
-- **Operators**: How to condition on it (EQ, CONTAINS, REGEX, etc.)
+-**Functions**: What it can do (send_message, insert, query, etc.)
+-**Nodes**: Resources it manages (channels, tables, topics, etc.)
+-**Triggers**: When it can be triggered (ON_CREATE, ON_SCHEDULE, etc.)
+-**Operators**: How to condition on it (EQ, CONTAINS, REGEX, etc.)
 
 ### 2. LLM Context
 When calling Python LLM, it receives complete system manifest:
@@ -223,9 +223,9 @@ Compliance rules that automatically:
 
 ---
 
-## ✅ What's Already Built
+## What's Already Built
 
-### ✅ You DON'T Need to Build
+### You DON'T Need to Build
 - [x] Connector registry with manifests
 - [x] 5 example connectors (Slack, PostgreSQL, HTTP, Kafka, FileSystem)
 - [x] LLM context builder
@@ -247,7 +247,7 @@ Compliance rules that automatically:
 
 ---
 
-## 🎓 Learning Path
+## Learning Path
 
 ### If you're new to this system
 1. Start: [ARCHITECTURE-LLM-RULES.md](./ARCHITECTURE-LLM-RULES.md)
@@ -269,7 +269,7 @@ Compliance rules that automatically:
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### "Build fails with TypeScript errors"
 → This shouldn't happen, we verified 0 errors. Try:
@@ -280,49 +280,49 @@ npm run build
 
 ### "Python service won't connect"
 → Check in task-compiler.service.ts around line ~150:
-- Python service must be running on `http://localhost:8001`
-- Must respond with `LLMIntentParserResponse` format
+- Python service must be running on http://localhost:8001`
+- Must respond with LLMIntentParserResponse` format
 - Add logging to see actual response
 
 ### "Task validation keeps failing"
 → Debug with validation levels:
-1. Check connector exists: `GET /tasks/manifest/connectors`
+1. Check connector exists: GET /tasks/manifest/connectors`
 2. Check function exists in that connector
 3. Check parameter types match
 4. Check you have permissions
 5. Check dependencies (if any)
 
 ### "Manifest endpoints return empty"
-→ ConnectorRegistryService is registered? Check `tasks.module.ts`:
+→ ConnectorRegistryService is registered? Check tasks.module.ts`:
 ```typescript
 providers: [ConnectorRegistryService, ...]
 ```
 
 ---
 
-## 📞 Getting Help
+## Getting Help
 
 **Questions about Architecture?**
-→ Read `ARCHITECTURE-LLM-RULES.md` section on your topic
+→ Read ARCHITECTURE-LLM-RULES.md` section on your topic
 
 **How do I implement X?**
-→ Check `EXAMPLES-USAGE.md` for API examples
+→ Check EXAMPLES-USAGE.md` for API examples
 
 **What's the timeline?**
-→ See `STATUS-DASHBOARD.md` pre-deployment checklist
+→ See STATUS-DASHBOARD.md` pre-deployment checklist
 
 **What's already done?**
-→ See `IMPLEMENTATION-MATRIX.md` for complete inventory
+→ See IMPLEMENTATION-MATRIX.md` for complete inventory
 
 ---
 
-## 🚢 Deployment Readiness
+## Deployment Readiness
 
 ### Current State
-✅ Code: Production-ready (0 TypeScript errors)
-✅ Architecture: Reviewed and approved
-✅ Documentation: Comprehensive
-✅ Types: Complete and type-safe
+ Code: Production-ready (0 TypeScript errors)
+ Architecture: Reviewed and approved
+ Documentation: Comprehensive
+ Types: Complete and type-safe
 ⏳ Python Service: Waiting for implementation
 ⏳ Database: Waiting for migrations
 
@@ -335,16 +335,16 @@ providers: [ConnectorRegistryService, ...]
 
 ---
 
-## 🎉 Ready to Build!
+## Ready to Build!
 
 You have:
-- ✅ Complete type system
-- ✅ Complete architecture
-- ✅ Complete documentation
-- ✅ Complete examples
-- ✅ Complete templates
+-  Complete type system
+-  Complete architecture
+-  Complete documentation
+-  Complete examples
+-  Complete templates
 
-**Next step**: Start the Python service! 🚀
+**Next step**: Start the Python service! 
 
 ---
 
@@ -356,6 +356,6 @@ You have:
 - Visual Diagrams: [ARCHITECTURE-DIAGRAMS.md](./ARCHITECTURE-DIAGRAMS.md)
 - Progress Tracking: [IMPLEMENTATION-MATRIX.md](./IMPLEMENTATION-MATRIX.md)
 
-📅 **Last Updated**: 2026-02-18  
-✅ **Build Status**: Successful (0 errors)  
-🎯 **Next Milestone**: Python LLM Service (Days 4-5)
+**Last Updated**: 2026-02-18  
+**Build Status**: Successful (0 errors)  
+**Next Milestone**: Python LLM Service (Days 4-5)

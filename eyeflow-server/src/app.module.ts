@@ -14,7 +14,9 @@ import { TasksModule } from './tasks/tasks.module';
 import { createNestWinstonConfig } from './common/services/logger.service';
 import { RedisCacheService } from './common/services/redis-cache.service';
 import { ExtensibilityModule } from './common/extensibility';
-import { FrontendModule } from './compiler/frontend';
+// DEPRECATED: FrontendModule not needed for Option 1 (Planning→Compilation→Execution)
+// NL parsing is handled at Planning layer (Python LLM Service)
+// import { FrontendModule } from './compiler/frontend';
 import { CompilerModule } from './compiler/compiler.module';
 import { RuntimeModule } from './runtime/runtime.module';
 
@@ -63,7 +65,7 @@ const getEnvFile = () => {
     KafkaModule,
     TasksModule,
     ExtensibilityModule,
-    FrontendModule,
+    // FrontendModule (DEPRECATED - see above),
     CompilerModule,
     RuntimeModule,
   ],

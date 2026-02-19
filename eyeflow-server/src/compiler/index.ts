@@ -5,14 +5,18 @@
  * @file src/compiler/index.ts
  */
 
-// Layer 2: Frontend
-export * from './frontend';
+// Layer 2: Frontend (DEPRECATED - not needed for Option 1)
+// NL parsing is handled at Planning layer instead
+// export * from './frontend';
 
 // Layer 3: Middle-end (Optimizer)
 export * from './optimizer';
 
 // Layer 4: Backend (IR Generator)
 export * from './ir-generator';
+
+// Integration Layer (Planning↔Compilation↔Execution)
+export * from './integration';
 
 // Stage 7+8 (Service Resolution & Pre-loading)
 export { CompilerModule } from './compiler.module';
@@ -21,3 +25,4 @@ export { ServicePreloaderService } from './stages/stage-8-service-preloader.serv
 
 // Interfaces
 export * from './interfaces/compiled-workflow.interface';
+export * from './interfaces/execution-result.interface';

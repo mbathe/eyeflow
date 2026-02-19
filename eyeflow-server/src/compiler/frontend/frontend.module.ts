@@ -1,8 +1,12 @@
 /**
- * Frontend Module
- * NestJS module for Layer 2: Compiler Frontend
+ * DEPRECATED: Frontend Module
  * 
- * Exports:
+ * NestJS module for Layer 2: Compiler Frontend
+ * NOT USED in Option 1 - Natural language parsing is handled at Planning layer
+ * 
+ * This module kept for reference/historical purposes only.
+ * 
+ * Previous Exports:
  * - FrontendOrchestratorService: Main entry point
  * - NLParserService: Natural language parser
  * - TypeInferencerService: Type checking
