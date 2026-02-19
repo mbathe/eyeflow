@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "/home/paul/codes/eyeflow/eyeflow-server/logs/combined/.2b2ef860c12183644dda83637e4bd16f74fbc669-audit.json",
+    "files": [
+        {
+            "date": 1771465277784,
+            "name": "/home/paul/codes/eyeflow/eyeflow-server/logs/combined/combined-2026-02-19.log",
+            "hash": "5ad6a52c4663f8d9cff71b9e6f821ccac1f16a4c3d94fbf4d4abac9bd86f8b7d"
+        }
+    ],
+    "hashType": "sha256"
+}

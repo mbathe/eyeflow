@@ -20,7 +20,7 @@ import {
   ParseError,
   SemanticNodeGuards 
 } from '../interfaces/semantic-node.interface';
-import { ComponentRegistry, Capability } from '@/common/extensibility/index';
+import { ComponentRegistry, Capability } from '../../../common/extensibility/index';
 
 /**
  * Type information with JSON Schema

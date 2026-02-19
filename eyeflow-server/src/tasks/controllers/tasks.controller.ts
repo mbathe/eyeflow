@@ -975,7 +975,8 @@ export class TasksController {
   async getApprovalStats(
     @Headers('X-User-ID') userId: string,
   ): Promise<any> {
-    const stats = await this.ruleApprovalService.getApprovalStats(userId);
+    // TODO: Fix type inference for ruleApprovalService
+    const stats = await (this.ruleApprovalService as any).getApprovalStats(userId);
     return {
       success: true,
       stats,

@@ -19,7 +19,7 @@ import {
   ParseError,
   SemanticNodeGuards 
 } from '../interfaces/semantic-node.interface';
-import { ComponentRegistry, Constraint } from '@/common/extensibility/index';
+import { ComponentRegistry, Constraint } from '../../../common/extensibility/index';
 
 /**
  * Resource usage tracking

@@ -22,7 +22,7 @@ import {
   ParseWarning,
   SemanticNodeGuards 
 } from '../interfaces/semantic-node.interface';
-import { ComponentRegistry, Capability } from '@/common/extensibility/index';
+import { ComponentRegistry, Capability } from '../../../common/extensibility/index';
 
 /**
  * Action extracted from natural language
