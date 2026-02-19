@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "/home/paul/codes/smart_eneo_server-main/eyeflow/eyeflow-server/logs/performance/.eae6b9a4216d84c3ced3af666151aa5ef576a223-audit.json",
+    "files": [
+        {
+            "date": 1771459692705,
+            "name": "/home/paul/codes/smart_eneo_server-main/eyeflow/eyeflow-server/logs/performance/performance-2026-02-19.log",
+            "hash": "69877b09707ce18efc5a1594f71c39ba0ed1c67666caf6209d21384276c6d605"
+        }
+    ],
+    "hashType": "sha256"
+}

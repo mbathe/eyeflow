@@ -362,48 +362,7 @@ export class TasksController {
     return result;
   }
 
-  /**
-   * GET /tasks/rules/:id
-   * Get surveillance rule status
-   *
-   * Response:
-   * {
-   *   "id": "uuid",
-   *   "name": "High Heart Rate Alert",
-   *   "status": "ACTIVE",
-   *   "sourceConnectorType": "SENSOR_HEART_RATE",
-   *   "totalTriggers": 42,
-   *   "lastTriggeredAt": "2026-02-18T10:30:00.000Z",
-   *   "createdAt": "...",
-   *   "updatedAt": "..."
-   * }
-   */
-  @Get('rules/:id')
-  @ApiOperation({
-    summary: 'Get rule status',
-    description: 'Retrieve surveillance rule details and statistics',
-  })
-  @ApiHeader({
-    name: 'X-User-ID',
-    description: 'User ID for multi-tenancy',
-    required: true,
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Rule retrieved',
-    type: EventRuleResponseDto,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Rule not found',
-    type: ErrorResponseDto,
-  })
-  async getEventRuleStatus(
-    @Headers('X-User-ID') userId: string,
-    @Param('id') ruleId: string,
-  ): Promise<EventRuleResponseDto> {
-    return this.taskCompilerService.getEventRuleStatus(userId, ruleId);
-  }
+
 
   /**
    * GET /tasks/manifest/connectors
@@ -1016,16 +975,56 @@ export class TasksController {
   async getApprovalStats(
     @Headers('X-User-ID') userId: string,
   ): Promise<any> {
-    // TODO: Implement stats method in RuleApprovalService if needed
+    const stats = await this.ruleApprovalService.getApprovalStats(userId);
     return {
       success: true,
-      stats: {
-        pending: 0,
-        approved: 0,
-        rejected: 0,
-        total: 0,
-      },
+      stats,
     };
+  }
+
+
+
+  /**
+   * GET /tasks/rules/:id
+   * Get surveillance rule status
+   *
+   * Response:
+   * {
+   *   "id": "uuid",
+   *   "name": "High Heart Rate Alert",
+   *   "status": "ACTIVE",
+   *   "sourceConnectorType": "SENSOR_HEART_RATE",
+   *   "totalTriggers": 42,
+   *   "lastTriggeredAt": "2026-02-18T10:30:00.000Z",
+   *   "createdAt": "...",
+   *   "updatedAt": "..."
+   * }
+   */
+  @Get('rules/:id')
+  @ApiOperation({
+    summary: 'Get rule status',
+    description: 'Retrieve surveillance rule details and statistics',
+  })
+  @ApiHeader({
+    name: 'X-User-ID',
+    description: 'User ID for multi-tenancy',
+    required: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Rule retrieved',
+    type: EventRuleResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Rule not found',
+    type: ErrorResponseDto,
+  })
+  async getEventRuleStatus(
+    @Headers('X-User-ID') userId: string,
+    @Param('id') ruleId: string,
+  ): Promise<EventRuleResponseDto> {
+    return this.taskCompilerService.getEventRuleStatus(userId, ruleId);
   }
 }
 
