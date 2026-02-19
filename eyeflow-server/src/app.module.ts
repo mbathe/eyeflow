@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { WinstonModule } from 'nest-winston';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AgentsModule } from './agents/agents.module';
@@ -10,8 +11,12 @@ import { ConnectorsModule } from './connectors/connectors.module';
 import { LlmConfigModule } from './llm-config/llm-config.module';
 import { KafkaModule } from './kafka/kafka.module';
 import { TasksModule } from './tasks/tasks.module';
+import { createNestWinstonConfig } from './common/services/logger.service';
+import { RedisCacheService } from './common/services/redis-cache.service';
 import { ExtensibilityModule } from './common/extensibility';
 import { FrontendModule } from './compiler/frontend';
+import { CompilerModule } from './compiler/compiler.module';
+import { RuntimeModule } from './runtime/runtime.module';
 
 // Determine which .env file to load based on environment
 const getEnvFile = () => {
@@ -59,8 +64,10 @@ const getEnvFile = () => {
     TasksModule,
     ExtensibilityModule,
     FrontendModule,
+    CompilerModule,
+    RuntimeModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, RedisCacheService],
 })
 export class AppModule {}
