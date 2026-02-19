@@ -31,7 +31,7 @@ export interface ExecutionResult {
   output: any;
   durationMs: number;
   instructionsExecuted: number;
-  servicesOalled: Array<{
+  servicesCalled: Array<{
     serviceId: string;
     format: string;
     durationMs: number;
@@ -56,7 +56,7 @@ export class SemanticVirtualMachine {
 
     // Initialize execution context
     const context = this.initializeContext(workflow.ir);
-    const servicesOalled: ExecutionResult['servicesOalled'] = [];
+    const servicesCalled: ExecutionResult['servicesCalled'] = [];
 
     try {
       // Execute each instruction in topological order
@@ -69,7 +69,7 @@ export class SemanticVirtualMachine {
           instr,
           context,
           workflow.preLoadedServices,
-          servicesOalled
+          servicesCalled
         );
       }
 
@@ -85,7 +85,7 @@ export class SemanticVirtualMachine {
         output,
         durationMs,
         instructionsExecuted: workflow.ir.instructionOrder.length,
-        servicesOalled
+        servicesCalled
       };
     } catch (error: any) {
       this.logger.error(
@@ -140,7 +140,7 @@ export class SemanticVirtualMachine {
     instr: IRInstruction,
     context: ExecutionContext,
     preLoaded: PreLoadedServices,
-    servicesOalled: ExecutionResult['servicesOalled']
+    servicesCalled: ExecutionResult['servicesCalled']
   ): Promise<void> {
     switch (instr.opcode) {
       case IROpcode.LOAD_RESOURCE:
@@ -152,7 +152,7 @@ export class SemanticVirtualMachine {
         break;
 
       case IROpcode.CALL_SERVICE:
-        await this.handleCallService(instr, context, preLoaded, servicesOalled);
+        await this.handleCallService(instr, context, preLoaded, servicesCalled);
         break;
 
       case IROpcode.CALL_ACTION:
@@ -225,7 +225,7 @@ export class SemanticVirtualMachine {
     instr: IRInstruction,
     context: ExecutionContext,
     preLoaded: PreLoadedServices,
-    servicesOalled: ExecutionResult['servicesOalled']
+    servicesCalled: ExecutionResult['servicesCalled']
   ): Promise<void> {
     const { dest, src, serviceId, dispatchMetadata } = instr;
 
@@ -267,7 +267,7 @@ export class SemanticVirtualMachine {
     context.registers.set(dest, result);
 
     // Track service call
-    servicesOalled.push({
+    servicesCalled.push({
       serviceId,
       format: dispatchMetadata.format,
       durationMs

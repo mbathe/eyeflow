@@ -20,5 +20,4 @@ export { ServiceResolutionService } from './stages/stage-7-service-resolution.se
 export { ServicePreloaderService } from './stages/stage-8-service-preloader.service';
 
 // Interfaces
-export * from './interfaces/ir.interface';
 export * from './interfaces/compiled-workflow.interface';

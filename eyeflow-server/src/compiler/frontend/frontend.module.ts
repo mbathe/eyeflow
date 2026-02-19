@@ -27,6 +27,21 @@ import { CacheModule } from '../../common/cache/cache.module';
     CacheModule,
   ],
   providers: [
+    {
+      provide: 'LOGGER',
+      useValue: {
+        debug: (msg: string, meta?: Record<string, unknown>) => console.debug(msg, meta),
+        info: (msg: string, meta?: Record<string, unknown>) => console.info(msg, meta),
+        warn: (msg: string, meta?: Record<string, unknown>) => console.warn(msg, meta),
+        error: (msg: string, meta?: Record<string, unknown>) => console.error(msg, meta),
+        child: () => ({
+          debug: (msg: string, meta?: Record<string, unknown>) => console.debug(msg, meta),
+          info: (msg: string, meta?: Record<string, unknown>) => console.info(msg, meta),
+          warn: (msg: string, meta?: Record<string, unknown>) => console.warn(msg, meta),
+          error: (msg: string, meta?: Record<string, unknown>) => console.error(msg, meta),
+        }),
+      },
+    },
     FrontendOrchestratorService,
     NLParserService,
     TypeInferencerService,

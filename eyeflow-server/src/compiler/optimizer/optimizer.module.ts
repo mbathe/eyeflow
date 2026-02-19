@@ -16,6 +16,15 @@ import { OptimizerOrchestratorService } from './services/optimizer-orchestrator.
 @Module({
   imports: [ExtensibilityModule, CacheModule],
   providers: [
+    {
+      provide: 'LOGGER',
+      useValue: {
+        debug: (msg: string, meta?: Record<string, unknown>) => console.debug(msg, meta),
+        info: (msg: string, meta?: Record<string, unknown>) => console.info(msg, meta),
+        warn: (msg: string, meta?: Record<string, unknown>) => console.warn(msg, meta),
+        error: (msg: string, meta?: Record<string, unknown>) => console.error(msg, meta),
+      },
+    },
     DataClassifierService,
     ResourceBinderService,
     SchemaPrecomputerService,
