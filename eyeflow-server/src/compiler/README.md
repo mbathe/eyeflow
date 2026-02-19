@@ -45,7 +45,7 @@ See [integration/README.md](./integration/README.md) for details.
 ### Compiler Layers
 
 - **Layer 1**: Catalog (Service registry)
-- **Layer 2**: Frontend (DEPRECATED - NL parsing moved to Planning)
+- **Layer 2**: Frontend (REMOVED - migrated to Planning layer)
 - **Layer 3**: Optimizer (Parallelization, resource binding)
 - **Layer 4**: IR Generator (IR bytecode generation)
 - **Layer 5**: SemanticVirtualMachine (Bytecode execution)

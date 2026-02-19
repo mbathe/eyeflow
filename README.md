@@ -722,6 +722,9 @@ Built with inspiration from:
 
 ## Changelog
 
+### Unreleased
+- Removed deprecated `FrontendModule` and `FrontendOrchestratorService` (Layer 2).  
+
 ### Version 1.0.0 (Current)
 - Initial semantic compiler framework
 - 5 core connectors (Slack, PostgreSQL, HTTP, Kafka, FileSystem)
