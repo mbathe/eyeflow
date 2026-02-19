@@ -18,8 +18,19 @@ describe('Live Task Execution API', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
+    const mockLogger = {
+      info: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+      debug: jest.fn(),
+      child: function () { return this; },
+    } as any;
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
+      providers: [
+        { provide: 'LOGGER', useValue: mockLogger },
+      ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
