@@ -10,3 +10,6 @@ export * from './frontend';
 
 // Layer 3: Middle-end (Optimizer)
 export * from './optimizer';
+
+// Layer 4: Backend (IR Generator)
+export * from './ir-generator';
