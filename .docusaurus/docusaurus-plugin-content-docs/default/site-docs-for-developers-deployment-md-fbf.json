@@ -1,0 +1,29 @@
+{
+  "unversionedId": "for-developers/deployment",
+  "id": "for-developers/deployment",
+  "title": "Deployment",
+  "description": "Deploy EyeFlow to production environments",
+  "source": "@site/docs/for-developers/deployment.md",
+  "sourceDirName": "for-developers",
+  "slug": "/for-developers/deployment",
+  "permalink": "/eyeflow/fr/docs/for-developers/deployment",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-developers/deployment.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 7,
+  "frontMatter": {
+    "sidebar_position": 7,
+    "title": "Deployment",
+    "description": "Deploy EyeFlow to production environments"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "SDKs & Client Libraries",
+    "permalink": "/eyeflow/fr/docs/for-developers/sdks"
+  },
+  "next": {
+    "title": "Connectors Overview",
+    "permalink": "/eyeflow/fr/docs/for-developers/connectors/overview"
+  }
+}

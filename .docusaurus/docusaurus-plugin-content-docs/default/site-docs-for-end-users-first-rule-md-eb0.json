@@ -1,0 +1,29 @@
+{
+  "unversionedId": "for-end-users/first-rule",
+  "id": "for-end-users/first-rule",
+  "title": "Create Your First Rule",
+  "description": "Add automation logic with conditionals",
+  "source": "@site/docs/for-end-users/first-rule.md",
+  "sourceDirName": "for-end-users",
+  "slug": "/for-end-users/first-rule",
+  "permalink": "/eyeflow/fr/docs/for-end-users/first-rule",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-end-users/first-rule.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3,
+    "title": "Create Your First Rule",
+    "description": "Add automation logic with conditionals"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Create Your First Task",
+    "permalink": "/eyeflow/fr/docs/for-end-users/first-task"
+  },
+  "next": {
+    "title": "Dashboard Tour",
+    "permalink": "/eyeflow/fr/docs/for-end-users/ui-dashboard"
+  }
+}

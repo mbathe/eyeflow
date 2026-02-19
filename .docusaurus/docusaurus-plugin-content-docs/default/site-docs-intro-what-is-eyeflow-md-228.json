@@ -1,0 +1,25 @@
+{
+  "unversionedId": "intro/what-is-eyeflow",
+  "id": "intro/what-is-eyeflow",
+  "title": "What is EyeFlow?",
+  "description": "Semantic compilation for deterministic automation at scale",
+  "source": "@site/docs/intro/what-is-eyeflow.md",
+  "sourceDirName": "intro",
+  "slug": "/intro/what-is-eyeflow",
+  "permalink": "/eyeflow/fr/docs/intro/what-is-eyeflow",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/intro/what-is-eyeflow.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "What is EyeFlow?",
+    "description": "Semantic compilation for deterministic automation at scale"
+  },
+  "sidebar": "tutorialSidebar",
+  "next": {
+    "title": "Why EyeFlow?",
+    "permalink": "/eyeflow/fr/docs/intro/why-eyeflow"
+  }
+}

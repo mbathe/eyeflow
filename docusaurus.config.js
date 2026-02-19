@@ -6,10 +6,10 @@ const config = {
   tagline: 'Semantic Task Intelligence Platform',
   favicon: 'img/favicon.ico',
 
-  url: 'https://eyeflow-ai.github.io',
-  baseUrl: '/eyeflow-docs/',
-  organizationName: 'eyeflow-ai',
-  projectName: 'eyeflow-docs',
+  url: 'https://mbathe.github.io',
+  baseUrl: '/eyeflow/',
+  organizationName: 'mbathe',
+  projectName: 'eyeflow',
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
 

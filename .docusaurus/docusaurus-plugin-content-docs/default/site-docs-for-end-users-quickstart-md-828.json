@@ -1,0 +1,29 @@
+{
+  "unversionedId": "for-end-users/quickstart",
+  "id": "for-end-users/quickstart",
+  "title": "Quickstart",
+  "description": "Get EyeFlow running in 5 minutes",
+  "source": "@site/docs/for-end-users/quickstart.md",
+  "sourceDirName": "for-end-users",
+  "slug": "/for-end-users/quickstart",
+  "permalink": "/eyeflow/fr/docs/for-end-users/quickstart",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-end-users/quickstart.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "Quickstart",
+    "description": "Get EyeFlow running in 5 minutes"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "EyeFlow vs OpenClaw",
+    "permalink": "/eyeflow/fr/docs/intro/vs-openclaw"
+  },
+  "next": {
+    "title": "Create Your First Task",
+    "permalink": "/eyeflow/fr/docs/for-end-users/first-task"
+  }
+}

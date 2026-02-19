@@ -1,0 +1,173 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/eyeflow/fr/docs",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/eyeflow/fr/docs",
+          "mainDocId": "intro/what-is-eyeflow",
+          "docs": [
+            {
+              "id": "for-decision-makers/compliance-security",
+              "path": "/eyeflow/fr/docs/for-decision-makers/compliance-security",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-decision-makers/roi-analysis",
+              "path": "/eyeflow/fr/docs/for-decision-makers/roi-analysis",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-decision-makers/scaling-performance",
+              "path": "/eyeflow/fr/docs/for-decision-makers/scaling-performance",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-decision-makers/technology-selection",
+              "path": "/eyeflow/fr/docs/for-decision-makers/technology-selection",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-decision-makers/use-cases",
+              "path": "/eyeflow/fr/docs/for-decision-makers/use-cases",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-developers/api-reference",
+              "path": "/eyeflow/fr/docs/for-developers/api-reference",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-developers/architecture",
+              "path": "/eyeflow/fr/docs/for-developers/architecture",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-developers/connectors/custom",
+              "path": "/eyeflow/fr/docs/for-developers/connectors/custom",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-developers/connectors/overview",
+              "path": "/eyeflow/fr/docs/for-developers/connectors/overview",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-developers/connectors/postgresql",
+              "path": "/eyeflow/fr/docs/for-developers/connectors/postgresql",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-developers/connectors/slack",
+              "path": "/eyeflow/fr/docs/for-developers/connectors/slack",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-developers/deployment",
+              "path": "/eyeflow/fr/docs/for-developers/deployment",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-developers/sdks",
+              "path": "/eyeflow/fr/docs/for-developers/sdks",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-end-users/cli-basics",
+              "path": "/eyeflow/fr/docs/for-end-users/cli-basics",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-end-users/first-rule",
+              "path": "/eyeflow/fr/docs/for-end-users/first-rule",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-end-users/first-task",
+              "path": "/eyeflow/fr/docs/for-end-users/first-task",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-end-users/quickstart",
+              "path": "/eyeflow/fr/docs/for-end-users/quickstart",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "for-end-users/ui-dashboard",
+              "path": "/eyeflow/fr/docs/for-end-users/ui-dashboard",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "intro/vs-openclaw",
+              "path": "/eyeflow/fr/docs/intro/vs-openclaw",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "intro/what-is-eyeflow",
+              "path": "/eyeflow/fr/docs/intro/what-is-eyeflow",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "intro/why-eyeflow",
+              "path": "/eyeflow/fr/docs/intro/why-eyeflow",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "technical-deep-dive/capability-catalog",
+              "path": "/eyeflow/fr/docs/technical-deep-dive/capability-catalog",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "technical-deep-dive/determinism-guarantees",
+              "path": "/eyeflow/fr/docs/technical-deep-dive/determinism-guarantees",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "technical-deep-dive/edge-computing",
+              "path": "/eyeflow/fr/docs/technical-deep-dive/edge-computing",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "technical-deep-dive/llm-ir",
+              "path": "/eyeflow/fr/docs/technical-deep-dive/llm-ir",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "technical-deep-dive/performance-benchmarking",
+              "path": "/eyeflow/fr/docs/technical-deep-dive/performance-benchmarking",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "technical-deep-dive/security-sandbox",
+              "path": "/eyeflow/fr/docs/technical-deep-dive/security-sandbox",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "technical-deep-dive/semantic-compilation",
+              "path": "/eyeflow/fr/docs/technical-deep-dive/semantic-compilation",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "technical-deep-dive/svm-runtime",
+              "path": "/eyeflow/fr/docs/technical-deep-dive/svm-runtime",
+              "sidebar": "tutorialSidebar"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {
+            "tutorialSidebar": {
+              "link": {
+                "path": "/eyeflow/fr/docs/intro/what-is-eyeflow",
+                "label": "intro/what-is-eyeflow"
+              }
+            }
+          }
+        }
+      ],
+      "breadcrumbs": true
+    }
+  }
+}

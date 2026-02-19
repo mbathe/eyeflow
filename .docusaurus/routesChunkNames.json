@@ -1,0 +1,125 @@
+{
+  "/eyeflow/fr/docs-553": {
+    "__comp": "1be78505",
+    "__context": {
+      "plugin": "713aaaaf"
+    },
+    "versionMetadata": "935f2afb"
+  },
+  "/eyeflow/fr/docs/for-decision-makers/compliance-security-52d": {
+    "__comp": "17896441",
+    "content": "41bd0fda"
+  },
+  "/eyeflow/fr/docs/for-decision-makers/roi-analysis-c25": {
+    "__comp": "17896441",
+    "content": "fcaca645"
+  },
+  "/eyeflow/fr/docs/for-decision-makers/scaling-performance-297": {
+    "__comp": "17896441",
+    "content": "5eb7ab9b"
+  },
+  "/eyeflow/fr/docs/for-decision-makers/technology-selection-15c": {
+    "__comp": "17896441",
+    "content": "f9584f4a"
+  },
+  "/eyeflow/fr/docs/for-decision-makers/use-cases-56b": {
+    "__comp": "17896441",
+    "content": "24225d17"
+  },
+  "/eyeflow/fr/docs/for-developers/api-reference-f0e": {
+    "__comp": "17896441",
+    "content": "caf70b3f"
+  },
+  "/eyeflow/fr/docs/for-developers/architecture-b7c": {
+    "__comp": "17896441",
+    "content": "368ddddd"
+  },
+  "/eyeflow/fr/docs/for-developers/connectors/custom-a12": {
+    "__comp": "17896441",
+    "content": "6c607d23"
+  },
+  "/eyeflow/fr/docs/for-developers/connectors/overview-cd5": {
+    "__comp": "17896441",
+    "content": "c896f4f8"
+  },
+  "/eyeflow/fr/docs/for-developers/connectors/postgresql-aa5": {
+    "__comp": "17896441",
+    "content": "115d4644"
+  },
+  "/eyeflow/fr/docs/for-developers/connectors/slack-b91": {
+    "__comp": "17896441",
+    "content": "4185229b"
+  },
+  "/eyeflow/fr/docs/for-developers/deployment-f23": {
+    "__comp": "17896441",
+    "content": "fbf5f7dc"
+  },
+  "/eyeflow/fr/docs/for-developers/sdks-2c3": {
+    "__comp": "17896441",
+    "content": "db311c44"
+  },
+  "/eyeflow/fr/docs/for-end-users/cli-basics-dd5": {
+    "__comp": "17896441",
+    "content": "ed140b02"
+  },
+  "/eyeflow/fr/docs/for-end-users/first-rule-1b5": {
+    "__comp": "17896441",
+    "content": "eb00a851"
+  },
+  "/eyeflow/fr/docs/for-end-users/first-task-de7": {
+    "__comp": "17896441",
+    "content": "5f177e7c"
+  },
+  "/eyeflow/fr/docs/for-end-users/quickstart-f8d": {
+    "__comp": "17896441",
+    "content": "828d8b3a"
+  },
+  "/eyeflow/fr/docs/for-end-users/ui-dashboard-eec": {
+    "__comp": "17896441",
+    "content": "71b0e7a1"
+  },
+  "/eyeflow/fr/docs/intro/vs-openclaw-e26": {
+    "__comp": "17896441",
+    "content": "126fed71"
+  },
+  "/eyeflow/fr/docs/intro/what-is-eyeflow-d76": {
+    "__comp": "17896441",
+    "content": "2288dad8"
+  },
+  "/eyeflow/fr/docs/intro/why-eyeflow-b84": {
+    "__comp": "17896441",
+    "content": "7ef6c744"
+  },
+  "/eyeflow/fr/docs/technical-deep-dive/capability-catalog-856": {
+    "__comp": "17896441",
+    "content": "15d0ad86"
+  },
+  "/eyeflow/fr/docs/technical-deep-dive/determinism-guarantees-3b0": {
+    "__comp": "17896441",
+    "content": "8f29ed76"
+  },
+  "/eyeflow/fr/docs/technical-deep-dive/edge-computing-9a7": {
+    "__comp": "17896441",
+    "content": "f78dff23"
+  },
+  "/eyeflow/fr/docs/technical-deep-dive/llm-ir-815": {
+    "__comp": "17896441",
+    "content": "2d1958fb"
+  },
+  "/eyeflow/fr/docs/technical-deep-dive/performance-benchmarking-3a6": {
+    "__comp": "17896441",
+    "content": "962525aa"
+  },
+  "/eyeflow/fr/docs/technical-deep-dive/security-sandbox-027": {
+    "__comp": "17896441",
+    "content": "3e887fff"
+  },
+  "/eyeflow/fr/docs/technical-deep-dive/semantic-compilation-c6c": {
+    "__comp": "17896441",
+    "content": "e5d8adf4"
+  },
+  "/eyeflow/fr/docs/technical-deep-dive/svm-runtime-85a": {
+    "__comp": "17896441",
+    "content": "0a6d4496"
+  }
+}

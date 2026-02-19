@@ -1,0 +1,29 @@
+{
+  "unversionedId": "for-developers/sdks",
+  "id": "for-developers/sdks",
+  "title": "SDKs & Client Libraries",
+  "description": "Official SDKs for popular languages",
+  "source": "@site/docs/for-developers/sdks.md",
+  "sourceDirName": "for-developers",
+  "slug": "/for-developers/sdks",
+  "permalink": "/eyeflow/fr/docs/for-developers/sdks",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-developers/sdks.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3,
+    "title": "SDKs & Client Libraries",
+    "description": "Official SDKs for popular languages"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "API Reference",
+    "permalink": "/eyeflow/fr/docs/for-developers/api-reference"
+  },
+  "next": {
+    "title": "Deployment",
+    "permalink": "/eyeflow/fr/docs/for-developers/deployment"
+  }
+}

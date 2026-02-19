@@ -1,0 +1,29 @@
+{
+  "unversionedId": "technical-deep-dive/edge-computing",
+  "id": "technical-deep-dive/edge-computing",
+  "title": "Edge Computing & IoT",
+  "description": "Deployment on edge devices and IoT systems",
+  "source": "@site/docs/technical-deep-dive/edge-computing.md",
+  "sourceDirName": "technical-deep-dive",
+  "slug": "/technical-deep-dive/edge-computing",
+  "permalink": "/eyeflow/fr/docs/technical-deep-dive/edge-computing",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/technical-deep-dive/edge-computing.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 6,
+  "frontMatter": {
+    "sidebar_position": 6,
+    "title": "Edge Computing & IoT",
+    "description": "Deployment on edge devices and IoT systems"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Determinism Guarantees",
+    "permalink": "/eyeflow/fr/docs/technical-deep-dive/determinism-guarantees"
+  },
+  "next": {
+    "title": "Security Sandbox",
+    "permalink": "/eyeflow/fr/docs/technical-deep-dive/security-sandbox"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "unversionedId": "for-developers/architecture",
+  "id": "for-developers/architecture",
+  "title": "Architecture Overview",
+  "description": "System design and core components",
+  "source": "@site/docs/for-developers/architecture.md",
+  "sourceDirName": "for-developers",
+  "slug": "/for-developers/architecture",
+  "permalink": "/eyeflow/fr/docs/for-developers/architecture",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-developers/architecture.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "Architecture Overview",
+    "description": "System design and core components"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "CLI Basics",
+    "permalink": "/eyeflow/fr/docs/for-end-users/cli-basics"
+  },
+  "next": {
+    "title": "API Reference",
+    "permalink": "/eyeflow/fr/docs/for-developers/api-reference"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "unversionedId": "for-end-users/ui-dashboard",
+  "id": "for-end-users/ui-dashboard",
+  "title": "Dashboard Tour",
+  "description": "Navigate the EyeFlow web interface",
+  "source": "@site/docs/for-end-users/ui-dashboard.md",
+  "sourceDirName": "for-end-users",
+  "slug": "/for-end-users/ui-dashboard",
+  "permalink": "/eyeflow/fr/docs/for-end-users/ui-dashboard",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-end-users/ui-dashboard.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4,
+    "title": "Dashboard Tour",
+    "description": "Navigate the EyeFlow web interface"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Create Your First Rule",
+    "permalink": "/eyeflow/fr/docs/for-end-users/first-rule"
+  },
+  "next": {
+    "title": "CLI Basics",
+    "permalink": "/eyeflow/fr/docs/for-end-users/cli-basics"
+  }
+}

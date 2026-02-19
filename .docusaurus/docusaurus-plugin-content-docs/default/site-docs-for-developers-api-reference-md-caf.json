@@ -1,0 +1,29 @@
+{
+  "unversionedId": "for-developers/api-reference",
+  "id": "for-developers/api-reference",
+  "title": "API Reference",
+  "description": "Complete REST API documentation",
+  "source": "@site/docs/for-developers/api-reference.md",
+  "sourceDirName": "for-developers",
+  "slug": "/for-developers/api-reference",
+  "permalink": "/eyeflow/fr/docs/for-developers/api-reference",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-developers/api-reference.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2,
+    "title": "API Reference",
+    "description": "Complete REST API documentation"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Architecture Overview",
+    "permalink": "/eyeflow/fr/docs/for-developers/architecture"
+  },
+  "next": {
+    "title": "SDKs & Client Libraries",
+    "permalink": "/eyeflow/fr/docs/for-developers/sdks"
+  }
+}

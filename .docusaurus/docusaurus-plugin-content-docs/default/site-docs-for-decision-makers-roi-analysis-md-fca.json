@@ -1,0 +1,29 @@
+{
+  "unversionedId": "for-decision-makers/roi-analysis",
+  "id": "for-decision-makers/roi-analysis",
+  "title": "ROI Analysis",
+  "description": "Financial analysis and return on investment",
+  "source": "@site/docs/for-decision-makers/roi-analysis.md",
+  "sourceDirName": "for-decision-makers",
+  "slug": "/for-decision-makers/roi-analysis",
+  "permalink": "/eyeflow/fr/docs/for-decision-makers/roi-analysis",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-decision-makers/roi-analysis.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "ROI Analysis",
+    "description": "Financial analysis and return on investment"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Custom Connectors",
+    "permalink": "/eyeflow/fr/docs/for-developers/connectors/custom"
+  },
+  "next": {
+    "title": "Use Cases",
+    "permalink": "/eyeflow/fr/docs/for-decision-makers/use-cases"
+  }
+}
