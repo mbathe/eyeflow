@@ -10,6 +10,7 @@ import { ConnectorsModule } from './connectors/connectors.module';
 import { LlmConfigModule } from './llm-config/llm-config.module';
 import { KafkaModule } from './kafka/kafka.module';
 import { TasksModule } from './tasks/tasks.module';
+import { ExtensibilityModule } from './common/extensibility';
 
 // Determine which .env file to load based on environment
 const getEnvFile = () => {
@@ -55,6 +56,7 @@ const getEnvFile = () => {
     LlmConfigModule,
     KafkaModule,
     TasksModule,
+    ExtensibilityModule,
   ],
   controllers: [AppController],
   providers: [AppService],
