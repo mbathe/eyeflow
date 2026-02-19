@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EventRuleExtendedEntity } from '../entities/event-rule-extended.entity';
 import { RuleApprovalStatus } from '../types/task.types';
+import { logWithContext } from '../../common/services/logger.service';
 
 @Injectable()
 export class RuleApprovalService {
@@ -18,6 +19,11 @@ export class RuleApprovalService {
    */
   async getPendingApproval(userId: string): Promise<EventRuleExtendedEntity[]> {
     this.logger.log(`Fetching pending approvals for user: ${userId}`);
+    logWithContext('info', 'Fetching pending approvals', {
+      service: 'RuleApprovalService',
+      action: 'getPendingApproval',
+      userId,
+    });
 
     return this.ruleRepository.find({
       where: {
@@ -74,10 +80,23 @@ export class RuleApprovalService {
     });
 
     if (!rule) {
+      logWithContext('warn', 'Rule not found for approval', {
+        service: 'RuleApprovalService',
+        action: 'approveRule',
+        userId,
+        ruleId,
+      });
       throw new NotFoundException(`Rule ${ruleId} not found`);
     }
 
     if (rule.approvalStatus !== RuleApprovalStatus.PENDING_APPROVAL) {
+      logWithContext('warn', 'Rule not in pending approval status', {
+        service: 'RuleApprovalService',
+        action: 'approveRule',
+        userId,
+        ruleId,
+        currentStatus: rule.approvalStatus,
+      });
       throw new BadRequestException(
         `Rule is not pending approval (current status: ${rule.approvalStatus})`,
       );
@@ -96,6 +115,14 @@ export class RuleApprovalService {
     rule.status = 'ACTIVE' as any; // From EventRuleStatus
 
     await this.ruleRepository.save(rule);
+
+    logWithContext('info', 'Rule approved and activated', {
+      service: 'RuleApprovalService',
+      action: 'approveRule',
+      userId,
+      ruleId,
+      ruleName: rule.name,
+    });
 
     this.logger.log(`Rule ${ruleId} approved by ${userId} and activated`);
 
@@ -119,10 +146,23 @@ export class RuleApprovalService {
     });
 
     if (!rule) {
+      logWithContext('warn', 'Rule not found for rejection', {
+        service: 'RuleApprovalService',
+        action: 'rejectRule',
+        userId,
+        ruleId,
+      });
       throw new NotFoundException(`Rule ${ruleId} not found`);
     }
 
     if (rule.approvalStatus !== RuleApprovalStatus.PENDING_APPROVAL) {
+      logWithContext('warn', 'Rule not in pending approval status for rejection', {
+        service: 'RuleApprovalService',
+        action: 'rejectRule',
+        userId,
+        ruleId,
+        currentStatus: rule.approvalStatus,
+      });
       throw new BadRequestException(
         `Rule is not pending approval (current status: ${rule.approvalStatus})`,
       );
@@ -133,6 +173,15 @@ export class RuleApprovalService {
     rule.userMessage = feedback;
 
     await this.ruleRepository.save(rule);
+
+    logWithContext('info', 'Rule rejected with feedback', {
+      service: 'RuleApprovalService',
+      action: 'rejectRule',
+      userId,
+      ruleId,
+      ruleName: rule.name,
+      feedbackLength: feedback.length,
+    });
 
     this.logger.log(`Rule ${ruleId} rejected by ${userId} with feedback: "${feedback}"`);
 

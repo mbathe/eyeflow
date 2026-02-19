@@ -3,17 +3,25 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AppModule } from './app.module';
 import { QueryExceptionFilter } from './common/query-exception.filter';
+import { HttpLoggingInterceptor } from './common/services/http-logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Use Winston as global logger
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   // Enable CORS
   app.enableCors();
 
   // Register global exception filters
   app.useGlobalFilters(new QueryExceptionFilter());
+
+  // Register global HTTP logging interceptor
+  app.useGlobalInterceptors(new HttpLoggingInterceptor());
   
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
