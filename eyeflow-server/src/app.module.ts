@@ -12,6 +12,7 @@ import { LlmConfigModule } from './llm-config/llm-config.module';
 import { KafkaModule } from './kafka/kafka.module';
 import { TasksModule } from './tasks/tasks.module';
 import { createNestWinstonConfig } from './common/services/logger.service';
+import { RedisCacheService } from './common/services/redis-cache.service';
 
 // Determine which .env file to load based on environment
 const getEnvFile = () => {
@@ -60,6 +61,6 @@ const getEnvFile = () => {
     TasksModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, RedisCacheService],
 })
 export class AppModule {}

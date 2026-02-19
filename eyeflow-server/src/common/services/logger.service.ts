@@ -138,6 +138,13 @@ export interface LogContext {
   ruleName?: string;
   currentStatus?: string;
   feedbackLength?: number;
+  key?: string;
+  pattern?: string;
+  type?: string;
+  ttl?: number;
+  valueSize?: number;
+  deleted?: boolean;
+  keysDeleted?: number;
   metadata?: Record<string, any>;
 }
 
