@@ -1,0 +1,332 @@
+node.exe : [WARNING] The 
+`siteConfig.onBrokenMarkdownLinks` config 
+option is deprecated and will be removed 
+in Docusaurus v4.
+At C:\Program Files\nodejs\npx.ps1:29 
+char:3
++   & $NODE_EXE $NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified 
+   : ([WARNING] The `... Docusaurus v4.:S  
+  tring) [], RemoteException
+    + FullyQualifiedErrorId : NativeComman 
+   dError
+ 
+Please migrate and move this option to `sit
+eConfig.markdown.hooks.onBrokenMarkdownLink
+s` instead.
+[INFO] [fr] Creating an optimized production build...
+[WARNING] The 
+`siteConfig.onBrokenMarkdownLinks` config 
+option is deprecated and will be removed 
+in Docusaurus v4.
+Please migrate and move this option to `sit
+eConfig.markdown.hooks.onBrokenMarkdownLink
+s` instead.
+[90m[[90mwebpackbar[90m][39m [36m???[39m Compiling Client
+[90m[[90mwebpackbar[90m][39m [36m???[39m Compiling Server
+[WARNING] Markdown link with URL 
+`../for-developers/connectors/kafka.md` in 
+source file 
+"../docs/for-end-users/quickstart.md" 
+(163:3) couldn't be resolved.
+Make sure it references a local Markdown 
+file that exists within the current plugin.
+[90m[[90mwebpackbar[90m][39m [32m???[39m Server: Compiled with some errors in 4.14s
+<w> [webpack.cache.PackFileCacheStrategy] 
+Skipped not serializable cache item 'Compil
+ation/modules|D:\Projets\VSCODE\digitorn\ey
+eflow\website\node_modules\@docusaurus\mdx-
+loader\lib\index.js??ruleSet[1].rules[8].us
+e[0]!D:\Projets\VSCODE\digitorn\eyeflow\doc
+s\technical-deep-dive\determinism-guarantee
+s.md': No serializer registered for 
+VFileMessage
+<w> while serializing webpack/lib/cache/Pac
+kFileCacheStrategy.PackContentItems -> 
+webpack/lib/NormalModule -> 
+webpack/lib/ModuleBuildError -> Error -> 
+VFileMessage
+<w> [webpack.cache.PackFileCacheStrategy] 
+Skipped not serializable cache item 'Compil
+ation/modules|D:\Projets\VSCODE\digitorn\ey
+eflow\website\node_modules\@docusaurus\mdx-
+loader\lib\index.js??ruleSet[1].rules[8].us
+e[0]!D:\Projets\VSCODE\digitorn\eyeflow\doc
+s\for-decision-makers\technology-selection.
+md': No serializer registered for 
+VFileMessage
+<w> while serializing webpack/lib/cache/Pac
+kFileCacheStrategy.PackContentItems -> 
+webpack/lib/NormalModule -> 
+webpack/lib/ModuleBuildError -> Error -> 
+VFileMessage
+<w> [webpack.cache.PackFileCacheStrategy] 
+Skipped not serializable cache item 'Compil
+ation/modules|D:\Projets\VSCODE\digitorn\ey
+eflow\website\node_modules\@docusaurus\mdx-
+loader\lib\index.js??ruleSet[1].rules[8].us
+e[0]!D:\Projets\VSCODE\digitorn\eyeflow\doc
+s\for-decision-makers\use-cases.md': No 
+serializer registered for VFileMessage
+<w> while serializing webpack/lib/cache/Pac
+kFileCacheStrategy.PackContentItems -> 
+webpack/lib/NormalModule -> 
+webpack/lib/ModuleBuildError -> Error -> 
+VFileMessage
+<w> [webpack.cache.PackFileCacheStrategy] 
+Skipped not serializable cache item 'Compil
+ation/modules|D:\Projets\VSCODE\digitorn\ey
+eflow\website\node_modules\@docusaurus\mdx-
+loader\lib\index.js??ruleSet[1].rules[8].us
+e[0]!D:\Projets\VSCODE\digitorn\eyeflow\doc
+s\for-decision-makers\scaling-performance.m
+d': No serializer registered for 
+VFileMessage
+<w> while serializing webpack/lib/cache/Pac
+kFileCacheStrategy.PackContentItems -> 
+webpack/lib/NormalModule -> 
+webpack/lib/ModuleBuildError -> Error -> 
+VFileMessage
+<w> [webpack.cache.PackFileCacheStrategy] 
+Skipped not serializable cache item 'Compil
+ation/modules|D:\Projets\VSCODE\digitorn\ey
+eflow\website\node_modules\@docusaurus\mdx-
+loader\lib\index.js??ruleSet[1].rules[8].us
+e[0]!D:\Projets\VSCODE\digitorn\eyeflow\doc
+s\for-end-users\first-task.md': No 
+serializer registered for VFileMessage
+<w> while serializing webpack/lib/cache/Pac
+kFileCacheStrategy.PackContentItems -> 
+webpack/lib/NormalModule -> 
+webpack/lib/ModuleBuildError -> Error -> 
+VFileMessage
+<w> [webpack.cache.PackFileCacheStrategy] 
+Skipped not serializable cache item 'Compil
+ation/modules|D:\Projets\VSCODE\digitorn\ey
+eflow\website\node_modules\@docusaurus\mdx-
+loader\lib\index.js??ruleSet[1].rules[8].us
+e[0]!D:\Projets\VSCODE\digitorn\eyeflow\doc
+s\for-decision-makers\roi-analysis.md': No 
+serializer registered for VFileMessage
+<w> while serializing webpack/lib/cache/Pac
+kFileCacheStrategy.PackContentItems -> 
+webpack/lib/NormalModule -> 
+webpack/lib/ModuleBuildError -> Error -> 
+VFileMessage
+[90m[[90mwebpackbar[90m][39m [32m???[39m Client: Compiled with some errors in 21.72s
+[ERROR] Client bundle compiled with errors 
+therefore further build is impossible.
+Error: MDX compilation failed for file "D:\
+Projets\VSCODE\digitorn\eyeflow\docs\for-de
+cision-makers\roi-analysis.md"
+Cause: Unexpected character `1` (U+0031) 
+before name, expected a character that can 
+start a name, such as a letter, `$`, or `_`
+Details:
+{
+  "column": 19,
+  "file": "",
+  "message": "Unexpected character `1` 
+(U+0031) before name, expected a character 
+that can start a name, such as a letter, 
+`$`, or `_`",
+  "line": 290,
+  "name": "290:19",
+  "place": {
+    "_bufferIndex": 18,
+    "_index": 0,
+    "line": 290,
+    "column": 19,
+    "offset": 6627
+  },
+  "reason": "Unexpected character `1` 
+(U+0031) before name, expected a character 
+that can start a name, such as a letter, 
+`$`, or `_`",
+  "ruleId": "unexpected-character",
+  "source": "micromark-extension-mdx-jsx",
+  "url": "https://github.com/micromark/micr
+omark-extension-mdx-jsx#unexpected-characte
+r-at-expected-expect"
+}
+
+--------------------------
+
+Error: MDX compilation failed for file "D:\
+Projets\VSCODE\digitorn\eyeflow\docs\for-de
+cision-makers\scaling-performance.md"
+Cause: Unexpected character `1` (U+0031) 
+before name, expected a character that can 
+start a name, such as a letter, `$`, or `_`
+Details:
+{
+  "column": 7,
+  "file": "",
+  "message": "Unexpected character `1` 
+(U+0031) before name, expected a character 
+that can start a name, such as a letter, 
+`$`, or `_`",
+  "line": 289,
+  "name": "289:7",
+  "place": {
+    "_bufferIndex": 1,
+    "_index": 0,
+    "line": 289,
+    "column": 7,
+    "offset": 6086
+  },
+  "reason": "Unexpected character `1` 
+(U+0031) before name, expected a character 
+that can start a name, such as a letter, 
+`$`, or `_`",
+  "ruleId": "unexpected-character",
+  "source": "micromark-extension-mdx-jsx",
+  "url": "https://github.com/micromark/micr
+omark-extension-mdx-jsx#unexpected-characte
+r-at-expected-expect"
+}
+
+--------------------------
+
+Error: MDX compilation failed for file "D:\
+Projets\VSCODE\digitorn\eyeflow\docs\for-de
+cision-makers\technology-selection.md"
+Cause: Unexpected character `8` (U+0038) 
+before name, expected a character that can 
+start a name, such as a letter, `$`, or `_`
+Details:
+{
+  "column": 13,
+  "file": "",
+  "message": "Unexpected character `8` 
+(U+0038) before name, expected a character 
+that can start a name, such as a letter, 
+`$`, or `_`",
+  "line": 243,
+  "name": "243:13",
+  "place": {
+    "_bufferIndex": 12,
+    "_index": 4,
+    "line": 243,
+    "column": 13,
+    "offset": 6261
+  },
+  "reason": "Unexpected character `8` 
+(U+0038) before name, expected a character 
+that can start a name, such as a letter, 
+`$`, or `_`",
+  "ruleId": "unexpected-character",
+  "source": "micromark-extension-mdx-jsx",
+  "url": "https://github.com/micromark/micr
+omark-extension-mdx-jsx#unexpected-characte
+r-at-expected-expect"
+}
+
+--------------------------
+
+Error: MDX compilation failed for file "D:\
+Projets\VSCODE\digitorn\eyeflow\docs\for-de
+cision-makers\use-cases.md"
+Cause: Unexpected character `1` (U+0031) 
+before name, expected a character that can 
+start a name, such as a letter, `$`, or `_`
+Details:
+{
+  "column": 46,
+  "file": "",
+  "message": "Unexpected character `1` 
+(U+0031) before name, expected a character 
+that can start a name, such as a letter, 
+`$`, or `_`",
+  "line": 15,
+  "name": "15:46",
+  "place": {
+    "_bufferIndex": 45,
+    "_index": 0,
+    "line": 15,
+    "column": 46,
+    "offset": 296
+  },
+  "reason": "Unexpected character `1` 
+(U+0031) before name, expected a character 
+that can start a name, such as a letter, 
+`$`, or `_`",
+  "ruleId": "unexpected-character",
+  "source": "micromark-extension-mdx-jsx",
+  "url": "https://github.com/micromark/micr
+omark-extension-mdx-jsx#unexpected-characte
+r-at-expected-expect"
+}
+
+--------------------------
+
+Error: MDX compilation failed for file "D:\
+Projets\VSCODE\digitorn\eyeflow\docs\for-en
+d-users\first-task.md"
+Cause: Unexpected character `5` (U+0035) 
+before name, expected a character that can 
+start a name, such as a letter, `$`, or `_`
+Details:
+{
+  "column": 23,
+  "file": "",
+  "message": "Unexpected character `5` 
+(U+0035) before name, expected a character 
+that can start a name, such as a letter, 
+`$`, or `_`",
+  "line": 331,
+  "name": "331:23",
+  "place": {
+    "_bufferIndex": 20,
+    "_index": 0,
+    "line": 331,
+    "column": 23,
+    "offset": 6951
+  },
+  "reason": "Unexpected character `5` 
+(U+0035) before name, expected a character 
+that can start a name, such as a letter, 
+`$`, or `_`",
+  "ruleId": "unexpected-character",
+  "source": "micromark-extension-mdx-jsx",
+  "url": "https://github.com/micromark/micr
+omark-extension-mdx-jsx#unexpected-characte
+r-at-expected-expect"
+}
+
+--------------------------
+
+Error: MDX compilation failed for file "D:\
+Projets\VSCODE\digitorn\eyeflow\docs\techni
+cal-deep-dive\determinism-guarantees.md"
+Cause: Unexpected character `5` (U+0035) 
+before name, expected a character that can 
+start a name, such as a letter, `$`, or `_`
+Details:
+{
+  "column": 16,
+  "file": "",
+  "message": "Unexpected character `5` 
+(U+0035) before name, expected a character 
+that can start a name, such as a letter, 
+`$`, or `_`",
+  "line": 469,
+  "name": "469:16",
+  "place": {
+    "_bufferIndex": 13,
+    "_index": 0,
+    "line": 469,
+    "column": 16,
+    "offset": 11663
+  },
+  "reason": "Unexpected character `5` 
+(U+0035) before name, expected a character 
+that can start a name, such as a letter, 
+`$`, or `_`",
+  "ruleId": "unexpected-character",
+  "source": "micromark-extension-mdx-jsx",
+  "url": "https://github.com/micromark/micr
+omark-extension-mdx-jsx#unexpected-characte
+r-at-expected-expect"
+}
