@@ -1,0 +1,32 @@
+{
+  "unversionedId": "getting-started/dashboard",
+  "id": "getting-started/dashboard",
+  "title": "Dashboard — Tableau de bord",
+  "description": "Guide du dashboard EyeFlow React — visualisation temps réel des exécutions, audit trail, gestion des règles et monitoring des nœuds SVM.",
+  "source": "@site/docs/getting-started/dashboard.md",
+  "sourceDirName": "getting-started",
+  "slug": "/getting-started/dashboard",
+  "permalink": "/docs/getting-started/dashboard",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/getting-started/dashboard.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "id": "dashboard",
+    "sidebar_position": 3,
+    "title": "Dashboard — Tableau de bord",
+    "description": "Guide du dashboard EyeFlow React — visualisation temps réel des exécutions, audit trail, gestion des règles et monitoring des nœuds SVM."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Premier workflow complet",
+    "permalink": "/docs/getting-started/first-workflow"
+  },
+  "next": {
+    "title": "Compilation sémantique",
+    "permalink": "/docs/concepts/semantic-compilation"
+  }
+}

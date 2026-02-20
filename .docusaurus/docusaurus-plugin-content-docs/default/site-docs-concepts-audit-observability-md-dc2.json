@@ -1,0 +1,32 @@
+{
+  "unversionedId": "concepts/audit-observability",
+  "id": "concepts/audit-observability",
+  "title": "Audit et observabilité",
+  "description": "Chaîne d'audit cryptographique SHA-256, traçabilité par instruction, export Kafka, dashboards Grafana/InfluxDB et conformité RGPD/NIS2.",
+  "source": "@site/docs/concepts/audit-observability.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/audit-observability",
+  "permalink": "/docs/concepts/audit-observability",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/audit-observability.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 9,
+  "frontMatter": {
+    "id": "audit-observability",
+    "sidebar_position": 9,
+    "title": "Audit et observabilité",
+    "description": "Chaîne d'audit cryptographique SHA-256, traçabilité par instruction, export Kafka, dashboards Grafana/InfluxDB et conformité RGPD/NIS2."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Appels LLM avancés",
+    "permalink": "/docs/concepts/llm-calls"
+  },
+  "next": {
+    "title": "Sécurité",
+    "permalink": "/docs/concepts/security"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "unversionedId": "concepts/event-sources",
+  "id": "concepts/event-sources",
+  "title": "Sources d'événements",
+  "description": "Les 11 types de sources d'événements supportés par EyeFlow — Kafka, MQTT, Modbus, OPC-UA, HTTP webhook, Cron, FS watcher, CDC, Email, BLE, AMQP.",
+  "source": "@site/docs/concepts/event-sources.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/event-sources",
+  "permalink": "/docs/concepts/event-sources",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/event-sources.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 5,
+  "frontMatter": {
+    "id": "event-sources",
+    "sidebar_position": 5,
+    "title": "Sources d'événements",
+    "description": "Les 11 types de sources d'événements supportés par EyeFlow — Kafka, MQTT, Modbus, OPC-UA, HTTP webhook, Cron, FS watcher, CDC, Email, BLE, AMQP."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "SVM — Semantic Virtual Machine",
+    "permalink": "/docs/concepts/svm-runtime"
+  },
+  "next": {
+    "title": "Exécution distribuée",
+    "permalink": "/docs/concepts/distributed-execution"
+  }
+}

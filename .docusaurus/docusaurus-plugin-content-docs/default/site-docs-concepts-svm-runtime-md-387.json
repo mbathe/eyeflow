@@ -1,0 +1,32 @@
+{
+  "unversionedId": "concepts/svm-runtime",
+  "id": "concepts/svm-runtime",
+  "title": "SVM — Semantic Virtual Machine",
+  "description": "Architecture de la SVM Rust — scheduler Tokio, 3 couches mémoire, FallbackEngine 5 stratégies, ResourceArbiter PriorityPolicy, exécution embedded Embassy.",
+  "source": "@site/docs/concepts/svm-runtime.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/svm-runtime",
+  "permalink": "/docs/concepts/svm-runtime",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/svm-runtime.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "id": "svm-runtime",
+    "sidebar_position": 4,
+    "title": "SVM — Semantic Virtual Machine",
+    "description": "Architecture de la SVM Rust — scheduler Tokio, 3 couches mémoire, FallbackEngine 5 stratégies, ResourceArbiter PriorityPolicy, exécution embedded Embassy."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Catalog de capabilities",
+    "permalink": "/docs/concepts/capability-catalog"
+  },
+  "next": {
+    "title": "Sources d'événements",
+    "permalink": "/docs/concepts/event-sources"
+  }
+}

@@ -1,0 +1,1535 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "loadedVersions": [
+        {
+          "versionName": "current",
+          "label": "Next",
+          "banner": null,
+          "badge": false,
+          "noIndex": false,
+          "className": "docs-version-current",
+          "path": "/docs",
+          "tagsPath": "/docs/tags",
+          "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs",
+          "editUrlLocalized": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/i18n/fr/docusaurus-plugin-content-docs/current",
+          "isLast": true,
+          "routePriority": -1,
+          "sidebarFilePath": "/home/paul/codes/smart_eneo_server-main/eyeflow/sidebars.js",
+          "contentPath": "/home/paul/codes/smart_eneo_server-main/eyeflow/docs",
+          "contentPathLocalized": "/home/paul/codes/smart_eneo_server-main/eyeflow/i18n/fr/docusaurus-plugin-content-docs/current",
+          "docs": [
+            {
+              "unversionedId": "concepts/audit-observability",
+              "id": "concepts/audit-observability",
+              "title": "Audit et observabilité",
+              "description": "Chaîne d'audit cryptographique SHA-256, traçabilité par instruction, export Kafka, dashboards Grafana/InfluxDB et conformité RGPD/NIS2.",
+              "source": "@site/docs/concepts/audit-observability.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/audit-observability",
+              "permalink": "/docs/concepts/audit-observability",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/audit-observability.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 9,
+              "frontMatter": {
+                "id": "audit-observability",
+                "sidebar_position": 9,
+                "title": "Audit et observabilité",
+                "description": "Chaîne d'audit cryptographique SHA-256, traçabilité par instruction, export Kafka, dashboards Grafana/InfluxDB et conformité RGPD/NIS2."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Appels LLM avancés",
+                "permalink": "/docs/concepts/llm-calls"
+              },
+              "next": {
+                "title": "Sécurité",
+                "permalink": "/docs/concepts/security"
+              }
+            },
+            {
+              "unversionedId": "concepts/capability-catalog",
+              "id": "concepts/capability-catalog",
+              "title": "Catalog de capabilities",
+              "description": "Gouvernance des capabilities — signature Ed25519, versionnage, préconditions/postconditions/rollback, révocation à chaud et 5 secteurs verticaux.",
+              "source": "@site/docs/concepts/capability-catalog.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/capability-catalog",
+              "permalink": "/docs/concepts/capability-catalog",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/capability-catalog.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 3,
+              "frontMatter": {
+                "id": "capability-catalog",
+                "sidebar_position": 3,
+                "title": "Catalog de capabilities",
+                "description": "Gouvernance des capabilities — signature Ed25519, versionnage, préconditions/postconditions/rollback, révocation à chaud et 5 secteurs verticaux."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Format LLM-IR",
+                "permalink": "/docs/concepts/llm-ir"
+              },
+              "next": {
+                "title": "SVM — Semantic Virtual Machine",
+                "permalink": "/docs/concepts/svm-runtime"
+              }
+            },
+            {
+              "unversionedId": "concepts/distributed-execution",
+              "id": "concepts/distributed-execution",
+              "title": "Exécution distribuée",
+              "description": "Topologie multi-nœuds EyeFlow — load balancing, résilience offline, buffer Kafka local, réconciliation, déploiement MCU Embassy STM32/nRF52.",
+              "source": "@site/docs/concepts/distributed-execution.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/distributed-execution",
+              "permalink": "/docs/concepts/distributed-execution",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/distributed-execution.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 6,
+              "frontMatter": {
+                "id": "distributed-execution",
+                "sidebar_position": 6,
+                "title": "Exécution distribuée",
+                "description": "Topologie multi-nœuds EyeFlow — load balancing, résilience offline, buffer Kafka local, réconciliation, déploiement MCU Embassy STM32/nRF52."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Sources d'événements",
+                "permalink": "/docs/concepts/event-sources"
+              },
+              "next": {
+                "title": "Contrôle physique",
+                "permalink": "/docs/concepts/physical-control"
+              }
+            },
+            {
+              "unversionedId": "concepts/event-sources",
+              "id": "concepts/event-sources",
+              "title": "Sources d'événements",
+              "description": "Les 11 types de sources d'événements supportés par EyeFlow — Kafka, MQTT, Modbus, OPC-UA, HTTP webhook, Cron, FS watcher, CDC, Email, BLE, AMQP.",
+              "source": "@site/docs/concepts/event-sources.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/event-sources",
+              "permalink": "/docs/concepts/event-sources",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/event-sources.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 5,
+              "frontMatter": {
+                "id": "event-sources",
+                "sidebar_position": 5,
+                "title": "Sources d'événements",
+                "description": "Les 11 types de sources d'événements supportés par EyeFlow — Kafka, MQTT, Modbus, OPC-UA, HTTP webhook, Cron, FS watcher, CDC, Email, BLE, AMQP."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "SVM — Semantic Virtual Machine",
+                "permalink": "/docs/concepts/svm-runtime"
+              },
+              "next": {
+                "title": "Exécution distribuée",
+                "permalink": "/docs/concepts/distributed-execution"
+              }
+            },
+            {
+              "unversionedId": "concepts/llm-calls",
+              "id": "concepts/llm-calls",
+              "title": "Appels LLM avancés",
+              "description": "CompiledLLMContext figé, pipeline multi-LLM, boucles de raisonnement bornées, génération contrainte par logit_bias et résolution de slots dynamiques.",
+              "source": "@site/docs/concepts/llm-calls.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/llm-calls",
+              "permalink": "/docs/concepts/llm-calls",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/llm-calls.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 8,
+              "frontMatter": {
+                "id": "llm-calls",
+                "sidebar_position": 8,
+                "title": "Appels LLM avancés",
+                "description": "CompiledLLMContext figé, pipeline multi-LLM, boucles de raisonnement bornées, génération contrainte par logit_bias et résolution de slots dynamiques."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Contrôle physique",
+                "permalink": "/docs/concepts/physical-control"
+              },
+              "next": {
+                "title": "Audit et observabilité",
+                "permalink": "/docs/concepts/audit-observability"
+              }
+            },
+            {
+              "unversionedId": "concepts/llm-ir",
+              "id": "concepts/llm-ir",
+              "title": "Format LLM-IR",
+              "description": "Structure du format binaire LLM-IR — protobuf, schéma des messages, versionnage semver, matrice de compatibilité et signature Ed25519.",
+              "source": "@site/docs/concepts/llm-ir.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/llm-ir",
+              "permalink": "/docs/concepts/llm-ir",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/llm-ir.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 2,
+              "frontMatter": {
+                "id": "llm-ir",
+                "sidebar_position": 2,
+                "title": "Format LLM-IR",
+                "description": "Structure du format binaire LLM-IR — protobuf, schéma des messages, versionnage semver, matrice de compatibilité et signature Ed25519."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Compilation sémantique",
+                "permalink": "/docs/concepts/semantic-compilation"
+              },
+              "next": {
+                "title": "Catalog de capabilities",
+                "permalink": "/docs/concepts/capability-catalog"
+              }
+            },
+            {
+              "unversionedId": "concepts/physical-control",
+              "id": "concepts/physical-control",
+              "title": "Contrôle physique",
+              "description": "Sécurité des actionneurs — TimeWindow, fenêtre d'annulation, postconditions, garde-fous pour actions irréversibles en environnements industriels et médicaux.",
+              "source": "@site/docs/concepts/physical-control.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/physical-control",
+              "permalink": "/docs/concepts/physical-control",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/physical-control.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 7,
+              "frontMatter": {
+                "id": "physical-control",
+                "sidebar_position": 7,
+                "title": "Contrôle physique",
+                "description": "Sécurité des actionneurs — TimeWindow, fenêtre d'annulation, postconditions, garde-fous pour actions irréversibles en environnements industriels et médicaux."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Exécution distribuée",
+                "permalink": "/docs/concepts/distributed-execution"
+              },
+              "next": {
+                "title": "Appels LLM avancés",
+                "permalink": "/docs/concepts/llm-calls"
+              }
+            },
+            {
+              "unversionedId": "concepts/security",
+              "id": "concepts/security",
+              "title": "Sécurité",
+              "description": "Modèle de menace EyeFlow — protection contre l'injection de prompt, permissions compilées, Vault HashiCorp, certifications par secteur et isolation d'exécution.",
+              "source": "@site/docs/concepts/security.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/security",
+              "permalink": "/docs/concepts/security",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/security.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 10,
+              "frontMatter": {
+                "id": "security",
+                "sidebar_position": 10,
+                "title": "Sécurité",
+                "description": "Modèle de menace EyeFlow — protection contre l'injection de prompt, permissions compilées, Vault HashiCorp, certifications par secteur et isolation d'exécution."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Audit et observabilité",
+                "permalink": "/docs/concepts/audit-observability"
+              },
+              "next": {
+                "title": "Secteur médical",
+                "permalink": "/docs/verticals/medical"
+              }
+            },
+            {
+              "unversionedId": "concepts/semantic-compilation",
+              "id": "concepts/semantic-compilation",
+              "title": "Compilation sémantique",
+              "description": "Les 6 phases de transformation d'une règle en langage naturel vers un binaire LLM-IR signé et vérifiable formellement.",
+              "source": "@site/docs/concepts/semantic-compilation.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/semantic-compilation",
+              "permalink": "/docs/concepts/semantic-compilation",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/semantic-compilation.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "id": "semantic-compilation",
+                "sidebar_position": 1,
+                "title": "Compilation sémantique",
+                "description": "Les 6 phases de transformation d'une règle en langage naturel vers un binaire LLM-IR signé et vérifiable formellement."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Dashboard — Tableau de bord",
+                "permalink": "/docs/getting-started/dashboard"
+              },
+              "next": {
+                "title": "Format LLM-IR",
+                "permalink": "/docs/concepts/llm-ir"
+              }
+            },
+            {
+              "unversionedId": "concepts/svm-runtime",
+              "id": "concepts/svm-runtime",
+              "title": "SVM — Semantic Virtual Machine",
+              "description": "Architecture de la SVM Rust — scheduler Tokio, 3 couches mémoire, FallbackEngine 5 stratégies, ResourceArbiter PriorityPolicy, exécution embedded Embassy.",
+              "source": "@site/docs/concepts/svm-runtime.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/svm-runtime",
+              "permalink": "/docs/concepts/svm-runtime",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/svm-runtime.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 4,
+              "frontMatter": {
+                "id": "svm-runtime",
+                "sidebar_position": 4,
+                "title": "SVM — Semantic Virtual Machine",
+                "description": "Architecture de la SVM Rust — scheduler Tokio, 3 couches mémoire, FallbackEngine 5 stratégies, ResourceArbiter PriorityPolicy, exécution embedded Embassy."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Catalog de capabilities",
+                "permalink": "/docs/concepts/capability-catalog"
+              },
+              "next": {
+                "title": "Sources d'événements",
+                "permalink": "/docs/concepts/event-sources"
+              }
+            },
+            {
+              "unversionedId": "for-decision-makers/compliance-security",
+              "id": "for-decision-makers/compliance-security",
+              "title": "Compliance & Security",
+              "description": "Regulatory compliance and security guarantees",
+              "source": "@site/docs/for-decision-makers/compliance-security.md",
+              "sourceDirName": "for-decision-makers",
+              "slug": "/for-decision-makers/compliance-security",
+              "permalink": "/docs/for-decision-makers/compliance-security",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-decision-makers/compliance-security.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 3,
+              "frontMatter": {
+                "sidebar_position": 3,
+                "title": "Compliance & Security",
+                "description": "Regulatory compliance and security guarantees"
+              }
+            },
+            {
+              "unversionedId": "for-decision-makers/roi-analysis",
+              "id": "for-decision-makers/roi-analysis",
+              "title": "ROI Analysis",
+              "description": "Financial analysis and return on investment",
+              "source": "@site/docs/for-decision-makers/roi-analysis.md",
+              "sourceDirName": "for-decision-makers",
+              "slug": "/for-decision-makers/roi-analysis",
+              "permalink": "/docs/for-decision-makers/roi-analysis",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-decision-makers/roi-analysis.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "sidebar_position": 1,
+                "title": "ROI Analysis",
+                "description": "Financial analysis and return on investment"
+              }
+            },
+            {
+              "unversionedId": "for-decision-makers/scaling-performance",
+              "id": "for-decision-makers/scaling-performance",
+              "title": "Scaling & Performance",
+              "description": "Enterprise-scale performance characteristics",
+              "source": "@site/docs/for-decision-makers/scaling-performance.md",
+              "sourceDirName": "for-decision-makers",
+              "slug": "/for-decision-makers/scaling-performance",
+              "permalink": "/docs/for-decision-makers/scaling-performance",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-decision-makers/scaling-performance.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 4,
+              "frontMatter": {
+                "sidebar_position": 4,
+                "title": "Scaling & Performance",
+                "description": "Enterprise-scale performance characteristics"
+              }
+            },
+            {
+              "unversionedId": "for-decision-makers/technology-selection",
+              "id": "for-decision-makers/technology-selection",
+              "title": "Technology Selection",
+              "description": "Vendor comparison and implementation roadmap",
+              "source": "@site/docs/for-decision-makers/technology-selection.md",
+              "sourceDirName": "for-decision-makers",
+              "slug": "/for-decision-makers/technology-selection",
+              "permalink": "/docs/for-decision-makers/technology-selection",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-decision-makers/technology-selection.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 5,
+              "frontMatter": {
+                "sidebar_position": 5,
+                "title": "Technology Selection",
+                "description": "Vendor comparison and implementation roadmap"
+              }
+            },
+            {
+              "unversionedId": "for-decision-makers/use-cases",
+              "id": "for-decision-makers/use-cases",
+              "title": "Use Cases",
+              "description": "Real-world applications and scenarios",
+              "source": "@site/docs/for-decision-makers/use-cases.md",
+              "sourceDirName": "for-decision-makers",
+              "slug": "/for-decision-makers/use-cases",
+              "permalink": "/docs/for-decision-makers/use-cases",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-decision-makers/use-cases.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 2,
+              "frontMatter": {
+                "sidebar_position": 2,
+                "title": "Use Cases",
+                "description": "Real-world applications and scenarios"
+              }
+            },
+            {
+              "unversionedId": "for-developers/api-reference",
+              "id": "for-developers/api-reference",
+              "title": "Référence API REST",
+              "description": "Tous les endpoints REST exposés par eyeflow-server — compilation, déploiement, exécution, audit, connecteurs et WebSocket.",
+              "source": "@site/docs/for-developers/api-reference.md",
+              "sourceDirName": "for-developers",
+              "slug": "/for-developers/api-reference",
+              "permalink": "/docs/for-developers/api-reference",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/api-reference.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 2,
+              "frontMatter": {
+                "id": "api-reference",
+                "sidebar_position": 2,
+                "title": "Référence API REST",
+                "description": "Tous les endpoints REST exposés par eyeflow-server — compilation, déploiement, exécution, audit, connecteurs et WebSocket."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Architecture système",
+                "permalink": "/docs/for-developers/architecture"
+              },
+              "next": {
+                "title": "Déploiement",
+                "permalink": "/docs/for-developers/deployment"
+              }
+            },
+            {
+              "unversionedId": "for-developers/architecture",
+              "id": "for-developers/architecture",
+              "title": "Architecture système",
+              "description": "Architecture complète d'EyeFlow — NestJS compilateur, SVM Rust, LLM service Python, protobuf, Kafka, Vault, WebSocket TLS et déploiement edge/MCU.",
+              "source": "@site/docs/for-developers/architecture.md",
+              "sourceDirName": "for-developers",
+              "slug": "/for-developers/architecture",
+              "permalink": "/docs/for-developers/architecture",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/architecture.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "id": "architecture",
+                "sidebar_position": 1,
+                "title": "Architecture système",
+                "description": "Architecture complète d'EyeFlow — NestJS compilateur, SVM Rust, LLM service Python, protobuf, Kafka, Vault, WebSocket TLS et déploiement edge/MCU."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Secteur IoT",
+                "permalink": "/docs/verticals/iot"
+              },
+              "next": {
+                "title": "Référence API REST",
+                "permalink": "/docs/for-developers/api-reference"
+              }
+            },
+            {
+              "unversionedId": "for-developers/connectors/connectors-custom",
+              "id": "for-developers/connectors/connectors-custom",
+              "title": "Créer un connecteur custom",
+              "description": "Guide complet pour implémenter, tester, signer et enregistrer une capability custom dans EyeFlow.",
+              "source": "@site/docs/for-developers/connectors/custom.md",
+              "sourceDirName": "for-developers/connectors",
+              "slug": "/for-developers/connectors/connectors-custom",
+              "permalink": "/docs/for-developers/connectors/connectors-custom",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/connectors/custom.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 6,
+              "frontMatter": {
+                "id": "connectors-custom",
+                "sidebar_position": 6,
+                "title": "Créer un connecteur custom",
+                "description": "Guide complet pour implémenter, tester, signer et enregistrer une capability custom dans EyeFlow."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Vue d'ensemble des connecteurs",
+                "permalink": "/docs/for-developers/connectors/connectors-overview"
+              },
+              "next": {
+                "title": "Feuille de route",
+                "permalink": "/docs/roadmap/roadmap"
+              }
+            },
+            {
+              "unversionedId": "for-developers/connectors/connectors-overview",
+              "id": "for-developers/connectors/connectors-overview",
+              "title": "Vue d'ensemble des connecteurs",
+              "description": "Architecture des connecteurs EyeFlow — sources d'événements, capabilities d'action, configuration et connecteurs built-in.",
+              "source": "@site/docs/for-developers/connectors/overview.md",
+              "sourceDirName": "for-developers/connectors",
+              "slug": "/for-developers/connectors/connectors-overview",
+              "permalink": "/docs/for-developers/connectors/connectors-overview",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/connectors/overview.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 5,
+              "frontMatter": {
+                "id": "connectors-overview",
+                "sidebar_position": 5,
+                "title": "Vue d'ensemble des connecteurs",
+                "description": "Architecture des connecteurs EyeFlow — sources d'événements, capabilities d'action, configuration et connecteurs built-in."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "SDKs & CLI",
+                "permalink": "/docs/for-developers/sdks"
+              },
+              "next": {
+                "title": "Créer un connecteur custom",
+                "permalink": "/docs/for-developers/connectors/connectors-custom"
+              }
+            },
+            {
+              "unversionedId": "for-developers/connectors/postgresql",
+              "id": "for-developers/connectors/postgresql",
+              "title": "PostgreSQL Connector",
+              "description": "Connect to PostgreSQL databases",
+              "source": "@site/docs/for-developers/connectors/postgresql.md",
+              "sourceDirName": "for-developers/connectors",
+              "slug": "/for-developers/connectors/postgresql",
+              "permalink": "/docs/for-developers/connectors/postgresql",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/connectors/postgresql.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 6,
+              "frontMatter": {
+                "sidebar_position": 6,
+                "title": "PostgreSQL Connector",
+                "description": "Connect to PostgreSQL databases"
+              }
+            },
+            {
+              "unversionedId": "for-developers/connectors/slack",
+              "id": "for-developers/connectors/slack",
+              "title": "Slack Connector",
+              "description": "Send messages, files, and manage channels in Slack",
+              "source": "@site/docs/for-developers/connectors/slack.md",
+              "sourceDirName": "for-developers/connectors",
+              "slug": "/for-developers/connectors/slack",
+              "permalink": "/docs/for-developers/connectors/slack",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/connectors/slack.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 5,
+              "frontMatter": {
+                "sidebar_position": 5,
+                "title": "Slack Connector",
+                "description": "Send messages, files, and manage channels in Slack"
+              }
+            },
+            {
+              "unversionedId": "for-developers/deployment",
+              "id": "for-developers/deployment",
+              "title": "Déploiement",
+              "description": "Docker Compose, Kubernetes/Helm, cross-compile ARMv7/STM32F4, Vault, InfluxDB et variables d'environnement.",
+              "source": "@site/docs/for-developers/deployment.md",
+              "sourceDirName": "for-developers",
+              "slug": "/for-developers/deployment",
+              "permalink": "/docs/for-developers/deployment",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/deployment.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 3,
+              "frontMatter": {
+                "id": "deployment",
+                "sidebar_position": 3,
+                "title": "Déploiement",
+                "description": "Docker Compose, Kubernetes/Helm, cross-compile ARMv7/STM32F4, Vault, InfluxDB et variables d'environnement."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Référence API REST",
+                "permalink": "/docs/for-developers/api-reference"
+              },
+              "next": {
+                "title": "SDKs & CLI",
+                "permalink": "/docs/for-developers/sdks"
+              }
+            },
+            {
+              "unversionedId": "for-developers/sdks",
+              "id": "for-developers/sdks",
+              "title": "SDKs & CLI",
+              "description": "SDK TypeScript/Node.js, client Rust embarqué, CLI eyeflow et exemples d'intégration complets.",
+              "source": "@site/docs/for-developers/sdks.md",
+              "sourceDirName": "for-developers",
+              "slug": "/for-developers/sdks",
+              "permalink": "/docs/for-developers/sdks",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/sdks.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 4,
+              "frontMatter": {
+                "id": "sdks",
+                "sidebar_position": 4,
+                "title": "SDKs & CLI",
+                "description": "SDK TypeScript/Node.js, client Rust embarqué, CLI eyeflow et exemples d'intégration complets."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Déploiement",
+                "permalink": "/docs/for-developers/deployment"
+              },
+              "next": {
+                "title": "Vue d'ensemble des connecteurs",
+                "permalink": "/docs/for-developers/connectors/connectors-overview"
+              }
+            },
+            {
+              "unversionedId": "for-end-users/cli-basics",
+              "id": "for-end-users/cli-basics",
+              "title": "CLI Basics",
+              "description": "Command-line interface for scripting and automation",
+              "source": "@site/docs/for-end-users/cli-basics.md",
+              "sourceDirName": "for-end-users",
+              "slug": "/for-end-users/cli-basics",
+              "permalink": "/docs/for-end-users/cli-basics",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-end-users/cli-basics.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 5,
+              "frontMatter": {
+                "sidebar_position": 5,
+                "title": "CLI Basics",
+                "description": "Command-line interface for scripting and automation"
+              }
+            },
+            {
+              "unversionedId": "for-end-users/first-rule",
+              "id": "for-end-users/first-rule",
+              "title": "Create Your First Rule",
+              "description": "Add automation logic with conditionals",
+              "source": "@site/docs/for-end-users/first-rule.md",
+              "sourceDirName": "for-end-users",
+              "slug": "/for-end-users/first-rule",
+              "permalink": "/docs/for-end-users/first-rule",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-end-users/first-rule.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 3,
+              "frontMatter": {
+                "sidebar_position": 3,
+                "title": "Create Your First Rule",
+                "description": "Add automation logic with conditionals"
+              }
+            },
+            {
+              "unversionedId": "for-end-users/first-task",
+              "id": "for-end-users/first-task",
+              "title": "Create Your First Task",
+              "description": "Build a practical task with connectors",
+              "source": "@site/docs/for-end-users/first-task.md",
+              "sourceDirName": "for-end-users",
+              "slug": "/for-end-users/first-task",
+              "permalink": "/docs/for-end-users/first-task",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-end-users/first-task.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 2,
+              "frontMatter": {
+                "sidebar_position": 2,
+                "title": "Create Your First Task",
+                "description": "Build a practical task with connectors"
+              }
+            },
+            {
+              "unversionedId": "for-end-users/quickstart",
+              "id": "for-end-users/quickstart",
+              "title": "Quickstart",
+              "description": "Get EyeFlow running in 5 minutes",
+              "source": "@site/docs/for-end-users/quickstart.md",
+              "sourceDirName": "for-end-users",
+              "slug": "/for-end-users/quickstart",
+              "permalink": "/docs/for-end-users/quickstart",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-end-users/quickstart.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "sidebar_position": 1,
+                "title": "Quickstart",
+                "description": "Get EyeFlow running in 5 minutes"
+              }
+            },
+            {
+              "unversionedId": "for-end-users/ui-dashboard",
+              "id": "for-end-users/ui-dashboard",
+              "title": "Dashboard Tour",
+              "description": "Navigate the EyeFlow web interface",
+              "source": "@site/docs/for-end-users/ui-dashboard.md",
+              "sourceDirName": "for-end-users",
+              "slug": "/for-end-users/ui-dashboard",
+              "permalink": "/docs/for-end-users/ui-dashboard",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-end-users/ui-dashboard.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 4,
+              "frontMatter": {
+                "sidebar_position": 4,
+                "title": "Dashboard Tour",
+                "description": "Navigate the EyeFlow web interface"
+              }
+            },
+            {
+              "unversionedId": "getting-started/dashboard",
+              "id": "getting-started/dashboard",
+              "title": "Dashboard — Tableau de bord",
+              "description": "Guide du dashboard EyeFlow React — visualisation temps réel des exécutions, audit trail, gestion des règles et monitoring des nœuds SVM.",
+              "source": "@site/docs/getting-started/dashboard.md",
+              "sourceDirName": "getting-started",
+              "slug": "/getting-started/dashboard",
+              "permalink": "/docs/getting-started/dashboard",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/getting-started/dashboard.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 3,
+              "frontMatter": {
+                "id": "dashboard",
+                "sidebar_position": 3,
+                "title": "Dashboard — Tableau de bord",
+                "description": "Guide du dashboard EyeFlow React — visualisation temps réel des exécutions, audit trail, gestion des règles et monitoring des nœuds SVM."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Premier workflow complet",
+                "permalink": "/docs/getting-started/first-workflow"
+              },
+              "next": {
+                "title": "Compilation sémantique",
+                "permalink": "/docs/concepts/semantic-compilation"
+              }
+            },
+            {
+              "unversionedId": "getting-started/first-workflow",
+              "id": "getting-started/first-workflow",
+              "title": "Premier workflow complet",
+              "description": "Créez un workflow avec conditions, branchements, appels LLM figés et contrôle d'un actionneur physique.",
+              "source": "@site/docs/getting-started/first-workflow.md",
+              "sourceDirName": "getting-started",
+              "slug": "/getting-started/first-workflow",
+              "permalink": "/docs/getting-started/first-workflow",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/getting-started/first-workflow.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 2,
+              "frontMatter": {
+                "id": "first-workflow",
+                "sidebar_position": 2,
+                "title": "Premier workflow complet",
+                "description": "Créez un workflow avec conditions, branchements, appels LLM figés et contrôle d'un actionneur physique."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Quickstart — 10 minutes",
+                "permalink": "/docs/getting-started/quickstart"
+              },
+              "next": {
+                "title": "Dashboard — Tableau de bord",
+                "permalink": "/docs/getting-started/dashboard"
+              }
+            },
+            {
+              "unversionedId": "getting-started/quickstart",
+              "id": "getting-started/quickstart",
+              "title": "Quickstart — 10 minutes",
+              "description": "Lancez EyeFlow localement, compilez votre première règle métier et exécutez-la sur la SVM en moins de 10 minutes.",
+              "source": "@site/docs/getting-started/quickstart.md",
+              "sourceDirName": "getting-started",
+              "slug": "/getting-started/quickstart",
+              "permalink": "/docs/getting-started/quickstart",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/getting-started/quickstart.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "id": "quickstart",
+                "sidebar_position": 1,
+                "title": "Quickstart — 10 minutes",
+                "description": "Lancez EyeFlow localement, compilez votre première règle métier et exécutez-la sur la SVM en moins de 10 minutes."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "EyeFlow vs. les alternatives",
+                "permalink": "/docs/intro/vs-alternatives"
+              },
+              "next": {
+                "title": "Premier workflow complet",
+                "permalink": "/docs/getting-started/first-workflow"
+              }
+            },
+            {
+              "unversionedId": "intro/vs-alternatives",
+              "id": "intro/vs-alternatives",
+              "title": "EyeFlow vs. les alternatives",
+              "description": "Comparaison technique approfondie entre EyeFlow et les alternatives d'automatisation IA — n8n, AutoGen, LangGraph, CrewAI, SCADA, OpenClaw.",
+              "source": "@site/docs/intro/vs-alternatives.md",
+              "sourceDirName": "intro",
+              "slug": "/intro/vs-alternatives",
+              "permalink": "/docs/intro/vs-alternatives",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/intro/vs-alternatives.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 3,
+              "frontMatter": {
+                "id": "vs-alternatives",
+                "sidebar_position": 3,
+                "title": "EyeFlow vs. les alternatives",
+                "description": "Comparaison technique approfondie entre EyeFlow et les alternatives d'automatisation IA — n8n, AutoGen, LangGraph, CrewAI, SCADA, OpenClaw."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Pourquoi EyeFlow ?",
+                "permalink": "/docs/intro/why-eyeflow"
+              },
+              "next": {
+                "title": "Quickstart — 10 minutes",
+                "permalink": "/docs/getting-started/quickstart"
+              }
+            },
+            {
+              "unversionedId": "intro/what-is-eyeflow",
+              "id": "intro/what-is-eyeflow",
+              "title": "Qu'est-ce qu'EyeFlow ?",
+              "description": "EyeFlow est un compilateur sémantique qui transforme des règles métier en langage naturel en programmes exécutables déterministes, certifiables et déployables sur systèmes embarqués critiques.",
+              "source": "@site/docs/intro/what-is-eyeflow.md",
+              "sourceDirName": "intro",
+              "slug": "/intro/what-is-eyeflow",
+              "permalink": "/docs/intro/what-is-eyeflow",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/intro/what-is-eyeflow.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "id": "what-is-eyeflow",
+                "sidebar_position": 1,
+                "title": "Qu'est-ce qu'EyeFlow ?",
+                "description": "EyeFlow est un compilateur sémantique qui transforme des règles métier en langage naturel en programmes exécutables déterministes, certifiables et déployables sur systèmes embarqués critiques."
+              },
+              "sidebar": "mainSidebar",
+              "next": {
+                "title": "Pourquoi EyeFlow ?",
+                "permalink": "/docs/intro/why-eyeflow"
+              }
+            },
+            {
+              "unversionedId": "intro/why-eyeflow",
+              "id": "intro/why-eyeflow",
+              "title": "Pourquoi EyeFlow ?",
+              "description": "Analyse comparative, ROI et avantages concurrentiels de la compilation sémantique déterministe.",
+              "source": "@site/docs/intro/why-eyeflow.md",
+              "sourceDirName": "intro",
+              "slug": "/intro/why-eyeflow",
+              "permalink": "/docs/intro/why-eyeflow",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/intro/why-eyeflow.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 2,
+              "frontMatter": {
+                "id": "why-eyeflow",
+                "sidebar_position": 2,
+                "title": "Pourquoi EyeFlow ?",
+                "description": "Analyse comparative, ROI et avantages concurrentiels de la compilation sémantique déterministe."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Qu'est-ce qu'EyeFlow ?",
+                "permalink": "/docs/intro/what-is-eyeflow"
+              },
+              "next": {
+                "title": "EyeFlow vs. les alternatives",
+                "permalink": "/docs/intro/vs-alternatives"
+              }
+            },
+            {
+              "unversionedId": "roadmap/roadmap",
+              "id": "roadmap/roadmap",
+              "title": "Feuille de route",
+              "description": "Roadmap d'implémentation EyeFlow en 4 phases sur 18 mois — compilateur sémantique, SVM Rust, MCU Embassy, 5 secteurs et certifications réglementaires.",
+              "source": "@site/docs/roadmap/implementation.md",
+              "sourceDirName": "roadmap",
+              "slug": "/roadmap/roadmap",
+              "permalink": "/docs/roadmap/roadmap",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/roadmap/implementation.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "id": "roadmap",
+                "sidebar_position": 1,
+                "title": "Feuille de route",
+                "description": "Roadmap d'implémentation EyeFlow en 4 phases sur 18 mois — compilateur sémantique, SVM Rust, MCU Embassy, 5 secteurs et certifications réglementaires."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Créer un connecteur custom",
+                "permalink": "/docs/for-developers/connectors/connectors-custom"
+              }
+            },
+            {
+              "unversionedId": "technical-deep-dive/capability-catalog",
+              "id": "technical-deep-dive/capability-catalog",
+              "title": "Capability Catalog",
+              "description": "Service registry and capability discovery",
+              "source": "@site/docs/technical-deep-dive/capability-catalog.md",
+              "sourceDirName": "technical-deep-dive",
+              "slug": "/technical-deep-dive/capability-catalog",
+              "permalink": "/docs/technical-deep-dive/capability-catalog",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/technical-deep-dive/capability-catalog.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 4,
+              "frontMatter": {
+                "sidebar_position": 4,
+                "title": "Capability Catalog",
+                "description": "Service registry and capability discovery"
+              }
+            },
+            {
+              "unversionedId": "technical-deep-dive/determinism-guarantees",
+              "id": "technical-deep-dive/determinism-guarantees",
+              "title": "Determinism Guarantees",
+              "description": "Formal correctness proofs and zero hallucinations",
+              "source": "@site/docs/technical-deep-dive/determinism-guarantees.md",
+              "sourceDirName": "technical-deep-dive",
+              "slug": "/technical-deep-dive/determinism-guarantees",
+              "permalink": "/docs/technical-deep-dive/determinism-guarantees",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/technical-deep-dive/determinism-guarantees.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 5,
+              "frontMatter": {
+                "sidebar_position": 5,
+                "title": "Determinism Guarantees",
+                "description": "Formal correctness proofs and zero hallucinations"
+              }
+            },
+            {
+              "unversionedId": "technical-deep-dive/edge-computing",
+              "id": "technical-deep-dive/edge-computing",
+              "title": "Edge Computing & IoT",
+              "description": "Deployment on edge devices and IoT systems",
+              "source": "@site/docs/technical-deep-dive/edge-computing.md",
+              "sourceDirName": "technical-deep-dive",
+              "slug": "/technical-deep-dive/edge-computing",
+              "permalink": "/docs/technical-deep-dive/edge-computing",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/technical-deep-dive/edge-computing.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 6,
+              "frontMatter": {
+                "sidebar_position": 6,
+                "title": "Edge Computing & IoT",
+                "description": "Deployment on edge devices and IoT systems"
+              }
+            },
+            {
+              "unversionedId": "technical-deep-dive/llm-ir",
+              "id": "technical-deep-dive/llm-ir",
+              "title": "LLM-IR (Intermediate Representation)",
+              "description": "Bytecode format and execution semantics",
+              "source": "@site/docs/technical-deep-dive/llm-ir.md",
+              "sourceDirName": "technical-deep-dive",
+              "slug": "/technical-deep-dive/llm-ir",
+              "permalink": "/docs/technical-deep-dive/llm-ir",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/technical-deep-dive/llm-ir.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 2,
+              "frontMatter": {
+                "sidebar_position": 2,
+                "title": "LLM-IR (Intermediate Representation)",
+                "description": "Bytecode format and execution semantics"
+              }
+            },
+            {
+              "unversionedId": "technical-deep-dive/performance-benchmarking",
+              "id": "technical-deep-dive/performance-benchmarking",
+              "title": "Performance Benchmarking",
+              "description": "Detailed latency analysis and throughput metrics",
+              "source": "@site/docs/technical-deep-dive/performance-benchmarking.md",
+              "sourceDirName": "technical-deep-dive",
+              "slug": "/technical-deep-dive/performance-benchmarking",
+              "permalink": "/docs/technical-deep-dive/performance-benchmarking",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/technical-deep-dive/performance-benchmarking.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 8,
+              "frontMatter": {
+                "sidebar_position": 8,
+                "title": "Performance Benchmarking",
+                "description": "Detailed latency analysis and throughput metrics"
+              }
+            },
+            {
+              "unversionedId": "technical-deep-dive/security-sandbox",
+              "id": "technical-deep-dive/security-sandbox",
+              "title": "Security Sandbox",
+              "description": "Closed-world security model and threat mitigation",
+              "source": "@site/docs/technical-deep-dive/security-sandbox.md",
+              "sourceDirName": "technical-deep-dive",
+              "slug": "/technical-deep-dive/security-sandbox",
+              "permalink": "/docs/technical-deep-dive/security-sandbox",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/technical-deep-dive/security-sandbox.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 7,
+              "frontMatter": {
+                "sidebar_position": 7,
+                "title": "Security Sandbox",
+                "description": "Closed-world security model and threat mitigation"
+              }
+            },
+            {
+              "unversionedId": "technical-deep-dive/semantic-compilation",
+              "id": "technical-deep-dive/semantic-compilation",
+              "title": "Semantic Compilation",
+              "description": "How EyeFlow compiles natural language tasks to bytecode",
+              "source": "@site/docs/technical-deep-dive/semantic-compilation.md",
+              "sourceDirName": "technical-deep-dive",
+              "slug": "/technical-deep-dive/semantic-compilation",
+              "permalink": "/docs/technical-deep-dive/semantic-compilation",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/technical-deep-dive/semantic-compilation.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "sidebar_position": 1,
+                "title": "Semantic Compilation",
+                "description": "How EyeFlow compiles natural language tasks to bytecode"
+              }
+            },
+            {
+              "unversionedId": "technical-deep-dive/svm-runtime",
+              "id": "technical-deep-dive/svm-runtime",
+              "title": "SVM Runtime",
+              "description": "Semantic Virtual Machine execution and correctness",
+              "source": "@site/docs/technical-deep-dive/svm-runtime.md",
+              "sourceDirName": "technical-deep-dive",
+              "slug": "/technical-deep-dive/svm-runtime",
+              "permalink": "/docs/technical-deep-dive/svm-runtime",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/technical-deep-dive/svm-runtime.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 3,
+              "frontMatter": {
+                "sidebar_position": 3,
+                "title": "SVM Runtime",
+                "description": "Semantic Virtual Machine execution and correctness"
+              }
+            },
+            {
+              "unversionedId": "verticals/agriculture",
+              "id": "verticals/agriculture",
+              "title": "Secteur agriculture",
+              "description": "EyeFlow pour l'agriculture de précision — irrigation intelligente, dosage phytosanitaire, monitoring sol/météo, déploiement offline Raspberry Pi terrain.",
+              "source": "@site/docs/verticals/agriculture.md",
+              "sourceDirName": "verticals",
+              "slug": "/verticals/agriculture",
+              "permalink": "/docs/verticals/agriculture",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/verticals/agriculture.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 3,
+              "frontMatter": {
+                "id": "agriculture",
+                "sidebar_position": 3,
+                "title": "Secteur agriculture",
+                "description": "EyeFlow pour l'agriculture de précision — irrigation intelligente, dosage phytosanitaire, monitoring sol/météo, déploiement offline Raspberry Pi terrain."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Secteur industriel",
+                "permalink": "/docs/verticals/industrial"
+              },
+              "next": {
+                "title": "Secteur finance",
+                "permalink": "/docs/verticals/finance"
+              }
+            },
+            {
+              "unversionedId": "verticals/finance",
+              "id": "verticals/finance",
+              "title": "Secteur finance",
+              "description": "EyeFlow en finance — conformité AMF/RGPD/NIS2, détection fraude déterministe, validation transactions, audit SOC2, reporting réglementaire automatisé.",
+              "source": "@site/docs/verticals/finance.md",
+              "sourceDirName": "verticals",
+              "slug": "/verticals/finance",
+              "permalink": "/docs/verticals/finance",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/verticals/finance.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 4,
+              "frontMatter": {
+                "id": "finance",
+                "sidebar_position": 4,
+                "title": "Secteur finance",
+                "description": "EyeFlow en finance — conformité AMF/RGPD/NIS2, détection fraude déterministe, validation transactions, audit SOC2, reporting réglementaire automatisé."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Secteur agriculture",
+                "permalink": "/docs/verticals/agriculture"
+              },
+              "next": {
+                "title": "Secteur IoT",
+                "permalink": "/docs/verticals/iot"
+              }
+            },
+            {
+              "unversionedId": "verticals/industrial",
+              "id": "verticals/industrial",
+              "title": "Secteur industriel",
+              "description": "EyeFlow pour l'industrie 4.0 — certifiable SIL2, catalog d'actionneurs, intégration SCADA/DCS, Modbus/OPC-UA, contrôle de processus déterministe.",
+              "source": "@site/docs/verticals/industrial.md",
+              "sourceDirName": "verticals",
+              "slug": "/verticals/industrial",
+              "permalink": "/docs/verticals/industrial",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/verticals/industrial.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 2,
+              "frontMatter": {
+                "id": "industrial",
+                "sidebar_position": 2,
+                "title": "Secteur industriel",
+                "description": "EyeFlow pour l'industrie 4.0 — certifiable SIL2, catalog d'actionneurs, intégration SCADA/DCS, Modbus/OPC-UA, contrôle de processus déterministe."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Secteur médical",
+                "permalink": "/docs/verticals/medical"
+              },
+              "next": {
+                "title": "Secteur agriculture",
+                "permalink": "/docs/verticals/agriculture"
+              }
+            },
+            {
+              "unversionedId": "verticals/iot",
+              "id": "verticals/iot",
+              "title": "Secteur IoT",
+              "description": "EyeFlow pour l'IoT — gestion de flotte d'appareils, mises à jour OTA sécurisées, télémétrie multi-protocoles, edge AI embarqué STM32/nRF52.",
+              "source": "@site/docs/verticals/iot.md",
+              "sourceDirName": "verticals",
+              "slug": "/verticals/iot",
+              "permalink": "/docs/verticals/iot",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/verticals/iot.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 5,
+              "frontMatter": {
+                "id": "iot",
+                "sidebar_position": 5,
+                "title": "Secteur IoT",
+                "description": "EyeFlow pour l'IoT — gestion de flotte d'appareils, mises à jour OTA sécurisées, télémétrie multi-protocoles, edge AI embarqué STM32/nRF52."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Secteur finance",
+                "permalink": "/docs/verticals/finance"
+              },
+              "next": {
+                "title": "Architecture système",
+                "permalink": "/docs/for-developers/architecture"
+              }
+            },
+            {
+              "unversionedId": "verticals/medical",
+              "id": "verticals/medical",
+              "title": "Secteur médical",
+              "description": "EyeFlow en environnement médical — conformité IEC 62304, catalog de capabilities médicales, exemples de workflows ICU, dosage médicament et coordination soins.",
+              "source": "@site/docs/verticals/medical.md",
+              "sourceDirName": "verticals",
+              "slug": "/verticals/medical",
+              "permalink": "/docs/verticals/medical",
+              "draft": false,
+              "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/verticals/medical.md",
+              "tags": [],
+              "version": "current",
+              "lastUpdatedAt": 1539502055,
+              "formattedLastUpdatedAt": "14 oct. 2018",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "id": "medical",
+                "sidebar_position": 1,
+                "title": "Secteur médical",
+                "description": "EyeFlow en environnement médical — conformité IEC 62304, catalog de capabilities médicales, exemples de workflows ICU, dosage médicament et coordination soins."
+              },
+              "sidebar": "mainSidebar",
+              "previous": {
+                "title": "Sécurité",
+                "permalink": "/docs/concepts/security"
+              },
+              "next": {
+                "title": "Secteur industriel",
+                "permalink": "/docs/verticals/industrial"
+              }
+            }
+          ],
+          "drafts": [],
+          "sidebars": {
+            "mainSidebar": [
+              {
+                "type": "category",
+                "label": "🎯 Introduction",
+                "collapsed": false,
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "intro/what-is-eyeflow"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "intro/why-eyeflow"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "intro/vs-alternatives"
+                  }
+                ],
+                "collapsible": true
+              },
+              {
+                "type": "category",
+                "label": "⚡ Démarrer rapidement",
+                "collapsed": false,
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "getting-started/quickstart"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "getting-started/first-workflow"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "getting-started/dashboard"
+                  }
+                ],
+                "collapsible": true
+              },
+              {
+                "type": "category",
+                "label": "🧠 Comment ça marche",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "concepts/semantic-compilation"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/llm-ir"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/capability-catalog"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/svm-runtime"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/event-sources"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/distributed-execution"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/physical-control"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/llm-calls"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/audit-observability"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/security"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              },
+              {
+                "type": "category",
+                "label": "🏭 Secteurs verticaux",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "verticals/medical"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "verticals/industrial"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "verticals/agriculture"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "verticals/finance"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "verticals/iot"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              },
+              {
+                "type": "category",
+                "label": "👨‍💻 Développeurs",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "for-developers/architecture"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "for-developers/api-reference"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "for-developers/deployment"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "for-developers/sdks"
+                  },
+                  {
+                    "type": "category",
+                    "label": "Connecteurs",
+                    "items": [
+                      {
+                        "type": "doc",
+                        "id": "for-developers/connectors/connectors-overview"
+                      },
+                      {
+                        "type": "doc",
+                        "id": "for-developers/connectors/connectors-custom"
+                      }
+                    ],
+                    "collapsed": true,
+                    "collapsible": true
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              },
+              {
+                "type": "category",
+                "label": "🗺️ Roadmap",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "roadmap/roadmap"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "docusaurus-plugin-content-pages": {
+    "default": null
+  },
+  "docusaurus-plugin-debug": {},
+  "docusaurus-theme-classic": {},
+  "docusaurus-bootstrap-plugin": {},
+  "docusaurus-mdx-fallback-plugin": {}
+}

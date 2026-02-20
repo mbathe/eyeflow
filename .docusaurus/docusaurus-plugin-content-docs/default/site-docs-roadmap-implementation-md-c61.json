@@ -1,0 +1,28 @@
+{
+  "unversionedId": "roadmap/roadmap",
+  "id": "roadmap/roadmap",
+  "title": "Feuille de route",
+  "description": "Roadmap d'implémentation EyeFlow en 4 phases sur 18 mois — compilateur sémantique, SVM Rust, MCU Embassy, 5 secteurs et certifications réglementaires.",
+  "source": "@site/docs/roadmap/implementation.md",
+  "sourceDirName": "roadmap",
+  "slug": "/roadmap/roadmap",
+  "permalink": "/docs/roadmap/roadmap",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/roadmap/implementation.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "id": "roadmap",
+    "sidebar_position": 1,
+    "title": "Feuille de route",
+    "description": "Roadmap d'implémentation EyeFlow en 4 phases sur 18 mois — compilateur sémantique, SVM Rust, MCU Embassy, 5 secteurs et certifications réglementaires."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Créer un connecteur custom",
+    "permalink": "/docs/for-developers/connectors/connectors-custom"
+  }
+}

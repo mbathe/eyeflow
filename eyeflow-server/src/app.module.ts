@@ -19,6 +19,8 @@ import { ExtensibilityModule } from './common/extensibility';
 // import { FrontendModule } from './compiler/frontend';
 import { CompilerModule } from './compiler/compiler.module';
 import { RuntimeModule } from './runtime/runtime.module';
+import { TriggersModule } from './triggers/triggers.module';
+import { EventsModule } from './events/events.module';
 
 // Determine which .env file to load based on environment
 const getEnvFile = () => {
@@ -68,6 +70,8 @@ const getEnvFile = () => {
     // FrontendModule (DEPRECATED - see above),
     CompilerModule,
     RuntimeModule,
+    TriggersModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [

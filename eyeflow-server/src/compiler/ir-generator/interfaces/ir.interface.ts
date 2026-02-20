@@ -74,6 +74,20 @@ export interface IRInstruction {
     fallbackInstructionId?: string; // If fails, jump to this
   };
 
+  /**
+   * Frozen LLM context for LLM_CALL instructions (spec §3.4).
+   * Built at compile time — never reconstructed at runtime.
+   * Present only when opcode = CALL_FUNCTION and the target is an LLM node.
+   */
+  compiledContext?: LlmCompiledContext;
+
+  /**
+   * Resource contention policy for instructions that acquire shared resources
+   * (CALL_SERVICE, CALL_ACTION, LOAD_RESOURCE) — spec §6.5.
+   * When set, the SVM enforces priority-based access before executing.
+   */
+  priority?: PriorityPolicy;
+
   // Documentation
   comment?: string;
   sourceLineNumber?: number;
@@ -151,6 +165,58 @@ export interface PermissionFlags {
   EXECUTE: boolean;
   DELETE: boolean;
   ADMIN: boolean;
+}
+
+// ── CompiledLLMContext (spec §3.4) ─────────────────────────────────────────
+// The frozen context built at compile time for each LLM_CALL node in the DAG.
+// The SVM injects only runtime dynamic slots — everything else is static.
+
+/**
+ * A few-shot example frozen at compile time (spec §3.4).
+ * Gives the LLM precise calibration without any runtime context construction.
+ */
+export interface LlmFewShotExample {
+  inputJson: string;   // JSON-encoded example input
+  outputJson: string;  // JSON-encoded expected output
+  label?: string;      // Optional descriptive label
+}
+
+/**
+ * A dynamic slot for runtime data injection (spec §3.4 + §13.2).
+ * Secrets never appear in the IR — they are fetched from Vault at runtime.
+ */
+export interface LlmDynamicSlot {
+  slotId: string;                     // Matches {{slotId}} placeholder in promptTemplate
+  sourceType: 'vault' | 'runtime';   // Where to fetch the value
+  sourceKey: string;                  // Vault path or dot-path into event payload
+}
+
+/**
+ * Frozen LLM context compiled into each LLM_CALL instruction (spec §3.4).
+ * Built once at compile time — the SVM only injects dynamic slots at runtime.
+ * This fundamentally reduces hallucination risk vs. runtime context construction.
+ */
+export interface LlmCompiledContext {
+  systemPrompt: string;                  // Frozen system prompt
+  fewShotExamples: LlmFewShotExample[];  // Calibration examples, selected at compile time
+  outputSchema: Record<string, unknown>; // JSON Schema for output validation (spec §3.4)
+  model: string;                         // Optimal model chosen at compile time
+  temperature: number;                   // Calibrated: extraction=0.0, reasoning=0.3
+  maxTokens: number;                     // Formally bounded (never unconstrained)
+  dynamicSlots: LlmDynamicSlot[];        // Runtime injection points (spec §13.2)
+  promptTemplate?: string;               // Template with {{slotId}} placeholders
+}
+
+// ── PriorityPolicy (spec §6.5) ────────────────────────────────────────────
+/**
+ * Resource contention policy compiled into IR instructions (spec §6.5).
+ * When multiple workflows compete for the same resource, the SVM applies this
+ * policy — NEVER makes a dynamic decision at runtime.
+ */
+export interface PriorityPolicy {
+  priorityLevel: number;   // 0 = critical, 255 = lowest priority
+  preemptible: boolean;    // true → higher-priority workflows can interrupt
+  maxWaitMs: number;       // Max time to wait for resource before fallback
 }
 
 /**

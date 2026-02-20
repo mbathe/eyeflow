@@ -1,0 +1,32 @@
+{
+  "unversionedId": "verticals/iot",
+  "id": "verticals/iot",
+  "title": "Secteur IoT",
+  "description": "EyeFlow pour l'IoT — gestion de flotte d'appareils, mises à jour OTA sécurisées, télémétrie multi-protocoles, edge AI embarqué STM32/nRF52.",
+  "source": "@site/docs/verticals/iot.md",
+  "sourceDirName": "verticals",
+  "slug": "/verticals/iot",
+  "permalink": "/docs/verticals/iot",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/verticals/iot.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 5,
+  "frontMatter": {
+    "id": "iot",
+    "sidebar_position": 5,
+    "title": "Secteur IoT",
+    "description": "EyeFlow pour l'IoT — gestion de flotte d'appareils, mises à jour OTA sécurisées, télémétrie multi-protocoles, edge AI embarqué STM32/nRF52."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Secteur finance",
+    "permalink": "/docs/verticals/finance"
+  },
+  "next": {
+    "title": "Architecture système",
+    "permalink": "/docs/for-developers/architecture"
+  }
+}

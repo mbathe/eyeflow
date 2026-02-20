@@ -1,0 +1,32 @@
+{
+  "unversionedId": "verticals/medical",
+  "id": "verticals/medical",
+  "title": "Secteur médical",
+  "description": "EyeFlow en environnement médical — conformité IEC 62304, catalog de capabilities médicales, exemples de workflows ICU, dosage médicament et coordination soins.",
+  "source": "@site/docs/verticals/medical.md",
+  "sourceDirName": "verticals",
+  "slug": "/verticals/medical",
+  "permalink": "/docs/verticals/medical",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/verticals/medical.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "id": "medical",
+    "sidebar_position": 1,
+    "title": "Secteur médical",
+    "description": "EyeFlow en environnement médical — conformité IEC 62304, catalog de capabilities médicales, exemples de workflows ICU, dosage médicament et coordination soins."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Sécurité",
+    "permalink": "/docs/concepts/security"
+  },
+  "next": {
+    "title": "Secteur industriel",
+    "permalink": "/docs/verticals/industrial"
+  }
+}

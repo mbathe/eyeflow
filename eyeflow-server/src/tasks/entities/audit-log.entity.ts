@@ -97,11 +97,48 @@ export class AuditLogEntity {
   verificationError?: string;
 
   // ==========================================
+  // 🔗 CRYPTOGRAPHIC CHAIN (spec §12.1)
+  // Blockchain-like: each event references previous hash → tamper-evident
+  // ==========================================
+
+  @ApiProperty({ description: 'SHA-256 of previous event — forms append-only chain' })
+  @Column({ type: 'char', length: 64, nullable: true })
+  previousEventHash?: string;
+
+  @ApiProperty({ description: 'SHA-256 of this event payload (for chain integrity)' })
+  @Column({ type: 'char', length: 64, nullable: true })
+  selfHash?: string;
+
+  @ApiProperty({ description: 'SHA-256 of input data at time of action' })
+  @Column({ type: 'char', length: 64, nullable: true })
+  inputHash?: string;
+
+  @ApiProperty({ description: 'SHA-256 of output data produced by action' })
+  @Column({ type: 'char', length: 64, nullable: true })
+  outputHash?: string;
+
+  @ApiProperty({ description: 'Exact workflow version number used (spec §11.1)' })
+  @Column({ type: 'int', nullable: true })
+  workflowVersion?: number;
+
+  @ApiProperty({ description: 'Precise instruction index in the LLM-IR' })
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  instructionId?: string;
+
+  @ApiProperty({ description: 'Structured audit event type (spec §12.1 AuditEventType)' })
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  eventType?: string;
+
+  @ApiProperty({ description: 'Duration in milliseconds for this instruction' })
+  @Column({ type: 'int', nullable: true })
+  durationMs?: number;
+
+  // ==========================================
   // WHEN
   // ==========================================
 
   @ApiProperty()
-  @CreateDateColumn()
+  @CreateDateColumn({ precision: 6 })  // nanosecond precision (spec §12.1)
   timestamp!: Date;
 
   // ==========================================

@@ -1,125 +1,244 @@
 {
-  "/eyeflow/fr/docs-553": {
-    "__comp": "1be78505",
+  "/__docusaurus/debug-45b": {
+    "__comp": "__comp---theme-debug-config-23-a-2ff",
     "__context": {
-      "plugin": "713aaaaf"
+      "plugin": "plugin---docusaurus-debuga-86-2ba"
+    }
+  },
+  "/__docusaurus/debug/config-bb8": {
+    "__comp": "__comp---theme-debug-config-23-a-2ff",
+    "__context": {
+      "plugin": "plugin---docusaurus-debuga-86-2ba"
+    }
+  },
+  "/__docusaurus/debug/content-9b2": {
+    "__comp": "__comp---theme-debug-contentba-8-ce7",
+    "__context": {
+      "plugin": "plugin---docusaurus-debuga-86-2ba"
     },
-    "versionMetadata": "935f2afb"
+    "allContent": "allContent---docusaurus-debug-content-246-9aa"
   },
-  "/eyeflow/fr/docs/for-decision-makers/compliance-security-52d": {
-    "__comp": "17896441",
-    "content": "41bd0fda"
+  "/__docusaurus/debug/globalData-010": {
+    "__comp": "__comp---theme-debug-global-dataede-0fa",
+    "__context": {
+      "plugin": "plugin---docusaurus-debuga-86-2ba"
+    }
   },
-  "/eyeflow/fr/docs/for-decision-makers/roi-analysis-c25": {
-    "__comp": "17896441",
-    "content": "fcaca645"
+  "/__docusaurus/debug/metadata-ad3": {
+    "__comp": "__comp---theme-debug-site-metadata-68-e-3d4",
+    "__context": {
+      "plugin": "plugin---docusaurus-debuga-86-2ba"
+    }
   },
-  "/eyeflow/fr/docs/for-decision-makers/scaling-performance-297": {
-    "__comp": "17896441",
-    "content": "5eb7ab9b"
+  "/__docusaurus/debug/registry-cf4": {
+    "__comp": "__comp---theme-debug-registry-679-501",
+    "__context": {
+      "plugin": "plugin---docusaurus-debuga-86-2ba"
+    }
   },
-  "/eyeflow/fr/docs/for-decision-makers/technology-selection-15c": {
-    "__comp": "17896441",
-    "content": "f9584f4a"
+  "/__docusaurus/debug/routes-faa": {
+    "__comp": "__comp---theme-debug-routes-946-699",
+    "__context": {
+      "plugin": "plugin---docusaurus-debuga-86-2ba"
+    }
   },
-  "/eyeflow/fr/docs/for-decision-makers/use-cases-56b": {
-    "__comp": "17896441",
-    "content": "24225d17"
+  "/docs-b83": {
+    "__comp": "__comp---theme-doc-page-1-be-9be",
+    "__context": {
+      "plugin": "plugin---docs-713-15c"
+    },
+    "versionMetadata": "versionMetadata---docs-935-398"
   },
-  "/eyeflow/fr/docs/for-developers/api-reference-f0e": {
-    "__comp": "17896441",
-    "content": "caf70b3f"
+  "/docs/concepts/audit-observability-2d0": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-audit-observabilitydc-2-ebe"
   },
-  "/eyeflow/fr/docs/for-developers/architecture-b7c": {
-    "__comp": "17896441",
-    "content": "368ddddd"
+  "/docs/concepts/capability-catalog-441": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-capability-catalogd-17-f6d"
   },
-  "/eyeflow/fr/docs/for-developers/connectors/custom-a12": {
-    "__comp": "17896441",
-    "content": "6c607d23"
+  "/docs/concepts/distributed-execution-9da": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-distributed-executionb-2-d-619"
   },
-  "/eyeflow/fr/docs/for-developers/connectors/overview-cd5": {
-    "__comp": "17896441",
-    "content": "c896f4f8"
+  "/docs/concepts/event-sources-5e4": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-event-sources-235-ec6"
   },
-  "/eyeflow/fr/docs/for-developers/connectors/postgresql-aa5": {
-    "__comp": "17896441",
-    "content": "115d4644"
+  "/docs/concepts/llm-calls-34d": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-llm-calls-100-d38"
   },
-  "/eyeflow/fr/docs/for-developers/connectors/slack-b91": {
-    "__comp": "17896441",
-    "content": "4185229b"
+  "/docs/concepts/llm-ir-0b6": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-llm-iread-0db"
   },
-  "/eyeflow/fr/docs/for-developers/deployment-f23": {
-    "__comp": "17896441",
-    "content": "fbf5f7dc"
+  "/docs/concepts/physical-control-cf1": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-physical-controlea-4-1aa"
   },
-  "/eyeflow/fr/docs/for-developers/sdks-2c3": {
-    "__comp": "17896441",
-    "content": "db311c44"
+  "/docs/concepts/security-6d5": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-security-456-8fd"
   },
-  "/eyeflow/fr/docs/for-end-users/cli-basics-dd5": {
-    "__comp": "17896441",
-    "content": "ed140b02"
+  "/docs/concepts/semantic-compilation-46e": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-semantic-compilationdbe-d73"
   },
-  "/eyeflow/fr/docs/for-end-users/first-rule-1b5": {
-    "__comp": "17896441",
-    "content": "eb00a851"
+  "/docs/concepts/svm-runtime-bf1": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-svm-runtime-387-91f"
   },
-  "/eyeflow/fr/docs/for-end-users/first-task-de7": {
-    "__comp": "17896441",
-    "content": "5f177e7c"
+  "/docs/for-decision-makers/compliance-security-fda": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-decision-makers-compliance-security-41-b-426"
   },
-  "/eyeflow/fr/docs/for-end-users/quickstart-f8d": {
-    "__comp": "17896441",
-    "content": "828d8b3a"
+  "/docs/for-decision-makers/roi-analysis-e78": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-decision-makers-roi-analysisfca-288"
   },
-  "/eyeflow/fr/docs/for-end-users/ui-dashboard-eec": {
-    "__comp": "17896441",
-    "content": "71b0e7a1"
+  "/docs/for-decision-makers/scaling-performance-124": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-decision-makers-scaling-performance-5-eb-d67"
   },
-  "/eyeflow/fr/docs/intro/vs-openclaw-e26": {
-    "__comp": "17896441",
-    "content": "126fed71"
+  "/docs/for-decision-makers/technology-selection-372": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-decision-makers-technology-selectionf-95-6d8"
   },
-  "/eyeflow/fr/docs/intro/what-is-eyeflow-d76": {
-    "__comp": "17896441",
-    "content": "2288dad8"
+  "/docs/for-decision-makers/use-cases-e2e": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-decision-makers-use-cases-242-5f2"
   },
-  "/eyeflow/fr/docs/intro/why-eyeflow-b84": {
-    "__comp": "17896441",
-    "content": "7ef6c744"
+  "/docs/for-developers/api-reference-6d6": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-developers-api-referencecaf-36f"
   },
-  "/eyeflow/fr/docs/technical-deep-dive/capability-catalog-856": {
-    "__comp": "17896441",
-    "content": "15d0ad86"
+  "/docs/for-developers/architecture-f24": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-developers-architecture-368-33f"
   },
-  "/eyeflow/fr/docs/technical-deep-dive/determinism-guarantees-3b0": {
-    "__comp": "17896441",
-    "content": "8f29ed76"
+  "/docs/for-developers/connectors/connectors-custom-c39": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-developers-connectors-connectors-custom-6-c-6-7d8"
   },
-  "/eyeflow/fr/docs/technical-deep-dive/edge-computing-9a7": {
-    "__comp": "17896441",
-    "content": "f78dff23"
+  "/docs/for-developers/connectors/connectors-overview-026": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-developers-connectors-connectors-overviewc-89-dc5"
   },
-  "/eyeflow/fr/docs/technical-deep-dive/llm-ir-815": {
-    "__comp": "17896441",
-    "content": "2d1958fb"
+  "/docs/for-developers/connectors/postgresql-180": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-developers-connectors-postgresql-115-36f"
   },
-  "/eyeflow/fr/docs/technical-deep-dive/performance-benchmarking-3a6": {
-    "__comp": "17896441",
-    "content": "962525aa"
+  "/docs/for-developers/connectors/slack-859": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-developers-connectors-slack-418-604"
   },
-  "/eyeflow/fr/docs/technical-deep-dive/security-sandbox-027": {
-    "__comp": "17896441",
-    "content": "3e887fff"
+  "/docs/for-developers/deployment-0c3": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-developers-deploymentfbf-11c"
   },
-  "/eyeflow/fr/docs/technical-deep-dive/semantic-compilation-c6c": {
-    "__comp": "17896441",
-    "content": "e5d8adf4"
+  "/docs/for-developers/sdks-ce7": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-developers-sdksdb-3-7ec"
   },
-  "/eyeflow/fr/docs/technical-deep-dive/svm-runtime-85a": {
-    "__comp": "17896441",
-    "content": "0a6d4496"
+  "/docs/for-end-users/cli-basics-d84": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-end-users-cli-basicsed-1-5e1"
+  },
+  "/docs/for-end-users/first-rule-126": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-end-users-first-ruleeb-0-035"
+  },
+  "/docs/for-end-users/first-task-b6d": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-end-users-first-task-5-f-1-696"
+  },
+  "/docs/for-end-users/quickstart-365": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-end-users-quickstart-828-ff8"
+  },
+  "/docs/for-end-users/ui-dashboard-a00": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-for-end-users-ui-dashboard-71-b-f90"
+  },
+  "/docs/getting-started/dashboard-be6": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-getting-started-dashboard-539-3f1"
+  },
+  "/docs/getting-started/first-workflow-678": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-getting-started-first-workflow-60-b-689"
+  },
+  "/docs/getting-started/quickstart-d7c": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-getting-started-quickstartfbd-5fc"
+  },
+  "/docs/intro/vs-alternatives-6d0": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-intro-vs-alternatives-77-e-e4f"
+  },
+  "/docs/intro/what-is-eyeflow-133": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-intro-what-is-eyeflow-228-301"
+  },
+  "/docs/intro/why-eyeflow-b1f": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-intro-why-eyeflow-7-ef-f05"
+  },
+  "/docs/roadmap/roadmap-358": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-roadmap-roadmapc-61-b06"
+  },
+  "/docs/technical-deep-dive/capability-catalog-6c1": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-technical-deep-dive-capability-catalog-15-d-0c1"
+  },
+  "/docs/technical-deep-dive/determinism-guarantees-46a": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-technical-deep-dive-determinism-guarantees-8-f-2-a2a"
+  },
+  "/docs/technical-deep-dive/edge-computing-822": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-technical-deep-dive-edge-computingf-78-e6e"
+  },
+  "/docs/technical-deep-dive/llm-ir-3c4": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-technical-deep-dive-llm-ir-2-d-1-1b2"
+  },
+  "/docs/technical-deep-dive/performance-benchmarking-197": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-technical-deep-dive-performance-benchmarking-962-f37"
+  },
+  "/docs/technical-deep-dive/security-sandbox-6df": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-technical-deep-dive-security-sandbox-3-e-8-e98"
+  },
+  "/docs/technical-deep-dive/semantic-compilation-c12": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-technical-deep-dive-semantic-compilatione-5-d-11a"
+  },
+  "/docs/technical-deep-dive/svm-runtime-445": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-technical-deep-dive-svm-runtime-0-a-6-d0f"
+  },
+  "/docs/verticals/agriculture-ce0": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-verticals-agriculture-375-77d"
+  },
+  "/docs/verticals/finance-28c": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-verticals-financefcd-e98"
+  },
+  "/docs/verticals/industrial-99c": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-verticals-industrial-116-d43"
+  },
+  "/docs/verticals/iot-a01": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-verticals-iot-148-b23"
+  },
+  "/docs/verticals/medical-d0f": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-verticals-medicalc-87-9a7"
   }
 }

@@ -6,24 +6,17 @@
   "source": "@site/docs/technical-deep-dive/capability-catalog.md",
   "sourceDirName": "technical-deep-dive",
   "slug": "/technical-deep-dive/capability-catalog",
-  "permalink": "/eyeflow/fr/docs/technical-deep-dive/capability-catalog",
+  "permalink": "/docs/technical-deep-dive/capability-catalog",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/technical-deep-dive/capability-catalog.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/technical-deep-dive/capability-catalog.md",
   "tags": [],
   "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
   "sidebarPosition": 4,
   "frontMatter": {
     "sidebar_position": 4,
     "title": "Capability Catalog",
     "description": "Service registry and capability discovery"
-  },
-  "sidebar": "tutorialSidebar",
-  "previous": {
-    "title": "SVM Runtime",
-    "permalink": "/eyeflow/fr/docs/technical-deep-dive/svm-runtime"
-  },
-  "next": {
-    "title": "Determinism Guarantees",
-    "permalink": "/eyeflow/fr/docs/technical-deep-dive/determinism-guarantees"
   }
 }

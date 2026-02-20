@@ -6,24 +6,17 @@
   "source": "@site/docs/for-decision-makers/scaling-performance.md",
   "sourceDirName": "for-decision-makers",
   "slug": "/for-decision-makers/scaling-performance",
-  "permalink": "/eyeflow/fr/docs/for-decision-makers/scaling-performance",
+  "permalink": "/docs/for-decision-makers/scaling-performance",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-decision-makers/scaling-performance.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-decision-makers/scaling-performance.md",
   "tags": [],
   "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
   "sidebarPosition": 4,
   "frontMatter": {
     "sidebar_position": 4,
     "title": "Scaling & Performance",
     "description": "Enterprise-scale performance characteristics"
-  },
-  "sidebar": "tutorialSidebar",
-  "previous": {
-    "title": "Compliance & Security",
-    "permalink": "/eyeflow/fr/docs/for-decision-makers/compliance-security"
-  },
-  "next": {
-    "title": "Technology Selection",
-    "permalink": "/eyeflow/fr/docs/for-decision-makers/technology-selection"
   }
 }

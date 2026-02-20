@@ -1,541 +1,400 @@
 ---
-sidebar_position: 3
-title: SDKs & Client Libraries
-description: Official SDKs for popular languages
+id: sdks
+sidebar_position: 4
+title: SDKs & CLI
+description: SDK TypeScript/Node.js, client Rust embarqué, CLI eyeflow et exemples d'intégration complets.
 ---
 
-# SDKs & Client Libraries
+# SDKs & CLI
 
-Official SDKs for integrating EyeFlow with your applications.
+EyeFlow fournit plusieurs moyens d'intégration : un SDK TypeScript officiel, un client REST Rust pour les nœuds embarqués, et un CLI en ligne de commande.
 
-## JavaScript / Node.js
+---
+
+## SDK TypeScript / Node.js
 
 ### Installation
 
 ```bash
 npm install @eyeflow/sdk
+# ou
+yarn add @eyeflow/sdk
 ```
 
-### Basic Usage
+### Configuration
 
-```javascript
-const Eyeflow = require('@eyeflow/sdk');
+```typescript
+import { EyeflowClient } from '@eyeflow/sdk';
 
-const client = new Eyeflow({
-  apiKey: 'sk_live_your_key_here',
-  apiUrl: 'https://api.eyeflow.com'
+const client = new EyeflowClient({
+  baseUrl: 'https://api.eyeflow.example.com',
+  apiKey: process.env.EYEFLOW_API_KEY,
+  timeout: 30_000,
 });
-
-// Execute a task
-const result = await client.tasks.execute('daily_weather', {
-  city: 'New York'
-});
-
-console.log(`Status: ${result.status}`); // success
-console.log(`Latency: ${result.duration_ms}ms`); // 78ms
-console.log(`Output: ${JSON.stringify(result.output)}`);
 ```
 
-### Task Operations
+### Compiler une règle
 
-```javascript
-// Create task
-const task = await client.tasks.create({
-  name: 'my_task',
-  trigger: { type: 'webhook' },
-  actions: [
-    {
-      type: 'http',
-      method: 'GET',
-      url: 'https://api.example.com/data'
-    }
-  ]
+```typescript
+const compilation = await client.rules.compile({
+  name: 'fermeture_vanne_urgence',
+  naturalLanguage: `
+    Si la pression dépasse 12 bar, fermer immédiatement la vanne d'urgence V-02,
+    couper la pompe principale et envoyer une alerte critique à l'opérateur.
+  `,
+  sector: 'INDUSTRIAL',
+  priority: 'CRITICAL',
 });
 
-// List tasks
-const tasks = await client.tasks.list({ limit: 50 });
-
-// Get task details
-const task = await client.tasks.get('daily_weather');
-
-// Update task
-await client.tasks.update('daily_weather', {
-  description: 'Updated description'
+// Attendre la fin de la compilation
+const rule = await client.rules.waitForCompilation(compilation.id, {
+  pollingIntervalMs: 1000,
+  timeoutMs: 30_000,
 });
 
-// Execute task
-const result = await client.tasks.execute('daily_weather');
-
-// Delete task
-await client.tasks.delete('daily_weather');
+console.log('Compilé avec succès:', rule.id);
+console.log('Z3 vérifié:', rule.z3Verified);
+console.log('Signature:', rule.signature.substring(0, 20) + '...');
 ```
 
-### Connector Operations
+### Déployer et surveiller
 
-```javascript
-// Create connector
-const connector = await client.connectors.create({
-  service: 'slack',
-  name: 'slack_alerts',
-  config: {
-    token: 'xoxb-...'
-  }
+```typescript
+// Déployer sur des nœuds cibles
+const deployment = await client.rules.deploy(rule.id, {
+  targetNodeIds: ['svm-usine-A', 'svm-usine-B'],
+  strategy: 'ROLLING',
 });
 
-// Test connector
-const test = await client.connectors.test('slack_alerts');
-console.log(test.connected); // true
-
-// List connectors
-const connectors = await client.connectors.list();
-```
-
-### Execution History
-
-```javascript
-// Get execution details
-const execution = await client.executions.get('exec_abc123');
-
-// List executions
-const executions = await client.executions.list({
-  task_id: 'task_abc123',
-  status: 'success',
-  limit: 20
+// S'abonner aux exécutions en temps réel
+const subscription = client.executions.subscribe({
+  ruleId: rule.id,
+  onExecution: (exec) => {
+    console.log(`Exécution ${exec.id}: ${exec.status} (${exec.durationMs}ms)`);
+  },
+  onInstruction: (instr) => {
+    console.log(`  > ${instr.opcode}: ${JSON.stringify(instr.result)}`);
+  },
 });
 
-// Stream executions in real-time
-client.executions.stream('task_abc123')
-  .on('success', (exec) => {
-    console.log(`Task succeeded in ${exec.duration_ms}ms`);
-  })
-  .on('failed', (exec) => {
-    console.log(`Task failed: ${exec.error}`);
-  });
+// Se désabonner après 1 heure
+setTimeout(() => subscription.unsubscribe(), 3_600_000);
 ```
 
-### Error Handling
+### Lire le journal d'audit
 
-```javascript
-try {
-  const result = await client.tasks.execute('daily_weather');
-} catch (error) {
-  if (error.code === 'TASK_NOT_FOUND') {
-    console.error('Task does not exist');
-  } else if (error.code === 'TIMEOUT') {
-    console.error('Task took too long');
-  } else {
-    console.error(`Error: ${error.message}`);
-  }
+```typescript
+const auditEntries = await client.audit.list({
+  ruleId: rule.id,
+  since: new Date(Date.now() - 86_400_000), // dernières 24h
+  format: 'json',
+});
+
+// Vérifier l'intégrité de la chaîne
+const verification = await client.audit.verifyChain(execId);
+console.log('Chaîne valide:', verification.valid);
+```
+
+### Types principaux
+
+```typescript
+interface Rule {
+  id: string;
+  name: string;
+  status: 'COMPILING' | 'VALIDATION_PENDING' | 'COMPILED' | 'DEPLOYED' | 'REVOKED';
+  compiledAt?: Date;
+  irVersion?: string;
+  z3Verified?: boolean;
+  signature?: string;
+  deployedNodes?: string[];
+}
+
+interface Execution {
+  id: string;
+  ruleId: string;
+  nodeId: string;
+  status: 'SUCCESS' | 'FAILED' | 'TIMEOUT' | 'IN_PROGRESS';
+  startedAt: Date;
+  durationMs: number;
+  instructionsExecuted: number;
+  auditChainHash: string;
+  trace?: InstructionTrace[];
+}
+
+interface InstructionTrace {
+  instructionId: string;
+  opcode: string;
+  startedAt: Date;
+  durationMs: number;
+  result: Record<string, unknown>;
+  auditHash: string;
 }
 ```
 
 ---
 
-## Python
+## Client Rust (nœuds embarqués)
 
-### Installation
+Pour les intégrations custom sur nœuds Linux edge (pas le SVM standard).
 
-```bash
-pip install eyeflow-sdk
+### `Cargo.toml`
+
+```toml
+[dependencies]
+eyeflow-client = "0.3"
+tokio = { version = "1", features = ["full"] }
+serde_json = "1"
 ```
 
-### Basic Usage
+### Exemple d'utilisation
 
-```python
-from eyeflow import Client
+```rust
+use eyeflow_client::{EyeflowClient, RuleCompileRequest};
 
-client = Client(
-    api_key='sk_live_your_key_here',
-    api_url='https://api.eyeflow.com'
-)
-
-# Execute a task
-result = client.tasks.execute('daily_weather', {
-    'city': 'New York'
-})
-
-print(f"Status: {result['status']}")        # success
-print(f"Latency: {result['duration_ms']}ms") # 78ms
-print(f"Output: {result['output']}")
-```
-
-### Task Operations
-
-```python
-# Create task
-task = client.tasks.create({
-    'name': 'my_task',
-    'trigger': {'type': 'webhook'},
-    'actions': [
-        {
-            'type': 'http',
-            'method': 'GET',
-            'url': 'https://api.example.com/data'
-        }
-    ]
-})
-
-# List tasks
-tasks = client.tasks.list(limit=50, status='active')
-
-# Get task
-task = client.tasks.get('daily_weather')
-
-# Update task
-client.tasks.update('daily_weather', {
-    'description': 'Updated description'
-})
-
-# Execute task
-result = client.tasks.execute('daily_weather')
-
-# Delete task
-client.tasks.delete('daily_weather')
-```
-
-### Async Support
-
-```python
-import asyncio
-from eyeflow import AsyncClient
-
-async def main():
-    async with AsyncClient(api_key='sk_live_...') as client:
-        result = await client.tasks.execute('daily_weather')
-        print(result)
-
-asyncio.run(main())
-```
-
-### Batch Operations
-
-```python
-# Execute multiple tasks
-results = []
-for task_name in ['task1', 'task2', 'task3']:
-    result = client.tasks.execute(task_name)
-    results.append(result)
-
-# Wait for all to complete
-all_successful = all(r['status'] == 'success' for r in results)
-```
-
----
-
-## Go
-
-### Installation
-
-```bash
-go get github.com/eyeflow-ai/go-sdk
-```
-
-### Basic Usage
-
-```go
-package main
-
-import (
-    "github.com/eyeflow-ai/go-sdk"
-)
-
-func main() {
-    client := eyeflow.NewClient(
-        "sk_live_your_key_here",
-        "https://api.eyeflow.com",
-    )
-
-    // Execute a task
-    result, err := client.Tasks.Execute("daily_weather", map[string]interface{}{
-        "city": "New York",
-    })
-    if err != nil {
-        panic(err)
-    }
-
-    println("Status:", result.Status)
-    println("Latency:", result.DurationMs, "ms")
-}
-```
-
-### Task Operations
-
-```go
-// Create task
-task, err := client.Tasks.Create(&eyeflow.Task{
-    Name: "my_task",
-    Trigger: eyeflow.Trigger{Type: "webhook"},
-})
-
-// List tasks
-tasks, err := client.Tasks.List(&eyeflow.ListOptions{
-    Limit: 50,
-    Status: "active",
-})
-
-// Get task
-task, err := client.Tasks.Get("daily_weather")
-
-// Execute task
-result, err := client.Tasks.Execute("daily_weather", nil)
-```
-
----
-
-## Java
-
-### Installation (Maven)
-
-```xml
-<dependency>
-    <groupId>com.eyeflow</groupId>
-    <artifactId>eyeflow-sdk</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
-
-### Basic Usage
-
-```java
-import com.eyeflow.Client;
-import com.eyeflow.models.ExecutionResult;
-
-public class Example {
-    public static void main(String[] args) throws Exception {
-        Client client = new Client("sk_live_your_key_here");
-        
-        // Execute a task
-        ExecutionResult result = client.tasks()
-            .execute("daily_weather", new HashMap<>() {{
-                put("city", "New York");
-            }});
-        
-        System.out.println("Status: " + result.getStatus());
-        System.out.println("Latency: " + result.getDurationMs() + "ms");
-    }
-}
-```
-
-### Reactive Streams
-
-```java
-// Combine with Project Reactor for reactive programming
-client.tasks()
-    .executeAsync("daily_weather")
-    .map(ExecutionResult::getOutput)
-    .subscribe(
-        output -> System.out.println("Result: " + output),
-        error -> System.err.println("Error: " + error)
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let client = EyeflowClient::new(
+        "https://api.eyeflow.example.com",
+        std::env::var("EYEFLOW_API_KEY")?,
     );
+
+    // Compiler une règle
+    let request = RuleCompileRequest {
+        name: "temperature_guard".to_string(),
+        natural_language: "If temperature exceeds 90°C, close valve V-01.".to_string(),
+        sector: "INDUSTRIAL".to_string(),
+        priority: "HIGH".to_string(),
+    };
+
+    let compilation = client.rules().compile(request).await?;
+    let rule = client.rules().wait_compiled(compilation.id, 30_000).await?;
+
+    println!("Rule compiled: {} (Z3: {})", rule.id, rule.z3_verified);
+
+    // Charger le binaire LLM-IR
+    let ir_bytes = client.rules().get_ir_binary(rule.id).await?;
+    println!("LLM-IR size: {} bytes", ir_bytes.len());
+
+    Ok(())
+}
 ```
 
 ---
 
-## Ruby
+## CLI eyeflow
 
 ### Installation
 
 ```bash
-gem install eyeflow
+# Via npm (recommandé)
+npm install -g @eyeflow/cli
+
+# Vérifier l'installation
+eyeflow --version
+# EyeFlow CLI v1.4.0 (NestJS 3000 · SVM Rust · LLM-IR 2.4)
 ```
 
-### Basic Usage
-
-```ruby
-require 'eyeflow'
-
-client = Eyeflow::Client.new(api_key: 'sk_live_your_key_here')
-
-# Execute a task
-result = client.tasks.execute('daily_weather', city: 'New York')
-
-puts "Status: #{result['status']}"
-puts "Latency: #{result['duration_ms']}ms"
-puts "Output: #{result['output']}"
-```
-
-### Rails Integration
-
-```ruby
-# Add to Gemfile
-gem 'eyeflow-rails'
-
-# app/services/weather_service.rb
-class WeatherService
-  def get_weather(city)
-    result = Eyeflow.execute('daily_weather', city: city)
-    result['output']
-  end
-end
-
-# app/controllers/weather_controller.rb
-class WeatherController < ApplicationController
-  def show
-    @weather = WeatherService.new.get_weather('New York')
-  end
-end
-```
-
----
-
-## PHP
-
-### Installation
+### Configuration
 
 ```bash
-composer require eyeflow/sdk
+# Configurer le serveur et le token
+eyeflow config set --url https://api.eyeflow.example.com
+eyeflow config set --token YOUR_JWT_TOKEN
+
+# Vérifier la configuration
+eyeflow config show
 ```
 
-### Basic Usage
+### Commandes de règles
 
-```php
-<?php
-require_once 'vendor/autoload.php';
+```bash
+# Compiler une règle depuis un fichier texte
+eyeflow rules compile --file surveillance_cuve.txt \
+  --name "surveillance_cuve" \
+  --sector INDUSTRIAL \
+  --priority HIGH
 
-use Eyeflow\Client;
+# Lister les règles
+eyeflow rules list
+eyeflow rules list --status DEPLOYED --sector INDUSTRIAL
 
-$client = new Client('sk_live_your_key_here');
+# Voir le détail d'une règle
+eyeflow rules get rule-abc123
 
-// Execute a task
-$result = $client->tasks()->execute('daily_weather', [
-    'city' => 'New York'
-]);
+# Obtenir le LLM-IR d'une règle
+eyeflow rules ir rule-abc123 --format json | jq .
+eyeflow rules ir rule-abc123 --format proto --out ./rule.pb
 
-echo "Status: " . $result['status'] . "\n";
-echo "Latency: " . $result['duration_ms'] . "ms\n";
-echo "Output: " . json_encode($result['output']) . "\n";
+# Valider manuellement une règle
+eyeflow rules validate rule-abc123 --approved
+
+# Déployer
+eyeflow rules deploy rule-abc123 \
+  --nodes svm-usine-A,svm-usine-B \
+  --strategy ROLLING
+
+# Révoquer
+eyeflow rules revoke rule-abc123
 ```
 
-### Laravel Integration
+### Commandes d'exécutions
 
-```php
-// config/eyeflow.php
-return [
-    'api_key' => env('EYEFLOW_API_KEY'),
-    'api_url' => env('EYEFLOW_API_URL'),
-];
+```bash
+# Lister les dernières exécutions
+eyeflow executions list --limit 20
+eyeflow executions list --rule rule-abc123 --status FAILED
 
-// app/Services/EyeflowService.php
-class EyeflowService {
-    protected $client;
-    
-    public function __construct() {
-        $this->client = new Client(config('eyeflow.api_key'));
-    }
-    
-    public function executeTask($name, $data = []) {
-        return $this->client->tasks()->execute($name, $data);
-    }
-}
+# Voir la trace complète d'une exécution
+eyeflow executions trace exec-555
 
-// Usage in controller
-$result = app(EyeflowService::class)->executeTask('daily_weather', [
-    'city' => 'New York'
-]);
+# Simuler un événement (dev/test)
+eyeflow executions simulate \
+  --node svm-usine-A \
+  --rule rule-abc123 \
+  --payload '{"temperature_cuve": 92.0}'
+```
+
+### Commandes d'audit
+
+```bash
+# Exporter le journal d'audit
+eyeflow audit export \
+  --rule rule-abc123 \
+  --since 2024-10-01 \
+  --format csv \
+  --out audit_octobre.csv
+
+# Vérifier l'intégrité d'une exécution
+eyeflow audit verify exec-555
+
+# Rapport réglementaire complet
+eyeflow audit report \
+  --rule rule-abc123 \
+  --format iec62304 \
+  --out rapport_iec62304.pdf
+```
+
+### Commandes de nœuds
+
+```bash
+# Lister les nœuds SVM
+eyeflow nodes list
+eyeflow nodes list --type LINUX_ARM
+
+# Surveiller un nœud
+eyeflow nodes watch svm-usine-A
+
+# Voir les métriques d'un nœud
+eyeflow nodes metrics svm-usine-A --since 1h
+
+# Mettre à jour le SVM d'un nœud
+eyeflow nodes update svm-usine-A --version 1.4.0
+```
+
+### Commandes du catalog
+
+```bash
+# Lister les capabilities
+eyeflow catalog list
+eyeflow catalog list --sector INDUSTRIAL
+
+# Détail d'une capability
+eyeflow catalog get valve_control
+
+# Enregistrer une capability custom
+eyeflow catalog register \
+  --file my_capability.json \
+  --sign-with /etc/eyeflow/keys/ir_signing.pem
+
+# Révoquer une capability
+eyeflow catalog revoke valve_control --version 1.0.0
+```
+
+### Commandes de sécurité
+
+```bash
+# Générer une paire de clés pour la signature IR
+eyeflow security keygen \
+  --algorithm ed25519 \
+  --out /etc/eyeflow/keys/ir_signing.pem
+
+# Vérifier la signature d'un programme LLM-IR
+eyeflow security verify \
+  --ir ./rule.pb \
+  --pubkey /etc/eyeflow/keys/ir_signing.pub
+
+# Audit de sécurité complet
+eyeflow security audit --full
 ```
 
 ---
 
-## Common Patterns
+## Exemples d'intégration avancés
 
-### Pattern 1: Error Handling with Retry
+### Intégration CI/CD (GitHub Actions)
 
-```javascript
-async function executeWithRetry(taskName, maxRetries = 3) {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      return await client.tasks.execute(taskName);
-    } catch (error) {
-      if (i === maxRetries - 1) throw error;
-      console.log(`Retry ${i + 1}/${maxRetries}`);
-      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
-    }
-  }
-}
+```yaml
+# .github/workflows/deploy-rules.yml
+name: Deploy EyeFlow Rules
+
+on:
+  push:
+    paths:
+      - 'rules/**'
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup EyeFlow CLI
+        run: npm install -g @eyeflow/cli
+
+      - name: Configure EyeFlow
+        run: |
+          eyeflow config set --url ${{ vars.EYEFLOW_URL }}
+          eyeflow config set --token ${{ secrets.EYEFLOW_TOKEN }}
+
+      - name: Compile & Deploy Changed Rules
+        run: |
+          for rule_file in $(git diff --name-only HEAD~1 HEAD -- rules/); do
+            rule_name=$(basename "$rule_file" .txt)
+            eyeflow rules compile --file "$rule_file" \
+              --name "$rule_name" \
+              --sector ${{ vars.SECTOR }}
+          done
 ```
 
-### Pattern 2: Webhook Handler (Express)
+### Réponse à un événement Kafka
 
-```javascript
-const express = require('express');
-const app = express();
+```typescript
+import { Kafka } from 'kafkajs';
+import { EyeflowClient } from '@eyeflow/sdk';
 
-app.post('/api/webhooks/eyeflow', express.json(), async (req, res) => {
-  try {
-    const result = await client.tasks.execute('process_incoming', req.body);
-    res.json({ success: true, execution_id: result.execution_id });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+const kafka = new Kafka({ brokers: ['localhost:9092'] });
+const consumer = kafka.consumer({ groupId: 'my-app' });
+const eyeflow = new EyeflowClient({ baseUrl: '...', apiKey: '...' });
+
+await consumer.subscribe({ topic: 'factory.sensors' });
+
+await consumer.run({
+  eachMessage: async ({ message }) => {
+    const sensor = JSON.parse(message.value!.toString());
+
+    // Simuler l'événement dans EyeFlow
+    const execution = await eyeflow.executions.simulate({
+      nodeId: 'svm-usine-A',
+      ruleId: 'rule-abc123',
+      payload: {
+        source: `sensor:${sensor.id}`,
+        value: sensor.value,
+        timestamp: sensor.timestamp,
+      },
+    });
+
+    console.log('Résultat:', execution.status);
+  },
 });
 ```
-
-### Pattern 3: Batch Execution Monitor
-
-```python
-import asyncio
-from eyeflow import AsyncClient
-
-async def batch_execute(tasks):
-    async with AsyncClient(api_key='sk_live_...') as client:
-        # Execute all tasks concurrently
-        results = await asyncio.gather(*[
-            client.tasks.execute(task)
-            for task in tasks
-        ])
-        
-        # Generate report
-        successful = sum(1 for r in results if r['status'] == 'success')
-        failed = sum(1 for r in results if r['status'] == 'failed')
-        
-        return {
-            'total': len(results),
-            'successful': successful,
-            'failed': failed,
-            'results': results
-        }
-```
-
----
-
-## SDK Features
-
-| Feature | JS | Python | Go | Java | Ruby | PHP |
-|---------|----|---------|----|------|------|-----|
-| Task execution | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Error handling | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Async/await | ✅ | ✅ | ✅ | ✅ | ✅ | ⏳ |
-| Streaming | ✅ | ✅ | ✅ | ✅ | ⏳ | ⏳ |
-| Rate limiting | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Retries | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-
----
-
-## Migration Guide
-
-### From OpenClaw SDK
-
-```javascript
-// OpenClaw (slow)
-const result = await openclaw.run('task_name', {
-  ...params
-});
-// Takes 1900ms, might hallucinate
-
-// EyeFlow (fast)
-const result = await eyeflow.tasks.execute('task_name', {
-  ...params
-});
-// Takes 45ms, 100% guaranteed
-```
-
----
-
-**Ready to build?**
-- [Connector Development](./connectors/custom.md)
-- [API Reference](./api-reference.md)
-- [Deployment Guide](./deployment.md)
-
----
-
-Integrate EyeFlow with your entire tech stack. 🚀

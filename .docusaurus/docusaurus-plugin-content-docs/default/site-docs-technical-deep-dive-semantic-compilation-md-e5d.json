@@ -6,24 +6,17 @@
   "source": "@site/docs/technical-deep-dive/semantic-compilation.md",
   "sourceDirName": "technical-deep-dive",
   "slug": "/technical-deep-dive/semantic-compilation",
-  "permalink": "/eyeflow/fr/docs/technical-deep-dive/semantic-compilation",
+  "permalink": "/docs/technical-deep-dive/semantic-compilation",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/technical-deep-dive/semantic-compilation.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/technical-deep-dive/semantic-compilation.md",
   "tags": [],
   "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
   "sidebarPosition": 1,
   "frontMatter": {
     "sidebar_position": 1,
     "title": "Semantic Compilation",
     "description": "How EyeFlow compiles natural language tasks to bytecode"
-  },
-  "sidebar": "tutorialSidebar",
-  "previous": {
-    "title": "Technology Selection",
-    "permalink": "/eyeflow/fr/docs/for-decision-makers/technology-selection"
-  },
-  "next": {
-    "title": "LLM-IR (Intermediate Representation)",
-    "permalink": "/eyeflow/fr/docs/technical-deep-dive/llm-ir"
   }
 }

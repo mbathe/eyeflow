@@ -8,6 +8,11 @@ import { EventRuleExtendedEntity } from './entities/event-rule-extended.entity';
 import { MissionEntity } from './entities/mission.entity';
 import { GlobalTaskStateEntity } from './entities/task-state.entity';
 import { AuditLogEntity } from './entities/audit-log.entity';
+import { LLMSessionEntity } from './entities/llm-session.entity';
+import { LLMProjectEntity } from './entities/llm-project.entity';
+import { ProjectVersionEntity } from './entities/project-version.entity';
+import { ExecutionMemoryStateEntity } from './entities/execution-memory-state.entity';
+import { ExecutionRecordEntity } from './entities/execution-record.entity';
 
 // Services
 import { TaskCompilerService } from './services/task-compiler.service';
@@ -21,8 +26,16 @@ import { RuleCompilerService } from './services/rule-compiler.service';
 import { CompilationFeedbackService } from './services/compilation-feedback.service';
 import { LLMContextEnricherService } from './services/llm-context-enricher.service';
 import { DAGGeneratorService } from './services/dag-generator.service';
+import { DAGCompilationService } from './services/dag-compilation.service';
 import { RuleApprovalService } from './services/rule-approval.service';
 import { CompilationProgressGateway } from './gateways/compilation-progress.gateway';
+import { LLMSessionService } from './services/llm-session.service';
+import { LLMSessionsController } from './controllers/llm-sessions.controller';
+import { ProjectsController } from './controllers/projects.controller';
+import { LLMProjectService } from './services/llm-project.service';
+import { LLMProjectExecutionService } from './services/llm-project-execution.service';
+import { AuditQueryService } from './services/audit-query.service';
+import { VersionLifecycleService } from './services/version-lifecycle.service';
 
 // Providers
 import { AnalyticsProvider } from './services/analytics.provider';
@@ -36,6 +49,7 @@ import { WorkflowModule } from './services/workflow.module';
 
 // Controllers
 import { TasksController } from './controllers/tasks.controller';
+import { AuditController } from './controllers/audit.controller';
 
 @Module({
   imports: [
@@ -46,6 +60,11 @@ import { TasksController } from './controllers/tasks.controller';
       MissionEntity,
       GlobalTaskStateEntity,
       AuditLogEntity,
+      LLMSessionEntity,
+      LLMProjectEntity,
+      ProjectVersionEntity,
+      ExecutionMemoryStateEntity,
+      ExecutionRecordEntity,
     ]),
     // Extension modules
     AnalyticsModule,
@@ -93,12 +112,22 @@ import { TasksController } from './controllers/tasks.controller';
     CompilationFeedbackService,
     LLMContextEnricherService,
     DAGGeneratorService,
+    DAGCompilationService,
     RuleApprovalService,
     CompilationProgressGateway,
+    // Session & LLM scoping
+    LLMSessionService,
+    // Project & Versioning
+    LLMProjectService,
+    LLMProjectExecutionService,
     // Task Compilation
     TaskCompilerService,
+    // Audit chain query (spec §12.4)
+    AuditQueryService,
+    // Version lifecycle state machine (spec §11)
+    VersionLifecycleService,
   ],
-  controllers: [TasksController],
+  controllers: [TasksController, LLMSessionsController, ProjectsController, AuditController],
   exports: [
     TaskCompilerService,
     ConnectorRegistryService,
@@ -109,9 +138,15 @@ import { TasksController } from './controllers/tasks.controller';
     RuleCompilerService,
     CompilationFeedbackService,
     LLMContextEnricherService,
+    LLMSessionService,
+    LLMProjectService,
+    LLMProjectExecutionService,
     DAGGeneratorService,
+    DAGCompilationService,
     RuleApprovalService,
     CompilationProgressGateway,
+    AuditQueryService,
+    VersionLifecycleService,
     TypeOrmModule,
   ],
 })

@@ -38,7 +38,14 @@ class OpenAIProvider(ILLMProvider):
         aggregated_context: Dict[str, Any],
         user_intent: str,
     ) -> Tuple[Dict[str, Any], int]:
-        """Generate workflow rules using GPT-4"""
+        """
+        Generate workflow rules using GPT-4.
+
+        Supports constrained generation (spec §3.3):
+         - response_format=json_object enforces structural constraint
+         - logit_bias=-100 suppresses explicitly forbidden token IDs
+           (populated by ConstrainedGenerationService when tiktoken is available)
+        """
         system_prompt = self._build_system_prompt(aggregated_context)
 
         prompt = f"""Based on the context and available capabilities provided above, generate workflow rules for this user intent:
@@ -49,13 +56,26 @@ Generate production-ready workflow rules as valid JSON only. No explanations, no
 
         logger.info(f"🔄 Generating rules for intent: {user_intent[:100]}...")
 
-        response = await self.client.chat.completions.create(
+        # Structural constraint: JSON mode prevents non-JSON output (spec §3.3)
+        response_format: Dict[str, Any] = {"type": "json_object"}
+
+        # Logit bias from constrained generation service (spec §3.3 — logit_bias=-100)
+        logit_bias: Dict[str, int] = aggregated_context.get("_logit_bias", {})
+
+        call_kwargs: Dict[str, Any] = dict(
             model=self._model,
             max_tokens=4096,
             temperature=0.3,
-            system=system_prompt,
-            messages=[{"role": "user", "content": prompt}],
+            response_format=response_format,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ],
         )
+        if logit_bias:
+            call_kwargs["logit_bias"] = logit_bias
+
+        response = await self.client.chat.completions.create(**call_kwargs)
 
         rules_text = response.choices[0].message.content
 

@@ -4,30 +4,25 @@
  * Modify the docusaurus.config.js file at your site's root instead.
  */
 export default {
-  "title": "EyeFlow Documentation",
-  "tagline": "Semantic Task Intelligence Platform",
+  "title": "EyeFlow — Semantic Compiler Platform",
+  "tagline": "Le LLM comme compilateur statique. Automatisation déterministe, certifiable, ultra-rapide.",
   "favicon": "img/favicon.ico",
-  "url": "https://mbathe.github.io",
-  "baseUrl": "/eyeflow/fr/",
-  "organizationName": "mbathe",
-  "projectName": "eyeflow",
-  "deploymentBranch": "gh-pages",
+  "url": "https://docs.eyeflow.sh",
+  "baseUrl": "/",
+  "organizationName": "eyeflow-ai",
+  "projectName": "eyeflow-docs",
   "trailingSlash": false,
   "onBrokenLinks": "warn",
   "onBrokenMarkdownLinks": "warn",
   "i18n": {
-    "defaultLocale": "en",
+    "defaultLocale": "fr",
     "locales": [
-      "en",
       "fr"
     ],
     "localeConfigs": {
-      "en": {
-        "htmlLang": "en-US",
-        "direction": "ltr"
-      },
       "fr": {
         "htmlLang": "fr-FR",
+        "label": "Français",
         "direction": "ltr"
       }
     },
@@ -39,7 +34,9 @@ export default {
       {
         "docs": {
           "sidebarPath": "/home/paul/codes/smart_eneo_server-main/eyeflow/sidebars.js",
-          "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/"
+          "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/",
+          "showLastUpdateTime": true,
+          "breadcrumbs": true
         },
         "blog": false,
         "theme": {
@@ -49,18 +46,162 @@ export default {
     ]
   ],
   "themeConfig": {
-    "image": "img/eyeflow-social.png",
+    "announcementBar": {
+      "id": "scp_v1",
+      "content": "🚀 <strong>EyeFlow SCP v1.0</strong> — Le premier compilateur sémantique certifiable pour systèmes critiques. &nbsp;<a href=\"/docs/intro/what-is-eyeflow\"><strong>Découvrir →</strong></a>",
+      "backgroundColor": "#0a0f2e",
+      "textColor": "#93c5fd",
+      "isCloseable": true
+    },
+    "colorMode": {
+      "defaultMode": "dark",
+      "disableSwitch": false,
+      "respectPrefersColorScheme": true
+    },
+    "image": "img/eyeflow-og.png",
     "navbar": {
       "title": "EyeFlow",
       "logo": {
-        "alt": "EyeFlow Logo",
+        "alt": "EyeFlow",
         "src": "img/logo.svg"
       },
+      "style": "dark",
       "items": [
         {
-          "type": "docSidebar",
-          "sidebarId": "tutorialSidebar",
-          "label": "Documentation",
+          "type": "dropdown",
+          "label": "📖 Démarrer",
+          "position": "left",
+          "items": [
+            {
+              "label": "Qu'est-ce qu'EyeFlow ?",
+              "to": "/docs/intro/what-is-eyeflow"
+            },
+            {
+              "label": "Pourquoi EyeFlow ?",
+              "to": "/docs/intro/why-eyeflow"
+            },
+            {
+              "label": "vs. Alternatives",
+              "to": "/docs/intro/vs-alternatives"
+            },
+            {
+              "label": "Quickstart — 5 min",
+              "to": "/docs/getting-started/quickstart"
+            },
+            {
+              "label": "Premier workflow",
+              "to": "/docs/getting-started/first-workflow"
+            },
+            {
+              "label": "Dashboard",
+              "to": "/docs/getting-started/dashboard"
+            }
+          ]
+        },
+        {
+          "type": "dropdown",
+          "label": "🧠 Comment ça marche",
+          "position": "left",
+          "items": [
+            {
+              "label": "Compilation sémantique",
+              "to": "/docs/concepts/semantic-compilation"
+            },
+            {
+              "label": "Format LLM-IR",
+              "to": "/docs/concepts/llm-ir"
+            },
+            {
+              "label": "Catalogue de capacités",
+              "to": "/docs/concepts/capability-catalog"
+            },
+            {
+              "label": "SVM — Machine virtuelle",
+              "to": "/docs/concepts/svm-runtime"
+            },
+            {
+              "label": "Sources d'événements",
+              "to": "/docs/concepts/event-sources"
+            },
+            {
+              "label": "Exécution distribuée",
+              "to": "/docs/concepts/distributed-execution"
+            },
+            {
+              "label": "Contrôle physique",
+              "to": "/docs/concepts/physical-control"
+            },
+            {
+              "label": "Appels LLM avancés",
+              "to": "/docs/concepts/llm-calls"
+            },
+            {
+              "label": "Audit & Observabilité",
+              "to": "/docs/concepts/audit-observability"
+            },
+            {
+              "label": "Sécurité & Certifs",
+              "to": "/docs/concepts/security"
+            }
+          ]
+        },
+        {
+          "type": "dropdown",
+          "label": "🏭 Secteurs",
+          "position": "left",
+          "items": [
+            {
+              "label": "🏥 Médical & Santé",
+              "to": "/docs/verticals/medical"
+            },
+            {
+              "label": "⚙️ Industrie 4.0",
+              "to": "/docs/verticals/industrial"
+            },
+            {
+              "label": "🌾 Agriculture de précision",
+              "to": "/docs/verticals/agriculture"
+            },
+            {
+              "label": "💰 Finance & Banque",
+              "to": "/docs/verticals/finance"
+            },
+            {
+              "label": "📡 IoT & Smart Building",
+              "to": "/docs/verticals/iot"
+            }
+          ]
+        },
+        {
+          "type": "dropdown",
+          "label": "👨‍💻 Développeurs",
+          "position": "left",
+          "items": [
+            {
+              "label": "Architecture technique",
+              "to": "/docs/for-developers/architecture"
+            },
+            {
+              "label": "Référence API REST",
+              "to": "/docs/for-developers/api-reference"
+            },
+            {
+              "label": "Déploiement",
+              "to": "/docs/for-developers/deployment"
+            },
+            {
+              "label": "Connecteurs",
+              "to": "/docs/for-developers/connectors/overview"
+            },
+            {
+              "label": "SDK & Intégration",
+              "to": "/docs/for-developers/sdks"
+            }
+          ]
+        },
+        {
+          "label": "🗺️ Roadmap",
+          "to": "/docs/roadmap/implementation",
           "position": "left"
         },
         {
@@ -71,8 +212,9 @@ export default {
         },
         {
           "href": "https://github.com/eyeflow-ai",
-          "label": "GitHub",
-          "position": "right"
+          "position": "right",
+          "className": "header-github-link",
+          "aria-label": "GitHub"
         }
       ],
       "hideOnScroll": false
@@ -81,46 +223,91 @@ export default {
       "style": "dark",
       "links": [
         {
-          "title": "Docs",
+          "title": "Plateforme",
           "items": [
             {
-              "label": "Getting Started",
+              "label": "Qu'est-ce qu'EyeFlow ?",
               "to": "/docs/intro/what-is-eyeflow"
             },
             {
-              "label": "For Developers",
+              "label": "Quickstart",
+              "to": "/docs/getting-started/quickstart"
+            },
+            {
+              "label": "Architecture",
               "to": "/docs/for-developers/architecture"
+            },
+            {
+              "label": "API Reference",
+              "to": "/docs/for-developers/api-reference"
             }
           ]
         },
         {
-          "title": "Company",
+          "title": "Concepts clés",
           "items": [
             {
-              "label": "Website",
-              "href": "https://eyeflow.sh"
+              "label": "Compilation sémantique",
+              "to": "/docs/concepts/semantic-compilation"
             },
+            {
+              "label": "Format LLM-IR",
+              "to": "/docs/concepts/llm-ir"
+            },
+            {
+              "label": "SVM Runtime (Rust)",
+              "to": "/docs/concepts/svm-runtime"
+            },
+            {
+              "label": "Sécurité & Certifs",
+              "to": "/docs/concepts/security"
+            }
+          ]
+        },
+        {
+          "title": "Secteurs",
+          "items": [
+            {
+              "label": "Médical",
+              "to": "/docs/verticals/medical"
+            },
+            {
+              "label": "Industrie",
+              "to": "/docs/verticals/industrial"
+            },
+            {
+              "label": "Agriculture",
+              "to": "/docs/verticals/agriculture"
+            },
+            {
+              "label": "Finance",
+              "to": "/docs/verticals/finance"
+            },
+            {
+              "label": "IoT",
+              "to": "/docs/verticals/iot"
+            }
+          ]
+        },
+        {
+          "title": "Liens",
+          "items": [
             {
               "label": "GitHub",
               "href": "https://github.com/eyeflow-ai"
-            }
-          ]
-        },
-        {
-          "title": "Legal",
-          "items": [
-            {
-              "label": "Privacy",
-              "href": "https://eyeflow.sh/privacy"
             },
             {
-              "label": "Terms",
-              "href": "https://eyeflow.sh/terms"
+              "label": "Site web",
+              "href": "https://eyeflow.sh"
+            },
+            {
+              "label": "Roadmap",
+              "to": "/docs/roadmap/implementation"
             }
           ]
         }
       ],
-      "copyright": "Copyright © 2026 EyeFlow AI. All rights reserved."
+      "copyright": "Copyright © 2026 EyeFlow AI. Tous droits réservés."
     },
     "prism": {
       "theme": {
@@ -318,9 +505,12 @@ export default {
         "bash",
         "json",
         "python",
-        "javascript",
         "typescript",
-        "sql"
+        "javascript",
+        "sql",
+        "rust",
+        "yaml",
+        "toml"
       ],
       "magicComments": [
         {
@@ -333,23 +523,18 @@ export default {
         }
       ]
     },
-    "colorMode": {
-      "defaultMode": "light",
-      "disableSwitch": false,
-      "respectPrefersColorScheme": false
-    },
-    "docs": {
-      "versionPersistence": "localStorage",
-      "sidebar": {
-        "hideable": false,
-        "autoCollapseCategories": false
-      }
-    },
-    "metadata": [],
     "tableOfContents": {
       "minHeadingLevel": 2,
-      "maxHeadingLevel": 3
-    }
+      "maxHeadingLevel": 4
+    },
+    "docs": {
+      "sidebar": {
+        "hideable": true,
+        "autoCollapseCategories": false
+      },
+      "versionPersistence": "localStorage"
+    },
+    "metadata": []
   },
   "baseUrlIssueBanner": true,
   "onDuplicateRoutes": "warn",

@@ -1,0 +1,32 @@
+{
+  "unversionedId": "intro/vs-alternatives",
+  "id": "intro/vs-alternatives",
+  "title": "EyeFlow vs. les alternatives",
+  "description": "Comparaison technique approfondie entre EyeFlow et les alternatives d'automatisation IA — n8n, AutoGen, LangGraph, CrewAI, SCADA, OpenClaw.",
+  "source": "@site/docs/intro/vs-alternatives.md",
+  "sourceDirName": "intro",
+  "slug": "/intro/vs-alternatives",
+  "permalink": "/docs/intro/vs-alternatives",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/intro/vs-alternatives.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "id": "vs-alternatives",
+    "sidebar_position": 3,
+    "title": "EyeFlow vs. les alternatives",
+    "description": "Comparaison technique approfondie entre EyeFlow et les alternatives d'automatisation IA — n8n, AutoGen, LangGraph, CrewAI, SCADA, OpenClaw."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Pourquoi EyeFlow ?",
+    "permalink": "/docs/intro/why-eyeflow"
+  },
+  "next": {
+    "title": "Quickstart — 10 minutes",
+    "permalink": "/docs/getting-started/quickstart"
+  }
+}

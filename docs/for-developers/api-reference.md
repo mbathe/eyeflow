@@ -1,725 +1,490 @@
 ---
+id: api-reference
 sidebar_position: 2
-title: API Reference
-description: Complete REST API documentation
+title: Référence API REST
+description: Tous les endpoints REST exposés par eyeflow-server — compilation, déploiement, exécution, audit, connecteurs et WebSocket.
 ---
 
-# API Reference
+# Référence API REST
 
-Complete documentation for EyeFlow's REST API.
-
-## Authentication
-
-All API requests require authentication via API token.
-
-### Get Your API Token
-
-1. In Dashboard: **Settings → API Keys**
-2. Click **+ Create API Key**
-3. Copy the token (starts with `sk_live_`)
-
-### Using the Token
-
-**Header-based (recommended):**
-```bash
-Authorization: Bearer sk_live_abc123xyz789
-```
-
-**Query parameter:**
-```bash
-?api_key=sk_live_abc123xyz789
-```
-
-**Examples:**
-```bash
-# With header
-curl -H "Authorization: Bearer sk_live_abc123xyz789" \
-  https://api.eyeflow.com/tasks
-
-# Or with query param
-curl "https://api.eyeflow.com/tasks?api_key=sk_live_abc123xyz789"
-```
+**Base URL :** `http://localhost:3000/api`  
+**Auth :** `Authorization: Bearer <JWT>`  
+**Format :** `Content-Type: application/json`
 
 ---
 
-## Base URLs
+## Authentification
 
-### Development
-```
-http://localhost:3000
-```
+### `POST /auth/login`
 
-### Production
-```
-https://api.eyeflow.com
-```
+Obtenir un token JWT.
 
-All examples use `/api/v1` prefix.
-
----
-
-## Response Format
-
-### Success Response
-
+**Request:**
 ```json
 {
-  "status": "success",
-  "data": {
-    "id": "task_abc123",
-    "name": "daily_weather",
-    ...
-  },
-  "timestamp": "2024-10-02T14:34:12Z"
+  "email": "admin@example.com",
+  "password": "secret"
 }
 ```
 
-### Error Response
-
+**Response 200:**
 ```json
 {
-  "status": "error",
-  "error": {
-    "code": "TASK_NOT_FOUND",
-    "message": "Task with ID task_xyz not found",
-    "details": {
-      "taskId": "task_xyz"
-    }
-  },
-  "timestamp": "2024-10-02T14:34:12Z"
-}
-```
-
-### Pagination
-
-```json
-{
-  "status": "success",
-  "data": [...],
-  "pagination": {
-    "total": 1847,
-    "limit": 50,
-    "offset": 0,
-    "hasMore": true
-  }
+  "access_token": "eyJhbGci...",
+  "expires_in": 86400,
+  "token_type": "Bearer"
 }
 ```
 
 ---
 
-## Tasks API
+## Règles & Compilation
 
-### Create Task
+### `POST /rules`
 
-```http
-POST /api/v1/tasks
-Content-Type: application/json
-Authorization: Bearer sk_live_...
+Soumettre une règle en langage naturel pour compilation.
 
+**Request:**
+```json
 {
-  "name": "daily_weather",
-  "description": "Get weather and post to Slack",
-  "trigger": {
-    "type": "schedule",
-    "frequency": "daily",
-    "time": "09:00"
-  },
-  "actions": [
+  "name": "surveillance_cuve_chimique",
+  "description": "string",
+  "naturalLanguage": "Si la température de la cuve dépasse 85°C, fermer la vanne V-01 et alerter l'opérateur.",
+  "targetNodeIds": ["svm-nœud-usine-A"],
+  "priority": "HIGH",
+  "sector": "INDUSTRIAL"
+}
+```
+
+**Response 202:**
+```json
+{
+  "id": "rule-abc123",
+  "status": "COMPILING",
+  "compilationId": "comp-xyz789",
+  "estimatedCompileTimeMs": 4200
+}
+```
+
+---
+
+### `GET /rules/:id`
+
+Obtenir l'état et les métadonnées d'une règle.
+
+**Response 200:**
+```json
+{
+  "id": "rule-abc123",
+  "name": "surveillance_cuve_chimique",
+  "status": "COMPILED",
+  "compiledAt": "2024-10-15T14:23:45.000Z",
+  "irVersion": "2.4.0",
+  "z3Verified": true,
+  "signature": "dGhpcyBpcyBhIGZha2Ugc2lnbmF0dXJl",
+  "deployedNodes": ["svm-nœud-usine-A"]
+}
+```
+
+---
+
+### `GET /rules/:id/ir`
+
+Obtenir le programme LLM-IR compilé (protobuf ou JSON selon `Accept`).
+
+**Headers:**
+- `Accept: application/json` → JSON human-readable
+- `Accept: application/octet-stream` → binaire protobuf
+
+**Response 200 (`application/json`):**
+```json
+{
+  "version": "2.4.0",
+  "ruleId": "rule-abc123",
+  "capabilities": ["valve_control", "sensor_read", "alert_send"],
+  "instructions": [
     {
-      "name": "fetch_weather",
-      "type": "http",
-      "method": "GET",
-      "url": "https://api.openweathermap.org/data/2.5/weather?q=New York",
-      "headers": {
-        "appid": "${secrets.openweather_key}"
-      }
+      "id": "instr-001",
+      "opcode": "LOAD_RESOURCE",
+      "operands": ["sensor:temperature_cuve"],
+      "timeout_ms": 2000
     },
     {
-      "name": "post_slack",
-      "type": "connector",
-      "connector": "slack_daily",
-      "function": "send_message",
-      "params": {
-        "channel": "#general",
-        "text": "Weather: ${fetch_weather.weather[0].description}"
-      }
+      "id": "instr-002",
+      "opcode": "EVAL",
+      "condition": "ctx.temperature_cuve > 85.0",
+      "successTarget": "instr-003",
+      "failureTarget": "instr-end"
+    },
+    {
+      "id": "instr-003",
+      "opcode": "CALL_ACTION",
+      "capability": "valve_control",
+      "operands": {"valve_id": "V-01", "action": "CLOSE"},
+      "fallbackStrategy": "RETRY_ONCE_THEN_ALERT"
     }
   ]
 }
 ```
 
-**Response:**
+---
+
+### `POST /rules/:id/validate`
+
+Déclencher une validation humaine et Z3.
+
+**Request:**
 ```json
 {
-  "status": "success",
-  "data": {
-    "id": "task_abc123",
-    "name": "daily_weather",
-    "status": "active",
-    "created_at": "2024-10-02T14:34:12Z",
-    "updated_at": "2024-10-02T14:34:12Z"
+  "validatorUserId": "user-operator-42"
+}
+```
+
+**Response 200:**
+```json
+{
+  "validationId": "val-111",
+  "status": "PENDING_HUMAN",
+  "z3Result": {
+    "verified": true,
+    "proofMs": 87,
+    "constraints": 12
   }
 }
 ```
 
-### List Tasks
+---
 
-```http
-GET /api/v1/tasks?limit=50&offset=0&status=active
+### `POST /rules/:id/deploy`
+
+Déployer le programme LLM-IR sur les nœuds SVM cibles.
+
+**Request:**
+```json
+{
+  "strategy": "ROLLING",
+  "targetNodeIds": ["svm-nœud-usine-A", "svm-nœud-usine-B"],
+  "rolloutPercent": 100
+}
 ```
 
-**Query Parameters:**
-| Parameter | Type | Description |
+**Response 202:**
+```json
+{
+  "deploymentId": "dep-deploy-001",
+  "status": "IN_PROGRESS",
+  "targetNodes": 2,
+  "pushedNodes": 0
+}
+```
+
+---
+
+### `DELETE /rules/:id`
+
+Révoquer et supprimer une règle (soft delete + révocation signature).
+
+**Response 200:**
+```json
+{
+  "revoked": true,
+  "revokedAt": "2024-10-15T16:00:00.000Z"
+}
+```
+
+---
+
+## Exécutions
+
+### `GET /executions`
+
+Lister les dernières exécutions.
+
+**Query params:**
+| Paramètre | Type | Description |
 |-----------|------|-------------|
-| `limit` | number | Results per page (default: 50, max: 200) |
-| `offset` | number | Pagination offset (default: 0) |
-| `status` | string | Filter by status: `active`, `inactive`, `archived` |
-| `trigger` | string | Filter by trigger: `schedule`, `webhook`, `manual` |
-| `tags` | string | Comma-separated tags to filter |
+| `ruleId` | string | Filtrer par règle |
+| `nodeId` | string | Filtrer par nœud SVM |
+| `status` | string | `SUCCESS`, `FAILED`, `IN_PROGRESS` |
+| `limit` | number | Défaut: 50, max: 500 |
+| `since` | ISO8601 | Depuis une date |
 
-### Get Task
-
-```http
-GET /api/v1/tasks/{taskId}
-```
-
-**Example:**
-```bash
-GET /api/v1/tasks/task_abc123
-```
-
-**Response:**
+**Response 200:**
 ```json
 {
-  "status": "success",
-  "data": {
-    "id": "task_abc123",
-    "name": "daily_weather",
-    "status": "active",
-    "description": "Get weather and post to Slack",
-    "trigger": {
-      "type": "schedule",
-      "frequency": "daily",
-      "time": "09:00"
-    },
-    "actions": [
-      {
-        "id": "action_1",
-        "name": "fetch_weather",
-        "type": "http",
-        ...
-      }
-    ],
-    "created_at": "2024-10-02T14:34:12Z",
-    "updated_at": "2024-10-02T14:34:12Z",
-    "last_execution": {
-      "id": "exec_xyz",
-      "status": "success",
-      "duration_ms": 78,
-      "completed_at": "2024-10-02T09:00:15Z"
-    }
-  }
-}
-```
-
-### Update Task
-
-```http
-PATCH /api/v1/tasks/{taskId}
-Content-Type: application/json
-
-{
-  "description": "Updated description",
-  "status": "inactive"
-}
-```
-
-### Delete Task
-
-```http
-DELETE /api/v1/tasks/{taskId}
-```
-
-### Execute Task
-
-```http
-POST /api/v1/tasks/{taskId}/execute
-Content-Type: application/json
-
-{
-  "input": {
-    "custom_param": "value"
-  },
-  "wait": true,
-  "timeout_ms": 5000
-}
-```
-
-**Response:**
-```json
-{
-  "execution_id": "exec_abc123",
-  "status": "success",
-  "duration_ms": 78,
-  "output": {
-    "message": "Task completed successfully"
-  }
-}
-```
-
----
-
-## Executions API
-
-### Get Execution
-
-```http
-GET /api/v1/executions/{executionId}
-```
-
-**Response:**
-```json
-{
-  "status": "success",
-  "data": {
-    "id": "exec_abc123",
-    "task_id": "task_abc123",
-    "status": "success",
-    "input": { "query": "New York" },
-    "output": { "temperature": 72 },
-    "duration_ms": 78,
-    "started_at": "2024-10-02T14:34:12Z",
-    "completed_at": "2024-10-02T14:34:12.078Z",
-    "actions": [
-      {
-        "name": "fetch_weather",
-        "status": "success",
-        "duration_ms": 32,
-        "output": { "temp": 72, "humidity": 60 }
-      },
-      {
-        "name": "post_slack",
-        "status": "success",
-        "duration_ms": 43,
-        "output": { "ok": true, "ts": "1234567890.000123" }
-      }
-    ]
-  }
-}
-```
-
-### List Executions
-
-```http
-GET /api/v1/executions?task_id=task_abc123&status=success&limit=50
-```
-
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `task_id` | string | Filter by task ID |
-| `status` | string | `success`, `failed`, `timeout` |
-| `since` | ISO8601 | Start date (e.g., `2024-10-01T00:00:00Z`) |
-| `until` | ISO8601 | End date |
-| `limit` | number | Results per page (default: 50) |
-
----
-
-## Connectors API
-
-### List Connectors
-
-```http
-GET /api/v1/connectors
-```
-
-**Response:**
-```json
-{
-  "status": "success",
-  "data": [
+  "executions": [
     {
-      "id": "conn_abc123",
-      "service": "slack",
-      "name": "slack_daily",
-      "status": "connected",
-      "created_at": "2024-09-15T10:30:00Z",
-      "last_tested_at": "2024-10-02T14:00:00Z",
-      "used_by": 3
-    }
-  ]
-}
-```
-
-### Create Connector
-
-```http
-POST /api/v1/connectors
-Content-Type: application/json
-
-{
-  "service": "slack",
-  "name": "slack_alerts",
-  "config": {
-    "token": "xoxb-1234567890-abcdefghijk",
-    "default_channel": "#alerts"
-  }
-}
-```
-
-### Test Connector
-
-```http
-POST /api/v1/connectors/{connectorId}/test
-```
-
-**Response:**
-```json
-{
-  "status": "success",
-  "data": {
-    "connected": true,
-    "service": "slack",
-    "workspace": "my-company",
-    "rate_limit": "120/minute",
-    "permissions": ["chat:write", "files:write"]
-  }
-}
-```
-
-### Delete Connector
-
-```http
-DELETE /api/v1/connectors/{connectorId}
-```
-
----
-
-## Rules API
-
-### Create Rule
-
-```http
-POST /api/v1/rules
-Content-Type: application/json
-
-{
-  "name": "weather_alert",
-  "description": "Alert for extreme weather",
-  "conditions": [
-    {
-      "name": "is_hot",
-      "condition": "temperature > 95",
-      "actions": [
-        {
-          "type": "send_alert",
-          "message": "🌞 Hot weather alert!"
-        }
-      ]
-    },
-    {
-      "name": "is_cold",
-      "condition": "temperature < 32",
-      "actions": [
-        {
-          "type": "send_alert",
-          "message": "❄️ Cold weather alert!"
-        }
-      ]
+      "id": "exec-555",
+      "ruleId": "rule-abc123",
+      "nodeId": "svm-nœud-usine-A",
+      "status": "SUCCESS",
+      "startedAt": "2024-10-15T15:00:01.000Z",
+      "durationMs": 312,
+      "instructionsExecuted": 5,
+      "auditChainHash": "sha256:7f3d2a..."
     }
   ],
-  "default_actions": [
+  "total": 1,
+  "page": 1
+}
+```
+
+---
+
+### `GET /executions/:id`
+
+Obtenir le détail complet d'une exécution avec la trace d'instructions.
+
+**Response 200:**
+```json
+{
+  "id": "exec-555",
+  "ruleId": "rule-abc123",
+  "status": "SUCCESS",
+  "trace": [
     {
-      "type": "log",
-      "message": "Normal weather"
+      "instructionId": "instr-001",
+      "opcode": "LOAD_RESOURCE",
+      "startedAt": "2024-10-15T15:00:01.010Z",
+      "durationMs": 45,
+      "result": {"temperature_cuve": 87.3},
+      "auditHash": "sha256:a1b2c3..."
+    },
+    {
+      "instructionId": "instr-002",
+      "opcode": "EVAL",
+      "durationMs": 1,
+      "result": {"condition": true},
+      "auditHash": "sha256:d4e5f6..."
+    },
+    {
+      "instructionId": "instr-003",
+      "opcode": "CALL_ACTION",
+      "durationMs": 204,
+      "result": {"valve_V-01": "CLOSED"},
+      "auditHash": "sha256:789abc..."
     }
   ]
 }
 ```
 
-### Evaluate Rule
+---
 
-```http
-POST /api/v1/rules/{ruleId}/evaluate
-Content-Type: application/json
+### `POST /events/simulate`
 
+Simuler un événement entrant sur un nœud SVM (environnement de test seulement).
+
+**Request:**
+```json
 {
-  "data": {
-    "temperature": 72,
-    "humidity": 60
+  "nodeId": "svm-nœud-usine-A",
+  "ruleId": "rule-abc123",
+  "payload": {
+    "source": "sensor:temperature_cuve",
+    "value": 92.0,
+    "timestamp": "2024-10-15T15:30:00.000Z"
   }
 }
 ```
 
-**Response:**
+**Response 200:**
 ```json
 {
-  "status": "success",
-  "data": {
-    "matched_condition": "default",
-    "actions_executed": ["log"],
-    "output": "Normal weather",
-    "duration_ms": 3
-  }
+  "simulationId": "sim-999",
+  "executionId": "exec-sim-999",
+  "triggered": true,
+  "durationMs": 294
 }
 ```
 
 ---
 
-## Webhooks API
+## Catalog de Capabilities
 
-### Create Webhook
+### `GET /catalog`
 
-```http
-POST /api/v1/webhooks
-Content-Type: application/json
+Lister toutes les capabilities disponibles.
 
-{
-  "task_id": "task_abc123",
-  "name": "my_webhook",
-  "description": "Webhook for my_task"
-}
-```
-
-**Response:**
+**Response 200:**
 ```json
 {
-  "status": "success",
-  "data": {
-    "id": "webhook_abc123",
-    "url": "https://api.eyeflow.com/webhooks/abc123",
-    "task_id": "task_abc123",
-    "created_at": "2024-10-02T14:34:12Z"
-  }
-}
-```
-
-### Trigger Webhook
-
-```http
-POST https://api.eyeflow.com/webhooks/{webhookId}
-Content-Type: application/json
-
-{
-  "name": "Alice",
-  "email": "alice@example.com",
-  "action": "subscribe"
-}
-```
-
-**Response:**
-```json
-{
-  "execution_id": "exec_xyz789",
-  "status": "pending",
-  "estimated_completion_ms": 150
-}
-```
-
-### List Webhooks
-
-```http
-GET /api/v1/webhooks?task_id=task_abc123
-```
-
----
-
-## Alerts API
-
-### Create Alert
-
-```http
-POST /api/v1/alerts
-Content-Type: application/json
-
-{
-  "name": "task_failure",
-  "task_id": "task_abc123",
-  "condition": "task_fails",
-  "actions": [
+  "capabilities": [
     {
-      "type": "email",
-      "to": "admin@company.com",
-      "subject": "Task failed: daily_weather"
-    },
-    {
-      "type": "slack",
-      "channel": "#alerts",
-      "message": "❌ Task failed"
+      "id": "valve_control",
+      "version": "1.2.0",
+      "sector": "INDUSTRIAL",
+      "description": "Contrôle des vannes industrielles",
+      "signatureValid": true
     }
   ]
 }
 ```
 
-### List Alerts
+---
 
-```http
-GET /api/v1/alerts
+### `POST /catalog`
+
+Enregistrer une nouvelle capability.
+
+**Request:**
+```json
+{
+  "id": "custom_pump_control",
+  "version": "1.0.0",
+  "sector": "INDUSTRIAL",
+  "description": "Contrôle pompes centrifuges",
+  "handler": "handlers/pump-control.ts",
+  "preconditions": [...],
+  "postconditions": [...],
+  "rollbackStrategy": "IDEMPOTENT_REVERSE"
+}
+```
+
+**Response 201:**
+```json
+{
+  "id": "custom_pump_control",
+  "signature": "Ed25519:...",
+  "registeredAt": "2024-10-15T10:00:00.000Z"
+}
 ```
 
 ---
 
-## Monitoring API
+## Nœuds SVM
 
-### Get System Status
+### `GET /nodes`
 
-```http
-GET /api/v1/system/status
-```
+Lister tous les nœuds SVM enregistrés.
 
-**Response:**
+**Response 200:**
 ```json
 {
-  "status": "success",
-  "data": {
-    "health": "healthy",
-    "uptime_seconds": 86400,
-    "components": {
-      "api_server": "healthy",
-      "database": "healthy",
-      "message_queue": "healthy"
-    },
-    "stats": {
-      "total_tasks": 42,
-      "active_tasks": 35,
-      "executions_today": 847,
-      "success_rate_percent": 100,
-      "average_latency_ms": 62
+  "nodes": [
+    {
+      "id": "svm-nœud-usine-A",
+      "hostname": "factory-edge-01",
+      "type": "LINUX_X86",
+      "status": "ONLINE",
+      "lastHeartbeat": "2024-10-15T15:59:30.000Z",
+      "irVersion": "2.4.0",
+      "loadedRules": 3,
+      "cpuPercent": 12,
+      "memoryMb": 145
     }
-  }
+  ]
 }
 ```
 
-### Get Metrics
+---
 
-```http
-GET /api/v1/metrics?since=2024-10-01T00:00:00Z&until=2024-10-02T00:00:00Z
-```
+### `GET /nodes/:id/executions`
 
-**Response:**
+Exécutions d'un nœud spécifique.  
+→ Mêmes paramètres que `GET /executions` avec filtrage automatique par nœud.
+
+---
+
+## Audit
+
+### `GET /audit`
+
+Requêter le journal d'audit.
+
+**Query params:**
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `executionId` | string | Audit d'une exécution |
+| `ruleId` | string | Toutes les exécutions d'une règle |
+| `since` / `until` | ISO8601 | Fenêtre temporelle |
+| `format` | string | `json` (défaut) ou `csv` |
+
+---
+
+### `POST /audit/verify`
+
+Vérifier l'intégrité de la chaîne de hachage d'une exécution.
+
+**Request:**
 ```json
 {
-  "status": "success",
-  "data": {
-    "period": {
-      "since": "2024-10-01T00:00:00Z",
-      "until": "2024-10-02T00:00:00Z"
-    },
-    "executions": {
-      "total": 12847,
-      "successful": 12847,
-      "failed": 0,
-      "timed_out": 0
-    },
-    "latency": {
-      "min_ms": 32,
-      "max_ms": 156,
-      "average_ms": 62,
-      "p50_ms": 45,
-      "p99_ms": 120
-    },
-    "resource_usage": {
-      "memory_mb": 256,
-      "cpu_percent": 12,
-      "network_mb": 2300
-    }
-  }
+  "executionId": "exec-555"
 }
 ```
 
----
-
-## Error Codes
-
-| Code | HTTP | Meaning |
-|------|------|---------|
-| `UNAUTHORIZED` | 401 | Invalid or missing API key |
-| `FORBIDDEN` | 403 | Insufficient permissions |
-| `TASK_NOT_FOUND` | 404 | Task does not exist |
-| `EXECUTION_NOT_FOUND` | 404 | Execution does not exist |
-| `INVALID_REQUEST` | 400 | Invalid request format |
-| `VALIDATION_ERROR` | 400 | Validation failed (see details) |
-| `CONFLICT` | 409 | Resource already exists |
-| `RATE_LIMIT` | 429 | Too many requests |
-| `TIMEOUT` | 504 | Request timeout |
-| `INTERNAL_ERROR` | 500 | Server error |
-
----
-
-## Rate Limits
-
-### Per-Account Limits
-
-| Endpoint | Limit |
-|----------|-------|
-| Task execution | 10,000/minute per task |
-| Webhook trigger | 10,000/minute per webhook |
-| API read | 60,000/minute |
-| API write | 6,000/minute |
-
-### Rate Limit Headers
-
-```
-X-RateLimit-Limit: 60000
-X-RateLimit-Remaining: 59999
-X-RateLimit-Reset: 1640000000
-```
-
----
-
-## SDKs & Client Libraries
-
-- [JavaScript/Node.js](./sdks.md#javascript)
-- [Python](./sdks.md#python)
-- [Go](./sdks.md#go)
-- [Java](./sdks.md#java)
-- [Ruby](./sdks.md#ruby)
-- [PHP](./sdks.md#php)
-
----
-
-## Webhook Events
-
-EyeFlow sends events to your webhook URLs:
-
-### Task Execution Event
-
+**Response 200:**
 ```json
 {
-  "event": "task.executed",
-  "timestamp": "2024-10-02T14:34:12Z",
-  "data": {
-    "task_id": "task_abc123",
-    "execution_id": "exec_xyz789",
-    "status": "success",
-    "duration_ms": 78,
-    "output": {...}
-  }
+  "valid": true,
+  "chainLength": 5,
+  "firstHash": "sha256:aaa...",
+  "lastHash": "sha256:zzz...",
+  "verifiedAt": "2024-10-15T16:00:00.000Z"
 }
 ```
 
-### Task Failure Event
+---
+
+## WebSocket API
+
+**URL :** `ws://localhost:3000/ws` (TLS en prod: `wss://...`)
+
+### Topics disponibles
 
 ```json
+// S'abonner à toutes les exécutions d'une règle
+{ "type": "SUBSCRIBE", "topic": "executions", "ruleId": "rule-abc123" }
+
+// S'abonner aux heartbeats d'un nœud
+{ "type": "SUBSCRIBE", "topic": "node-status", "nodeId": "svm-nœud-usine-A" }
+
+// S'abonner aux événements d'audit
+{ "type": "SUBSCRIBE", "topic": "audit-stream" }
+```
+
+### Messages entrants (serveur → client)
+
+```json
+// Démarrage d'exécution
 {
-  "event": "task.failed",
-  "timestamp": "2024-10-02T14:34:12Z",
-  "data": {
-    "task_id": "task_abc123",
-    "execution_id": "exec_xyz789",
-    "error": "API timeout",
-    "failed_action": "fetch_weather"
-  }
+  "type": "EXECUTION_STARTED",
+  "executionId": "exec-777",
+  "ruleId": "rule-abc123",
+  "nodeId": "svm-nœud-usine-A",
+  "timestamp": "2024-10-15T15:00:01.000Z"
+}
+
+// Instruction exécutée
+{
+  "type": "INSTRUCTION_EXECUTED",
+  "executionId": "exec-777",
+  "instructionId": "instr-003",
+  "opcode": "CALL_ACTION",
+  "result": {"valve_V-01": "CLOSED"}
+}
+
+// Fin d'exécution
+{
+  "type": "EXECUTION_COMPLETED",
+  "executionId": "exec-777",
+  "status": "SUCCESS",
+  "durationMs": 312
 }
 ```
 
 ---
 
-**Ready to integrate?**
-- [JavaScript SDK](./sdks.md#javascript)
-- [Connector Development](./connectors/custom.md)
-- [Deployment Guide](./deployment.md)
+## Codes d'erreur
 
----
-
-Complete, production-ready API with zero hallucinations. 🚀
+| Code HTTP | Code interne | Description |
+|-----------|-------------|-------------|
+| 400 | `INVALID_RULE_SYNTAX` | Règle non parsable |
+| 400 | `IR_VALIDATION_FAILED` | Programme IR invalide |
+| 401 | `UNAUTHORIZED` | Token manquant ou expiré |
+| 403 | `INSUFFICIENT_PERMISSIONS` | RBAC insuffisant |
+| 404 | `RULE_NOT_FOUND` | Règle introuvable |
+| 409 | `RULE_ALREADY_DEPLOYED` | Redéploiement d'une règle active |
+| 422 | `Z3_VERIFICATION_FAILED` | Preuve Z3 échouée |
+| 422 | `SIGNATURE_INVALID` | Signature LLM-IR corrompue |
+| 500 | `COMPILATION_ERROR` | Erreur interne compilateur |
+| 503 | `SVM_NODE_OFFLINE` | Nœud SVM inaccessible |

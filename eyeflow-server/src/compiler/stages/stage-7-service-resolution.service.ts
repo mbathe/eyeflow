@@ -1,311 +1,190 @@
 /**
- * STAGE 7: Service Resolution
- * 
- * Input: LLMIntermediateRepresentation (from Layer 4 Stages 1-6)
- * Output: ResolvedIR (IR with dispatch metadata injected)
- * 
- * Responsibility:
- * - For each CALL_SERVICE in IR: lookup in services registry
- * - Verify service exists, version is available
- * - Validate signature (trusted?)
- * - Retrieve format and format_config
- * - Inject dispatch metadata into IR instructions
+ * STAGE 7: Service Resolution (v2)
+ *
+ * Input:  LLMIntermediateRepresentation (from Stages 1-6)
+ * Output: ResolvedIR (IR with full EnrichedDispatchMetadata injected per CALL_SERVICE)
+ *
+ * What this stage does
+ * --------------------
+ *  1. For every CALL_SERVICE / CALL_MCP instruction:
+ *     a. Look up the service in the ServiceRegistry (user-defined + built-ins)
+ *     b. Determine the target node tier (from reqiuredTier or default CENTRAL)
+ *     c. Select the FIRST ExecutionDescriptor compatible with the target tier
+ *     d. Inject a fully-populated EnrichedDispatchMetadata into the instruction
+ *
+ *  2. Validate: fail fast at compile time if any service cannot be resolved.
+ *
+ * Guarantees
+ * ----------
+ *  - Zero LLM calls (pure deterministic lookup)
+ *  - Compile-time failure if a service has no compatible descriptor for the target tier
  */
 
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import {
   LLMIntermediateRepresentation,
   ResolvedIR,
   IRInstruction,
   IROpcode,
-  DispatchMetadata,
-  ServiceManifest
+  EnrichedDispatchMetadata,
+  PowerfulServiceManifest,
 } from '../interfaces/ir.interface';
-
-/**
- * Service Registry Entity (TypeORM)
- * Represents services available for compilation
- */
-export interface ServiceRegistryEntity {
-  id: string;
-  version: string;
-  format: 'WASM' | 'NATIVE' | 'MCP' | 'DOCKER';
-  manifest: ServiceManifest;
-  formatConfig: Record<string, any>;
-  publishedBy: string;
-  trusted: boolean;
-  createdAt: Date;
-}
+import {
+  ExecutionDescriptor,
+  NativeExecutionDescriptor,
+  WasmExecutionDescriptor,
+  NodeTier,
+} from '../interfaces/service-manifest.interface';
+import { ServiceRegistryService } from '../service-registry.service';
 
 @Injectable()
 export class ServiceResolutionService {
   private readonly logger = new Logger(ServiceResolutionService.name);
 
-  // Simulated registry (in production, would be @InjectRepository)
-  private serviceRegistry: Map<string, ServiceRegistryEntity> = new Map();
+  constructor(private readonly registry: ServiceRegistryService) {}
 
-  constructor() {
-    // Seed with test services
-    this.initializeTestServices();
-  }
+  // ---------------------------------------------------------------------------
+  // Entry point
+  // ---------------------------------------------------------------------------
 
-  /**
-   * Main entry point: resolve all service calls in the IR
-   */
   async resolveServices(ir: LLMIntermediateRepresentation): Promise<ResolvedIR> {
-    this.logger.log(`[Stage 7] Resolving services in IR (${ir.instructions.length} instructions)`);
+    this.logger.log(`[Stage 7] Resolving services (${ir.instructions.length} instructions)`);
 
     const resolvedServices: ResolvedIR['resolvedServices'] = [];
     const resolvedInstructions = ir.instructions.map(instr => ({ ...instr }));
+    const errors: string[] = [];
 
-    // Find all CALL_SERVICE instructions
     for (const instr of resolvedInstructions) {
-      if (instr.opcode === IROpcode.CALL_SERVICE && instr.serviceId) {
-        this.logger.debug(`Resolving service: ${instr.serviceId}@${instr.serviceVersion}`);
+      if (
+        instr.opcode === IROpcode.CALL_SERVICE ||
+        instr.opcode === IROpcode.CALL_MCP
+      ) {
+        try {
+          const meta = this._resolveInstruction(instr);
+          instr.dispatchMetadata = meta;
 
-        // Lookup & validate
-        const manifest = await this.resolveServiceCall(instr);
+          resolvedServices.push({
+            serviceId: instr.serviceId!,
+            version: instr.serviceVersion || 'latest',
+            format: meta.format,
+            manifest: this.registry.findByIdAndVersion(instr.serviceId!, instr.serviceVersion),
+            dispatchMetadata: meta,
+          });
 
-        // Inject dispatch metadata
-        const dispatchMeta = this.buildDispatchMetadata(manifest);
-        instr.dispatchMetadata = dispatchMeta;
-
-        // Track resolution
-        resolvedServices.push({
-          serviceId: instr.serviceId!,
-          version: instr.serviceVersion || 'latest',
-          format: manifest.formatConfig.format || 'WASM',
-          manifest,
-          dispatchMetadata: dispatchMeta
-        });
+          this.logger.debug(
+            `[Stage 7] OK ${instr.serviceId}@${instr.serviceVersion || 'latest'} -> format=${meta.format}, tier=${meta.targetTier}`,
+          );
+        } catch (err: any) {
+          errors.push(`Instruction #${instr.index} (${instr.serviceId}): ${err.message}`);
+          this.logger.error(`[Stage 7] FAIL ${err.message}`);
+        }
       }
     }
 
-    if (resolvedServices.length === 0) {
-      this.logger.warn(`[Stage 7] No services to resolve (OK if workflow is data-only)`);
-    } else {
-      this.logger.log(`[Stage 7] Resolved ${resolvedServices.length} services`);
-    }
-
-    // Return ResolvedIR with injected metadata
-    return {
-      ...ir,
-      instructions: resolvedInstructions,
-      resolvedServices
-    } as ResolvedIR;
-  }
-
-  /**
-   * Resolve a single CALL_SERVICE instruction
-   */
-  private async resolveServiceCall(instr: IRInstruction): Promise<ServiceManifest> {
-    const { serviceId, serviceVersion } = instr;
-
-    if (!serviceId) {
-      throw new BadRequestException(`[Stage 7] Instruction ${instr.index}: CALL_SERVICE missing serviceId`);
-    }
-
-    // Lookup in registry
-    const cacheKey = `${serviceId}@${serviceVersion || 'latest'}`;
-    const registryEntry = this.serviceRegistry.get(cacheKey);
-
-    if (!registryEntry) {
-      throw new NotFoundException(
-        `[Stage 7] Service not found: ${cacheKey}. Available services: ${Array.from(this.serviceRegistry.keys()).join(', ')}`
+    if (errors.length > 0) {
+      throw new BadRequestException(
+        `[Stage 7] Compilation failed - ${errors.length} service(s) could not be resolved:\n` +
+        errors.map((e, i) => `  ${i + 1}. ${e}`).join('\n'),
       );
     }
 
-    // Validate
-    if (!registryEntry.trusted) {
-      this.logger.warn(`[Stage 7] Service ${cacheKey} is not trusted`);
+    if (resolvedServices.length === 0) {
+      this.logger.warn('[Stage 7] No services to resolve (data-only workflow)');
+    } else {
+      this.logger.log(`[Stage 7] Resolved ${resolvedServices.length} service call(s)`);
     }
 
-    this.logger.debug(`[Stage 7] Resolved ${cacheKey} (format: ${registryEntry.format}, trusted: ${registryEntry.trusted})`);
-
-    return registryEntry.manifest;
+    return { ...ir, instructions: resolvedInstructions, resolvedServices } as ResolvedIR;
   }
 
-  /**
-   * Build dispatch metadata from service manifest
-   */
-  private buildDispatchMetadata(manifest: ServiceManifest): DispatchMetadata {
-    const config = manifest.formatConfig;
+  // ---------------------------------------------------------------------------
+  // Core resolution logic
+  // ---------------------------------------------------------------------------
 
-    return {
-      format: config.format || 'WASM',
-      
-      wasmBinaryUrl: config.wasmBinaryUrl,
-      wasmChecksum: config.wasmChecksum,
-      wasmMemory: config.wasmMemory || 10,
-      
-      mcpServer: config.mcpServer,
-      mcpMethod: config.mcpMethod,
-      mcpVersion: config.mcpVersion,
-      
-      nativeBinaryUrl: config.nativeBinaryUrl,
-      nativePlatform: config.nativePlatform,
-      nativeChecksum: config.nativeChecksum,
-      
-      dockerImage: config.dockerImage,
-      dockerVersion: config.dockerVersion,
-      dockerEnv: config.dockerEnv,
-      
-      timeout: manifest.latencyMs * 3, // 3x latency estimate
-      retryPolicy: {
-        maxAttempts: 3,
-        delayMs: 100
-      }
+  private _resolveInstruction(instr: IRInstruction): EnrichedDispatchMetadata {
+    if (!instr.serviceId) {
+      throw new BadRequestException(`CALL_SERVICE instruction #${instr.index} is missing serviceId`);
+    }
+
+    const targetTier: NodeTier = instr.requiredTier || 'CENTRAL';
+
+    const { manifest, selectedDescriptor, targetTier: resolvedTier } = this.registry.resolveForNode(
+      instr.serviceId,
+      instr.serviceVersion || 'latest',
+      targetTier,
+    );
+
+    this._annotateRequirements(manifest, instr);
+
+    return this._buildDispatchMetadata(manifest, selectedDescriptor, resolvedTier);
+  }
+
+  private _buildDispatchMetadata(
+    manifest: PowerfulServiceManifest,
+    descriptor: ExecutionDescriptor,
+    targetTier: NodeTier,
+  ): EnrichedDispatchMetadata {
+    const base: EnrichedDispatchMetadata = {
+      format: descriptor.format,
+      selectedDescriptor: descriptor,
+      timeoutMs: manifest.contract.timeoutMs,
+      retryPolicy: manifest.contract.retryPolicy,
+      targetTier,
+      serviceId: manifest.id,
+      serviceVersion: manifest.version,
+      timeout: manifest.contract.timeoutMs,
     };
+
+    switch (descriptor.format) {
+      case 'WASM': {
+        const d = descriptor as WasmExecutionDescriptor;
+        base.wasmBinaryUrl = d.binaryUrl;
+        base.wasmChecksum = d.checksum;
+        base.wasmMemory = d.memorySizeMb;
+        break;
+      }
+      case 'NATIVE': {
+        const d = descriptor as NativeExecutionDescriptor;
+        const hostBin = d.binaries.find(b => b.platform === 'linux-x64') || d.binaries[0];
+        if (hostBin) {
+          base.nativeBinaryUrl = hostBin.binaryUrl;
+          base.nativeChecksum = hostBin.checksum;
+          base.nativePlatform = hostBin.platform;
+        }
+        break;
+      }
+      case 'MCP': {
+        const d = descriptor as any;
+        base.mcpServer = d.serverName;
+        base.mcpMethod = d.toolName;
+        break;
+      }
+      case 'DOCKER': {
+        const d = descriptor as any;
+        base.dockerImage = d.image;
+        base.dockerVersion = d.tag;
+        base.dockerEnv = d.env;
+        break;
+      }
+    }
+
+    return base;
   }
 
-  /**
-   * Register a service in the in-memory registry (for testing)
-   */
-  registerService(entity: ServiceRegistryEntity): void {
-    const key = `${entity.id}@${entity.version}`;
-    this.serviceRegistry.set(key, entity);
-    this.logger.log(`[Stage 7] Registered service: ${key} (format: ${entity.format})`);
+  private _annotateRequirements(manifest: PowerfulServiceManifest, instr: IRInstruction): void {
+    const req = manifest.nodeRequirements;
+    instr.requiredCapabilities = instr.requiredCapabilities || {};
+
+    if (req.needsInternet) instr.requiredCapabilities.needsInternet = true;
+    if (req.needsVaultAccess) instr.requiredCapabilities.needsVault = true;
+    if (req.minMemoryMb) instr.requiredCapabilities.minMemoryMb = req.minMemoryMb;
+    if (req.requiredPhysicalProtocols?.length) {
+      instr.requiredCapabilities.protocols = req.requiredPhysicalProtocols;
+    }
   }
 
-  /**
-   * Initialize with test services
-   */
-  private initializeTestServices(): void {
-    // WASM: Sentiment analyzer
-    this.registerService({
-      id: 'sentiment-analyzer',
-      version: '2.1.0',
-      format: 'WASM',
-      trusted: true,
-      publishedBy: 'eyeflow-team',
-      createdAt: new Date(),
-      manifest: {
-        id: 'sentiment-analyzer',
-        version: '2.1.0',
-        name: 'Sentiment Analyzer',
-        description: 'WASM-based sentiment analysis',
-        inputs: { text: 'string' },
-        outputs: { score: 'number', label: 'string' },
-        latencyMs: 10,
-        deterministic: true,
-        sideEffects: [],
-        trusted: true,
-        formatConfig: {
-          format: 'WASM',
-          wasmBinaryUrl: 'https://cdn.example.com/sentiment-analyzer-2.1.0.wasm',
-          wasmChecksum: 'sha256:abc123...',
-          wasmMemory: 5
-        }
-      },
-      formatConfig: {
-        format: 'WASM',
-        wasmBinaryUrl: 'https://cdn.example.com/sentiment-analyzer-2.1.0.wasm',
-        wasmChecksum: 'sha256:abc123...',
-        wasmMemory: 5
-      }
-    });
-
-    // MCP: GitHub search
-    this.registerService({
-      id: 'github-search',
-      version: '1.0.0',
-      format: 'MCP',
-      trusted: true,
-      publishedBy: 'eyeflow-team',
-      createdAt: new Date(),
-      manifest: {
-        id: 'github-search',
-        version: '1.0.0',
-        name: 'GitHub Search',
-        description: 'Search GitHub repos via MCP',
-        inputs: { query: 'string' },
-        outputs: { results: 'array' },
-        latencyMs: 500,
-        deterministic: false,
-        sideEffects: [],
-        trusted: true,
-        formatConfig: {
-          format: 'MCP',
-          mcpServer: 'ghcli',
-          mcpMethod: 'search_repos'
-        }
-      },
-      formatConfig: {
-        format: 'MCP',
-        mcpServer: 'ghcli',
-        mcpMethod: 'search_repos'
-      }
-    });
-
-    // NATIVE: Image processing
-    this.registerService({
-      id: 'image-processor',
-      version: '1.5.0',
-      format: 'NATIVE',
-      trusted: true,
-      publishedBy: 'eyeflow-team',
-      createdAt: new Date(),
-      manifest: {
-        id: 'image-processor',
-        version: '1.5.0',
-        name: 'Image Processor',
-        description: 'Native image processing (ffmpeg)',
-        inputs: { image: 'buffer' },
-        outputs: { output: 'buffer' },
-        latencyMs: 50,
-        deterministic: true,
-        sideEffects: [],
-        trusted: true,
-        formatConfig: {
-          format: 'NATIVE',
-          nativeBinaryUrl: 'https://cdn.example.com/image-processor-1.5.0',
-          nativePlatform: 'linux-x64',
-          nativeChecksum: 'sha256:def456...'
-        }
-      },
-      formatConfig: {
-        format: 'NATIVE',
-        nativeBinaryUrl: 'https://cdn.example.com/image-processor-1.5.0',
-        nativePlatform: 'linux-x64',
-        nativeChecksum: 'sha256:def456...'
-      }
-    });
-
-    // DOCKER: Python ML
-    this.registerService({
-      id: 'ml-trainer',
-      version: '3.0.0',
-      format: 'DOCKER',
-      trusted: true,
-      publishedBy: 'data-team',
-      createdAt: new Date(),
-      manifest: {
-        id: 'ml-trainer',
-        version: '3.0.0',
-        name: 'ML Trainer',
-        description: 'Python ML training via Docker',
-        inputs: { dataset: 'array', config: 'object' },
-        outputs: { model: 'buffer', metrics: 'object' },
-        latencyMs: 5000,
-        deterministic: false,
-        sideEffects: ['writes to /models'],
-        trusted: true,
-        formatConfig: {
-          format: 'DOCKER',
-          dockerImage: 'eyeflow/ml-trainer',
-          dockerVersion: '3.0.0'
-        }
-      },
-      formatConfig: {
-        format: 'DOCKER',
-        dockerImage: 'eyeflow/ml-trainer',
-        dockerVersion: '3.0.0'
-      }
-    });
-
-    this.logger.log(`[Stage 7] Initialized with ${this.serviceRegistry.size} test services`);
+  /** Preview descriptor selection - useful for diagnostics endpoints */
+  preview(serviceId: string, version = 'latest', tier: NodeTier = 'CENTRAL') {
+    return this.registry.resolveForNode(serviceId, version, tier);
   }
 }

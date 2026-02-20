@@ -1,0 +1,32 @@
+{
+  "unversionedId": "concepts/security",
+  "id": "concepts/security",
+  "title": "Sécurité",
+  "description": "Modèle de menace EyeFlow — protection contre l'injection de prompt, permissions compilées, Vault HashiCorp, certifications par secteur et isolation d'exécution.",
+  "source": "@site/docs/concepts/security.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/security",
+  "permalink": "/docs/concepts/security",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/security.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 10,
+  "frontMatter": {
+    "id": "security",
+    "sidebar_position": 10,
+    "title": "Sécurité",
+    "description": "Modèle de menace EyeFlow — protection contre l'injection de prompt, permissions compilées, Vault HashiCorp, certifications par secteur et isolation d'exécution."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Audit et observabilité",
+    "permalink": "/docs/concepts/audit-observability"
+  },
+  "next": {
+    "title": "Secteur médical",
+    "permalink": "/docs/verticals/medical"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "unversionedId": "verticals/finance",
+  "id": "verticals/finance",
+  "title": "Secteur finance",
+  "description": "EyeFlow en finance — conformité AMF/RGPD/NIS2, détection fraude déterministe, validation transactions, audit SOC2, reporting réglementaire automatisé.",
+  "source": "@site/docs/verticals/finance.md",
+  "sourceDirName": "verticals",
+  "slug": "/verticals/finance",
+  "permalink": "/docs/verticals/finance",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/verticals/finance.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "id": "finance",
+    "sidebar_position": 4,
+    "title": "Secteur finance",
+    "description": "EyeFlow en finance — conformité AMF/RGPD/NIS2, détection fraude déterministe, validation transactions, audit SOC2, reporting réglementaire automatisé."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Secteur agriculture",
+    "permalink": "/docs/verticals/agriculture"
+  },
+  "next": {
+    "title": "Secteur IoT",
+    "permalink": "/docs/verticals/iot"
+  }
+}

@@ -1,0 +1,69 @@
+[package]
+name    = "eyeflow-svm-mcu"
+version = "0.1.0"
+edition = "2021"
+
+# ── Target ────────────────────────────────────────────────────────────────────
+# STM32F4xx Cortex-M4F with hardware floating-point.
+# Override via `CARGO_CFG_TARGET_ARCH` or `.cargo/config.toml`.
+
+[[bin]]
+name              = "eyeflow-svm-mcu"
+path              = "src/main.rs"
+test              = false
+bench             = false
+
+# ── Profile: firmware release ─────────────────────────────────────────────────
+[profile.release]
+opt-level    = "z"      # optimize for code size
+lto          = "fat"
+codegen-units = 1
+panic        = "abort"  # required for no_std (no unwinding runtime)
+debug        = false
+
+[profile.dev]
+opt-level = 1
+debug     = 2
+panic     = "abort"
+
+# ── Dependencies (all no_std-compatible) ─────────────────────────────────────
+[dependencies]
+
+# Embassy async executor — Cortex-M target
+embassy-executor = { version = "0.6", features = ["arch-cortex-m", "executor-thread", "integrated-timers"] }
+
+# Embassy time driver (SysTick for Cortex-M; concrete impl chosen per feature)
+embassy-time     = { version = "0.3", features = ["tick-hz-1_000"] }
+
+# STM32F4 HAL with Embassy integration (example: STM32F407)
+embassy-stm32    = { version = "0.1", features = [
+    "stm32f407vg",
+    "memory-x",
+    "time-driver-tim2",
+    "exti",
+] }
+
+# Cortex-M interrupt infrastructure
+cortex-m         = { version = "0.7", features = ["critical-section-single-core"] }
+cortex-m-rt      = "0.7"
+
+# Panic handler (writes to ITM in debug, halt in release)
+panic-probe       = { version = "0.3", features = ["print-rtt"] }
+
+# Fixed-capacity heapless data structures (queue, Vec, String) — no alloc needed
+heapless          = "0.8"
+
+# defmt for structured logging via RTT (zero-cost in release)
+defmt             = "0.3"
+defmt-rtt         = "0.4"
+
+# Minimalist JSON-like value representation without alloc
+serde             = { version = "1", default-features = false, features = ["derive"] }
+
+# ── Features ──────────────────────────────────────────────────────────────────
+[features]
+default    = ["usart-edge-link"]
+# Enable USART-based link to the edge node
+usart-edge-link = []
+# Enable SPI flash offline buffer
+spi-flash-buf   = []

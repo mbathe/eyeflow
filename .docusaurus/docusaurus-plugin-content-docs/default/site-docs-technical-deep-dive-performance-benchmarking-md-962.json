@@ -6,20 +6,17 @@
   "source": "@site/docs/technical-deep-dive/performance-benchmarking.md",
   "sourceDirName": "technical-deep-dive",
   "slug": "/technical-deep-dive/performance-benchmarking",
-  "permalink": "/eyeflow/fr/docs/technical-deep-dive/performance-benchmarking",
+  "permalink": "/docs/technical-deep-dive/performance-benchmarking",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/technical-deep-dive/performance-benchmarking.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/technical-deep-dive/performance-benchmarking.md",
   "tags": [],
   "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
   "sidebarPosition": 8,
   "frontMatter": {
     "sidebar_position": 8,
     "title": "Performance Benchmarking",
     "description": "Detailed latency analysis and throughput metrics"
-  },
-  "sidebar": "tutorialSidebar",
-  "previous": {
-    "title": "Security Sandbox",
-    "permalink": "/eyeflow/fr/docs/technical-deep-dive/security-sandbox"
   }
 }

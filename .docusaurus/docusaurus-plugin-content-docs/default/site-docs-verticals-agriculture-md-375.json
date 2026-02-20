@@ -1,0 +1,32 @@
+{
+  "unversionedId": "verticals/agriculture",
+  "id": "verticals/agriculture",
+  "title": "Secteur agriculture",
+  "description": "EyeFlow pour l'agriculture de précision — irrigation intelligente, dosage phytosanitaire, monitoring sol/météo, déploiement offline Raspberry Pi terrain.",
+  "source": "@site/docs/verticals/agriculture.md",
+  "sourceDirName": "verticals",
+  "slug": "/verticals/agriculture",
+  "permalink": "/docs/verticals/agriculture",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/verticals/agriculture.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "id": "agriculture",
+    "sidebar_position": 3,
+    "title": "Secteur agriculture",
+    "description": "EyeFlow pour l'agriculture de précision — irrigation intelligente, dosage phytosanitaire, monitoring sol/météo, déploiement offline Raspberry Pi terrain."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Secteur industriel",
+    "permalink": "/docs/verticals/industrial"
+  },
+  "next": {
+    "title": "Secteur finance",
+    "permalink": "/docs/verticals/finance"
+  }
+}

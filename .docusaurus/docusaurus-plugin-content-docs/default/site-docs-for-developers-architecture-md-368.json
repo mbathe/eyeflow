@@ -1,29 +1,32 @@
 {
   "unversionedId": "for-developers/architecture",
   "id": "for-developers/architecture",
-  "title": "Architecture Overview",
-  "description": "System design and core components",
+  "title": "Architecture système",
+  "description": "Architecture complète d'EyeFlow — NestJS compilateur, SVM Rust, LLM service Python, protobuf, Kafka, Vault, WebSocket TLS et déploiement edge/MCU.",
   "source": "@site/docs/for-developers/architecture.md",
   "sourceDirName": "for-developers",
   "slug": "/for-developers/architecture",
-  "permalink": "/eyeflow/fr/docs/for-developers/architecture",
+  "permalink": "/docs/for-developers/architecture",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-developers/architecture.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/architecture.md",
   "tags": [],
   "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
   "sidebarPosition": 1,
   "frontMatter": {
+    "id": "architecture",
     "sidebar_position": 1,
-    "title": "Architecture Overview",
-    "description": "System design and core components"
+    "title": "Architecture système",
+    "description": "Architecture complète d'EyeFlow — NestJS compilateur, SVM Rust, LLM service Python, protobuf, Kafka, Vault, WebSocket TLS et déploiement edge/MCU."
   },
-  "sidebar": "tutorialSidebar",
+  "sidebar": "mainSidebar",
   "previous": {
-    "title": "CLI Basics",
-    "permalink": "/eyeflow/fr/docs/for-end-users/cli-basics"
+    "title": "Secteur IoT",
+    "permalink": "/docs/verticals/iot"
   },
   "next": {
-    "title": "API Reference",
-    "permalink": "/eyeflow/fr/docs/for-developers/api-reference"
+    "title": "Référence API REST",
+    "permalink": "/docs/for-developers/api-reference"
   }
 }

@@ -1,29 +1,32 @@
 {
   "unversionedId": "intro/why-eyeflow",
   "id": "intro/why-eyeflow",
-  "title": "Why EyeFlow?",
-  "description": "Performance gains, ROI, and competitive advantages",
+  "title": "Pourquoi EyeFlow ?",
+  "description": "Analyse comparative, ROI et avantages concurrentiels de la compilation sémantique déterministe.",
   "source": "@site/docs/intro/why-eyeflow.md",
   "sourceDirName": "intro",
   "slug": "/intro/why-eyeflow",
-  "permalink": "/eyeflow/fr/docs/intro/why-eyeflow",
+  "permalink": "/docs/intro/why-eyeflow",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/intro/why-eyeflow.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/intro/why-eyeflow.md",
   "tags": [],
   "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
   "sidebarPosition": 2,
   "frontMatter": {
+    "id": "why-eyeflow",
     "sidebar_position": 2,
-    "title": "Why EyeFlow?",
-    "description": "Performance gains, ROI, and competitive advantages"
+    "title": "Pourquoi EyeFlow ?",
+    "description": "Analyse comparative, ROI et avantages concurrentiels de la compilation sémantique déterministe."
   },
-  "sidebar": "tutorialSidebar",
+  "sidebar": "mainSidebar",
   "previous": {
-    "title": "What is EyeFlow?",
-    "permalink": "/eyeflow/fr/docs/intro/what-is-eyeflow"
+    "title": "Qu'est-ce qu'EyeFlow ?",
+    "permalink": "/docs/intro/what-is-eyeflow"
   },
   "next": {
-    "title": "EyeFlow vs OpenClaw",
-    "permalink": "/eyeflow/fr/docs/intro/vs-openclaw"
+    "title": "EyeFlow vs. les alternatives",
+    "permalink": "/docs/intro/vs-alternatives"
   }
 }

@@ -108,7 +108,14 @@ class ILLMProvider(ABC):
         """
         Build comprehensive system prompt with all available capabilities.
         This is shared across all providers for consistency.
+
+        If the context contains a '_constraint_preamble' key (injected by
+        ConstrainedGenerationService), that block is prepended to the prompt
+        to enforce catalog-constrained generation (spec §3.3).
         """
+        # ── Catalog constraint block (spec §3.3) ──────────────────────────────
+        constraint_preamble = aggregated_context.get("_constraint_preamble", "")
+
         conditions_text = self._format_conditions(aggregated_context)
         actions_text = self._format_actions(aggregated_context)
         variables_text = self._format_variables(aggregated_context)
@@ -117,7 +124,7 @@ class ILLMProvider(ABC):
         examples_text = self._format_examples(aggregated_context)
         best_practices = self._format_best_practices(aggregated_context)
 
-        return f"""You are an expert enterprise workflow automation engine powering a sophisticated LLM-driven task management system.
+        return f"""{constraint_preamble}You are an expert enterprise workflow automation engine powering a sophisticated LLM-driven task management system.
 
 ## 🎯 YOUR MISSION
 Generate production-ready workflow rules that orchestrate complex business processes across 4+ enterprise modules.

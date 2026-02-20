@@ -6,24 +6,17 @@
   "source": "@site/docs/for-decision-makers/technology-selection.md",
   "sourceDirName": "for-decision-makers",
   "slug": "/for-decision-makers/technology-selection",
-  "permalink": "/eyeflow/fr/docs/for-decision-makers/technology-selection",
+  "permalink": "/docs/for-decision-makers/technology-selection",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-decision-makers/technology-selection.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-decision-makers/technology-selection.md",
   "tags": [],
   "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
   "sidebarPosition": 5,
   "frontMatter": {
     "sidebar_position": 5,
     "title": "Technology Selection",
     "description": "Vendor comparison and implementation roadmap"
-  },
-  "sidebar": "tutorialSidebar",
-  "previous": {
-    "title": "Scaling & Performance",
-    "permalink": "/eyeflow/fr/docs/for-decision-makers/scaling-performance"
-  },
-  "next": {
-    "title": "Semantic Compilation",
-    "permalink": "/eyeflow/fr/docs/technical-deep-dive/semantic-compilation"
   }
 }

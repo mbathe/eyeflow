@@ -1,0 +1,32 @@
+{
+  "unversionedId": "concepts/llm-calls",
+  "id": "concepts/llm-calls",
+  "title": "Appels LLM avancés",
+  "description": "CompiledLLMContext figé, pipeline multi-LLM, boucles de raisonnement bornées, génération contrainte par logit_bias et résolution de slots dynamiques.",
+  "source": "@site/docs/concepts/llm-calls.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/llm-calls",
+  "permalink": "/docs/concepts/llm-calls",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/llm-calls.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 8,
+  "frontMatter": {
+    "id": "llm-calls",
+    "sidebar_position": 8,
+    "title": "Appels LLM avancés",
+    "description": "CompiledLLMContext figé, pipeline multi-LLM, boucles de raisonnement bornées, génération contrainte par logit_bias et résolution de slots dynamiques."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Contrôle physique",
+    "permalink": "/docs/concepts/physical-control"
+  },
+  "next": {
+    "title": "Audit et observabilité",
+    "permalink": "/docs/concepts/audit-observability"
+  }
+}

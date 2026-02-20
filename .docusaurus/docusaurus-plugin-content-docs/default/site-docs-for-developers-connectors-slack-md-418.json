@@ -6,24 +6,17 @@
   "source": "@site/docs/for-developers/connectors/slack.md",
   "sourceDirName": "for-developers/connectors",
   "slug": "/for-developers/connectors/slack",
-  "permalink": "/eyeflow/fr/docs/for-developers/connectors/slack",
+  "permalink": "/docs/for-developers/connectors/slack",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-developers/connectors/slack.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/connectors/slack.md",
   "tags": [],
   "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
   "sidebarPosition": 5,
   "frontMatter": {
     "sidebar_position": 5,
     "title": "Slack Connector",
     "description": "Send messages, files, and manage channels in Slack"
-  },
-  "sidebar": "tutorialSidebar",
-  "previous": {
-    "title": "Connectors Overview",
-    "permalink": "/eyeflow/fr/docs/for-developers/connectors/overview"
-  },
-  "next": {
-    "title": "PostgreSQL Connector",
-    "permalink": "/eyeflow/fr/docs/for-developers/connectors/postgresql"
   }
 }

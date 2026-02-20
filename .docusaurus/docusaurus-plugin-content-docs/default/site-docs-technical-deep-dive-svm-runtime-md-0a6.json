@@ -6,24 +6,17 @@
   "source": "@site/docs/technical-deep-dive/svm-runtime.md",
   "sourceDirName": "technical-deep-dive",
   "slug": "/technical-deep-dive/svm-runtime",
-  "permalink": "/eyeflow/fr/docs/technical-deep-dive/svm-runtime",
+  "permalink": "/docs/technical-deep-dive/svm-runtime",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/technical-deep-dive/svm-runtime.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/technical-deep-dive/svm-runtime.md",
   "tags": [],
   "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
   "sidebarPosition": 3,
   "frontMatter": {
     "sidebar_position": 3,
     "title": "SVM Runtime",
     "description": "Semantic Virtual Machine execution and correctness"
-  },
-  "sidebar": "tutorialSidebar",
-  "previous": {
-    "title": "LLM-IR (Intermediate Representation)",
-    "permalink": "/eyeflow/fr/docs/technical-deep-dive/llm-ir"
-  },
-  "next": {
-    "title": "Capability Catalog",
-    "permalink": "/eyeflow/fr/docs/technical-deep-dive/capability-catalog"
   }
 }

@@ -1,29 +1,32 @@
 {
-  "unversionedId": "for-developers/connectors/custom",
-  "id": "for-developers/connectors/custom",
-  "title": "Custom Connectors",
-  "description": "Build your own EyeFlow connectors",
+  "unversionedId": "for-developers/connectors/connectors-custom",
+  "id": "for-developers/connectors/connectors-custom",
+  "title": "Créer un connecteur custom",
+  "description": "Guide complet pour implémenter, tester, signer et enregistrer une capability custom dans EyeFlow.",
   "source": "@site/docs/for-developers/connectors/custom.md",
   "sourceDirName": "for-developers/connectors",
-  "slug": "/for-developers/connectors/custom",
-  "permalink": "/eyeflow/fr/docs/for-developers/connectors/custom",
+  "slug": "/for-developers/connectors/connectors-custom",
+  "permalink": "/docs/for-developers/connectors/connectors-custom",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-developers/connectors/custom.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/connectors/custom.md",
   "tags": [],
   "version": "current",
-  "sidebarPosition": 8,
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 6,
   "frontMatter": {
-    "sidebar_position": 8,
-    "title": "Custom Connectors",
-    "description": "Build your own EyeFlow connectors"
+    "id": "connectors-custom",
+    "sidebar_position": 6,
+    "title": "Créer un connecteur custom",
+    "description": "Guide complet pour implémenter, tester, signer et enregistrer une capability custom dans EyeFlow."
   },
-  "sidebar": "tutorialSidebar",
+  "sidebar": "mainSidebar",
   "previous": {
-    "title": "PostgreSQL Connector",
-    "permalink": "/eyeflow/fr/docs/for-developers/connectors/postgresql"
+    "title": "Vue d'ensemble des connecteurs",
+    "permalink": "/docs/for-developers/connectors/connectors-overview"
   },
   "next": {
-    "title": "ROI Analysis",
-    "permalink": "/eyeflow/fr/docs/for-decision-makers/roi-analysis"
+    "title": "Feuille de route",
+    "permalink": "/docs/roadmap/roadmap"
   }
 }

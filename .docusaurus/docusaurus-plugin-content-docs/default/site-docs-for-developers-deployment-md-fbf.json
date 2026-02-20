@@ -1,29 +1,32 @@
 {
   "unversionedId": "for-developers/deployment",
   "id": "for-developers/deployment",
-  "title": "Deployment",
-  "description": "Deploy EyeFlow to production environments",
+  "title": "Déploiement",
+  "description": "Docker Compose, Kubernetes/Helm, cross-compile ARMv7/STM32F4, Vault, InfluxDB et variables d'environnement.",
   "source": "@site/docs/for-developers/deployment.md",
   "sourceDirName": "for-developers",
   "slug": "/for-developers/deployment",
-  "permalink": "/eyeflow/fr/docs/for-developers/deployment",
+  "permalink": "/docs/for-developers/deployment",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-developers/deployment.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/deployment.md",
   "tags": [],
   "version": "current",
-  "sidebarPosition": 7,
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 3,
   "frontMatter": {
-    "sidebar_position": 7,
-    "title": "Deployment",
-    "description": "Deploy EyeFlow to production environments"
+    "id": "deployment",
+    "sidebar_position": 3,
+    "title": "Déploiement",
+    "description": "Docker Compose, Kubernetes/Helm, cross-compile ARMv7/STM32F4, Vault, InfluxDB et variables d'environnement."
   },
-  "sidebar": "tutorialSidebar",
+  "sidebar": "mainSidebar",
   "previous": {
-    "title": "SDKs & Client Libraries",
-    "permalink": "/eyeflow/fr/docs/for-developers/sdks"
+    "title": "Référence API REST",
+    "permalink": "/docs/for-developers/api-reference"
   },
   "next": {
-    "title": "Connectors Overview",
-    "permalink": "/eyeflow/fr/docs/for-developers/connectors/overview"
+    "title": "SDKs & CLI",
+    "permalink": "/docs/for-developers/sdks"
   }
 }

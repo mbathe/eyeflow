@@ -23,3 +23,13 @@ export {
 } from './responses.dto';
 
 export { GenerateRuleFromIntentDto } from './generate-rule-from-intent.dto';
+export { CreateLLMSessionDto } from './create-llm-session.dto';
+export {
+  CreateLLMProjectDto,
+  UpdateLLMProjectDto,
+  LLMProjectDto,
+  CreateProjectVersionDto,
+  ProjectVersionDto,
+  ExecutionMemoryStateDto,
+  ExecutionRecordDto,
+} from './project.dto';

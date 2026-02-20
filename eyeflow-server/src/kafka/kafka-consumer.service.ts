@@ -1,8 +1,9 @@
-import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, OnModuleDestroy, Optional } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Kafka, Consumer, logLevel } from 'kafkajs';
 import { CDCEventProcessorService } from './cdc-event-processor.service';
 import { EventRule, KAFKA_TOPICS } from './kafka-events.types';
+import { OfflineBufferService } from '../runtime/offline-buffer.service';
 
 /**
  * Kafka Consumer Service
@@ -25,6 +26,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private configService: ConfigService,
     private cdcProcessor: CDCEventProcessorService,
+    @Optional() private readonly offlineBuffer?: OfflineBufferService,
   ) {}
 
   /**
@@ -101,11 +103,15 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     this.consumer.on('consumer.disconnect', () => {
       this.logger.warn('Kafka consumer disconnected');
       this.isConnected = false;
+      // Notify offline buffer — buffering mode ON (spec §8.3)
+      this.offlineBuffer?.notifyConnected(false);
     });
 
     await this.consumer.connect();
     this.isConnected = true;
     this.logger.log(`✅ Kafka consumer connected to ${brokers.join(', ')}`);
+    // Notify offline buffer — buffering mode OFF, flush will be triggered
+    this.offlineBuffer?.notifyConnected(true);
 
     // Subscribe to CDC topics
     await this.subscribeToCDCTopics();
@@ -195,6 +201,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     if (this.consumer && this.isConnected) {
       await this.consumer.disconnect();
       this.isConnected = false;
+      this.offlineBuffer?.notifyConnected(false);
       this.logger.log('✅ Kafka consumer disconnected');
     }
   }

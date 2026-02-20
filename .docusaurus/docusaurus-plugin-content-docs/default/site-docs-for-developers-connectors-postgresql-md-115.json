@@ -6,24 +6,17 @@
   "source": "@site/docs/for-developers/connectors/postgresql.md",
   "sourceDirName": "for-developers/connectors",
   "slug": "/for-developers/connectors/postgresql",
-  "permalink": "/eyeflow/fr/docs/for-developers/connectors/postgresql",
+  "permalink": "/docs/for-developers/connectors/postgresql",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-developers/connectors/postgresql.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/connectors/postgresql.md",
   "tags": [],
   "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
   "sidebarPosition": 6,
   "frontMatter": {
     "sidebar_position": 6,
     "title": "PostgreSQL Connector",
     "description": "Connect to PostgreSQL databases"
-  },
-  "sidebar": "tutorialSidebar",
-  "previous": {
-    "title": "Slack Connector",
-    "permalink": "/eyeflow/fr/docs/for-developers/connectors/slack"
-  },
-  "next": {
-    "title": "Custom Connectors",
-    "permalink": "/eyeflow/fr/docs/for-developers/connectors/custom"
   }
 }

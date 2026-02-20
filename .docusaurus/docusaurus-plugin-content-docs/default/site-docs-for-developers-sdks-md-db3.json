@@ -1,29 +1,32 @@
 {
   "unversionedId": "for-developers/sdks",
   "id": "for-developers/sdks",
-  "title": "SDKs & Client Libraries",
-  "description": "Official SDKs for popular languages",
+  "title": "SDKs & CLI",
+  "description": "SDK TypeScript/Node.js, client Rust embarqué, CLI eyeflow et exemples d'intégration complets.",
   "source": "@site/docs/for-developers/sdks.md",
   "sourceDirName": "for-developers",
   "slug": "/for-developers/sdks",
-  "permalink": "/eyeflow/fr/docs/for-developers/sdks",
+  "permalink": "/docs/for-developers/sdks",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-developers/sdks.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/sdks.md",
   "tags": [],
   "version": "current",
-  "sidebarPosition": 3,
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 4,
   "frontMatter": {
-    "sidebar_position": 3,
-    "title": "SDKs & Client Libraries",
-    "description": "Official SDKs for popular languages"
+    "id": "sdks",
+    "sidebar_position": 4,
+    "title": "SDKs & CLI",
+    "description": "SDK TypeScript/Node.js, client Rust embarqué, CLI eyeflow et exemples d'intégration complets."
   },
-  "sidebar": "tutorialSidebar",
+  "sidebar": "mainSidebar",
   "previous": {
-    "title": "API Reference",
-    "permalink": "/eyeflow/fr/docs/for-developers/api-reference"
+    "title": "Déploiement",
+    "permalink": "/docs/for-developers/deployment"
   },
   "next": {
-    "title": "Deployment",
-    "permalink": "/eyeflow/fr/docs/for-developers/deployment"
+    "title": "Vue d'ensemble des connecteurs",
+    "permalink": "/docs/for-developers/connectors/connectors-overview"
   }
 }

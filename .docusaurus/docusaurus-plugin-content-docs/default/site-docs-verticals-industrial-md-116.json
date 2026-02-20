@@ -1,0 +1,32 @@
+{
+  "unversionedId": "verticals/industrial",
+  "id": "verticals/industrial",
+  "title": "Secteur industriel",
+  "description": "EyeFlow pour l'industrie 4.0 — certifiable SIL2, catalog d'actionneurs, intégration SCADA/DCS, Modbus/OPC-UA, contrôle de processus déterministe.",
+  "source": "@site/docs/verticals/industrial.md",
+  "sourceDirName": "verticals",
+  "slug": "/verticals/industrial",
+  "permalink": "/docs/verticals/industrial",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/verticals/industrial.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "id": "industrial",
+    "sidebar_position": 2,
+    "title": "Secteur industriel",
+    "description": "EyeFlow pour l'industrie 4.0 — certifiable SIL2, catalog d'actionneurs, intégration SCADA/DCS, Modbus/OPC-UA, contrôle de processus déterministe."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Secteur médical",
+    "permalink": "/docs/verticals/medical"
+  },
+  "next": {
+    "title": "Secteur agriculture",
+    "permalink": "/docs/verticals/agriculture"
+  }
+}

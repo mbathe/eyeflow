@@ -6,24 +6,17 @@
   "source": "@site/docs/technical-deep-dive/security-sandbox.md",
   "sourceDirName": "technical-deep-dive",
   "slug": "/technical-deep-dive/security-sandbox",
-  "permalink": "/eyeflow/fr/docs/technical-deep-dive/security-sandbox",
+  "permalink": "/docs/technical-deep-dive/security-sandbox",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/technical-deep-dive/security-sandbox.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/technical-deep-dive/security-sandbox.md",
   "tags": [],
   "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
   "sidebarPosition": 7,
   "frontMatter": {
     "sidebar_position": 7,
     "title": "Security Sandbox",
     "description": "Closed-world security model and threat mitigation"
-  },
-  "sidebar": "tutorialSidebar",
-  "previous": {
-    "title": "Edge Computing & IoT",
-    "permalink": "/eyeflow/fr/docs/technical-deep-dive/edge-computing"
-  },
-  "next": {
-    "title": "Performance Benchmarking",
-    "permalink": "/eyeflow/fr/docs/technical-deep-dive/performance-benchmarking"
   }
 }

@@ -1,29 +1,32 @@
 {
-  "unversionedId": "for-developers/connectors/overview",
-  "id": "for-developers/connectors/overview",
-  "title": "Connectors Overview",
-  "description": "Available integrations and services",
+  "unversionedId": "for-developers/connectors/connectors-overview",
+  "id": "for-developers/connectors/connectors-overview",
+  "title": "Vue d'ensemble des connecteurs",
+  "description": "Architecture des connecteurs EyeFlow — sources d'événements, capabilities d'action, configuration et connecteurs built-in.",
   "source": "@site/docs/for-developers/connectors/overview.md",
   "sourceDirName": "for-developers/connectors",
-  "slug": "/for-developers/connectors/overview",
-  "permalink": "/eyeflow/fr/docs/for-developers/connectors/overview",
+  "slug": "/for-developers/connectors/connectors-overview",
+  "permalink": "/docs/for-developers/connectors/connectors-overview",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-developers/connectors/overview.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/connectors/overview.md",
   "tags": [],
   "version": "current",
-  "sidebarPosition": 4,
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 5,
   "frontMatter": {
-    "sidebar_position": 4,
-    "title": "Connectors Overview",
-    "description": "Available integrations and services"
+    "id": "connectors-overview",
+    "sidebar_position": 5,
+    "title": "Vue d'ensemble des connecteurs",
+    "description": "Architecture des connecteurs EyeFlow — sources d'événements, capabilities d'action, configuration et connecteurs built-in."
   },
-  "sidebar": "tutorialSidebar",
+  "sidebar": "mainSidebar",
   "previous": {
-    "title": "Deployment",
-    "permalink": "/eyeflow/fr/docs/for-developers/deployment"
+    "title": "SDKs & CLI",
+    "permalink": "/docs/for-developers/sdks"
   },
   "next": {
-    "title": "Slack Connector",
-    "permalink": "/eyeflow/fr/docs/for-developers/connectors/slack"
+    "title": "Créer un connecteur custom",
+    "permalink": "/docs/for-developers/connectors/connectors-custom"
   }
 }

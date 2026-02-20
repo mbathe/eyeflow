@@ -1,0 +1,32 @@
+{
+  "unversionedId": "concepts/capability-catalog",
+  "id": "concepts/capability-catalog",
+  "title": "Catalog de capabilities",
+  "description": "Gouvernance des capabilities — signature Ed25519, versionnage, préconditions/postconditions/rollback, révocation à chaud et 5 secteurs verticaux.",
+  "source": "@site/docs/concepts/capability-catalog.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/capability-catalog",
+  "permalink": "/docs/concepts/capability-catalog",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/capability-catalog.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "id": "capability-catalog",
+    "sidebar_position": 3,
+    "title": "Catalog de capabilities",
+    "description": "Gouvernance des capabilities — signature Ed25519, versionnage, préconditions/postconditions/rollback, révocation à chaud et 5 secteurs verticaux."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Format LLM-IR",
+    "permalink": "/docs/concepts/llm-ir"
+  },
+  "next": {
+    "title": "SVM — Semantic Virtual Machine",
+    "permalink": "/docs/concepts/svm-runtime"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "unversionedId": "concepts/llm-ir",
+  "id": "concepts/llm-ir",
+  "title": "Format LLM-IR",
+  "description": "Structure du format binaire LLM-IR — protobuf, schéma des messages, versionnage semver, matrice de compatibilité et signature Ed25519.",
+  "source": "@site/docs/concepts/llm-ir.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/llm-ir",
+  "permalink": "/docs/concepts/llm-ir",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/llm-ir.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "id": "llm-ir",
+    "sidebar_position": 2,
+    "title": "Format LLM-IR",
+    "description": "Structure du format binaire LLM-IR — protobuf, schéma des messages, versionnage semver, matrice de compatibilité et signature Ed25519."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Compilation sémantique",
+    "permalink": "/docs/concepts/semantic-compilation"
+  },
+  "next": {
+    "title": "Catalog de capabilities",
+    "permalink": "/docs/concepts/capability-catalog"
+  }
+}

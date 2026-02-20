@@ -1,0 +1,32 @@
+{
+  "unversionedId": "concepts/distributed-execution",
+  "id": "concepts/distributed-execution",
+  "title": "Exécution distribuée",
+  "description": "Topologie multi-nœuds EyeFlow — load balancing, résilience offline, buffer Kafka local, réconciliation, déploiement MCU Embassy STM32/nRF52.",
+  "source": "@site/docs/concepts/distributed-execution.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/distributed-execution",
+  "permalink": "/docs/concepts/distributed-execution",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/distributed-execution.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 6,
+  "frontMatter": {
+    "id": "distributed-execution",
+    "sidebar_position": 6,
+    "title": "Exécution distribuée",
+    "description": "Topologie multi-nœuds EyeFlow — load balancing, résilience offline, buffer Kafka local, réconciliation, déploiement MCU Embassy STM32/nRF52."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Sources d'événements",
+    "permalink": "/docs/concepts/event-sources"
+  },
+  "next": {
+    "title": "Contrôle physique",
+    "permalink": "/docs/concepts/physical-control"
+  }
+}

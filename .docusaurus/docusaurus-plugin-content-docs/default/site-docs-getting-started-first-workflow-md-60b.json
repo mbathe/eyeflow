@@ -1,0 +1,32 @@
+{
+  "unversionedId": "getting-started/first-workflow",
+  "id": "getting-started/first-workflow",
+  "title": "Premier workflow complet",
+  "description": "Créez un workflow avec conditions, branchements, appels LLM figés et contrôle d'un actionneur physique.",
+  "source": "@site/docs/getting-started/first-workflow.md",
+  "sourceDirName": "getting-started",
+  "slug": "/getting-started/first-workflow",
+  "permalink": "/docs/getting-started/first-workflow",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/getting-started/first-workflow.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "id": "first-workflow",
+    "sidebar_position": 2,
+    "title": "Premier workflow complet",
+    "description": "Créez un workflow avec conditions, branchements, appels LLM figés et contrôle d'un actionneur physique."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Quickstart — 10 minutes",
+    "permalink": "/docs/getting-started/quickstart"
+  },
+  "next": {
+    "title": "Dashboard — Tableau de bord",
+    "permalink": "/docs/getting-started/dashboard"
+  }
+}

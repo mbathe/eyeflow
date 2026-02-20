@@ -1,29 +1,32 @@
 {
   "unversionedId": "for-developers/api-reference",
   "id": "for-developers/api-reference",
-  "title": "API Reference",
-  "description": "Complete REST API documentation",
+  "title": "Référence API REST",
+  "description": "Tous les endpoints REST exposés par eyeflow-server — compilation, déploiement, exécution, audit, connecteurs et WebSocket.",
   "source": "@site/docs/for-developers/api-reference.md",
   "sourceDirName": "for-developers",
   "slug": "/for-developers/api-reference",
-  "permalink": "/eyeflow/fr/docs/for-developers/api-reference",
+  "permalink": "/docs/for-developers/api-reference",
   "draft": false,
-  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/tree/main/docs/for-developers/api-reference.md",
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/for-developers/api-reference.md",
   "tags": [],
   "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
   "sidebarPosition": 2,
   "frontMatter": {
+    "id": "api-reference",
     "sidebar_position": 2,
-    "title": "API Reference",
-    "description": "Complete REST API documentation"
+    "title": "Référence API REST",
+    "description": "Tous les endpoints REST exposés par eyeflow-server — compilation, déploiement, exécution, audit, connecteurs et WebSocket."
   },
-  "sidebar": "tutorialSidebar",
+  "sidebar": "mainSidebar",
   "previous": {
-    "title": "Architecture Overview",
-    "permalink": "/eyeflow/fr/docs/for-developers/architecture"
+    "title": "Architecture système",
+    "permalink": "/docs/for-developers/architecture"
   },
   "next": {
-    "title": "SDKs & Client Libraries",
-    "permalink": "/eyeflow/fr/docs/for-developers/sdks"
+    "title": "Déploiement",
+    "permalink": "/docs/for-developers/deployment"
   }
 }

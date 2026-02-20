@@ -9,6 +9,7 @@ import { AgentBrokerService } from './agent-broker.service';
 import { RuleCompilerService } from './rule-compiler.service';
 import { CompilationFeedbackService } from './compilation-feedback.service';
 import { LLMContextEnricherService } from './llm-context-enricher.service';
+import { LLMSessionService } from './llm-session.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { GlobalTaskEntity } from '../entities/global-task.entity';
 import { EventRuleEntity } from '../entities/event-rule.entity';
@@ -88,6 +89,11 @@ describe('TaskCompilerService - Basic Coverage', () => {
       enrichContext: jest.fn().mockResolvedValue({}),
     };
 
+    const mockLLMSessionService = {
+      getSession: jest.fn().mockResolvedValue({ id: 'sess-1', userId: 'user-123', allowedConnectorIds: ['slack'] }),
+      filterLLMContext: jest.fn().mockImplementation((ctx) => ctx),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TaskCompilerService,
@@ -146,6 +152,10 @@ describe('TaskCompilerService - Basic Coverage', () => {
         {
           provide: LLMContextEnricherService,
           useValue: mockContextEnricher,
+        },
+        {
+          provide: LLMSessionService,
+          useValue: mockLLMSessionService,
         },
       ],
     }).compile();
@@ -212,6 +222,13 @@ describe('TaskCompilerService - Basic Coverage', () => {
     it('should provide LLM context for user', () => {
       const context = service.getLLMContext('user-123');
       expect(context).toBeDefined();
+    });
+
+    it('generateEventRuleFromIntent should use session filter when sessionId provided', async () => {
+      // call generateEventRuleFromIntent with a sessionId; the mock session service should be used
+      const spy = jest.spyOn((service as any).llmSessionService, 'filterLLMContext');
+      await service.generateEventRuleFromIntent('user-123', 'alert when X', false, 'sess-1');
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should export LLM context as JSON', () => {

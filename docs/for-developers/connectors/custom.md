@@ -1,629 +1,413 @@
 ---
-sidebar_position: 8
-title: Custom Connectors
-description: Build your own EyeFlow connectors
+id: connectors-custom
+sidebar_position: 6
+title: Créer un connecteur custom
+description: Guide complet pour implémenter, tester, signer et enregistrer une capability custom dans EyeFlow.
 ---
 
-# Building Custom Connectors
+# Créer un connecteur custom
 
-Extend EyeFlow by creating connectors for services not in the built-in library.
+Ce guide explique comment créer une capability personnalisée — c'est-à-dire un connecteur d'action qui peut être appelé depuis un programme LLM-IR compilé.
 
-## Connector Architecture
+---
 
-Every connector implements the `Connector` interface:
+## Anatomie d'une capability
 
-```typescript
-interface Connector {
-  // Called once at setup (compile time)
-  initialize(config: ConnectorConfig): Promise<void>;
-  
-  // Called for each execution
-  call(method: string, params: Record<string, any>): Promise<any>;
-  
-  // Called on shutdown
-  cleanup(): Promise<void>;
+Une capability EyeFlow est composée de :
+
+1. **Un fichier de déclaration JSON** — métadonnées, préconditions, postconditions, rollback
+2. **Un handler TypeScript** — logique d'exécution concrète
+3. **Une signature Ed25519** — garantit l'immutabilité
+
+```
+eyeflow-server/src/catalog/capabilities/
+├── valve_control/
+│   ├── capability.json     ← déclaration
+│   └── handler.ts          ← logique
+└── my_custom_pump/
+    ├── capability.json
+    └── handler.ts
+```
+
+---
+
+## 1. Fichier de déclaration `capability.json`
+
+```json
+{
+  "id": "custom_pump_centrifuge",
+  "version": "1.0.0",
+  "sector": "INDUSTRIAL",
+  "description": "Contrôle des pompes centrifuges séries Grundfos CM",
+  "handler": "capabilities/custom_pump_centrifuge/handler.ts",
+  "parameters": {
+    "pump_id": {
+      "type": "string",
+      "description": "Identifiant de la pompe (ex: PUMP-01)",
+      "required": true
+    },
+    "action": {
+      "type": "string",
+      "enum": ["START", "STOP", "SET_SPEED"],
+      "required": true
+    },
+    "speed_rpm": {
+      "type": "number",
+      "description": "Vitesse en tr/min (requis si action=SET_SPEED)",
+      "minimum": 0,
+      "maximum": 3600
+    }
+  },
+  "preconditions": [
+    {
+      "id": "pre_pump_not_emergency_stopped",
+      "description": "La pompe ne doit pas être en arrêt d'urgence",
+      "check": "ctx.pump_status !== 'EMERGENCY_STOP'",
+      "errorCode": "PUMP_EMERGENCY_STOP",
+      "severity": "BLOCKING"
+    },
+    {
+      "id": "pre_no_cavitation_risk",
+      "description": "Le niveau d'aspiration est suffisant",
+      "check": "ctx.suction_level_m > 0.5",
+      "errorCode": "INSUFFICIENT_SUCTION_LEVEL",
+      "severity": "BLOCKING"
+    }
+  ],
+  "postconditions": [
+    {
+      "id": "post_pump_state_changed",
+      "description": "L'état de la pompe a changé comme attendu",
+      "check": "ctx.pump_status === params.action",
+      "pollingIntervalMs": 500,
+      "timeoutMs": 5000
+    }
+  ],
+  "rollbackStrategy": "IDEMPOTENT_REVERSE",
+  "rollbackAction": {
+    "action": "STOP",
+    "pump_id": "$params.pump_id"
+  },
+  "timeoutMs": 8000,
+  "physicalControlWindow": {
+    "cooldownMs": 2000,
+    "maxFrequencyPerMinute": 10
+  },
+  "auditLevel": "FULL"
 }
 ```
 
-## Quick Start Template
+---
 
-### Step 1: Create Connector Class
-
-Create `connectors/my-service.connector.ts`:
+## 2. Handler TypeScript
 
 ```typescript
-import { Connector, ConnectorConfig } from '@eyeflow/sdk';
+// src/catalog/capabilities/custom_pump_centrifuge/handler.ts
 
-export class MyServiceConnector implements Connector {
-  private client: MyServiceClient;
-  private config: ConnectorConfig;
-  
-  async initialize(config: ConnectorConfig): Promise<void> {
-    this.config = config;
-    
-    // Validate configuration
-    if (!config.api_key) {
-      throw new Error('api_key is required');
+import { CapabilityHandler, CapabilityContext, CapabilityResult } from '@/catalog/types';
+import { ModbusClient } from '@/connectors/modbus';
+import { Logger } from '@nestjs/common';
+
+const PUMP_MODBUS_REGISTER = {
+  START: 0x01,
+  STOP: 0x00,
+  SET_SPEED: 0x02,
+} as const;
+
+const logger = new Logger('PumpCentrifugeHandler');
+
+export const handler: CapabilityHandler = {
+  /**
+   * Exécution principale de la capability.
+   * Cette fonction est appelée par le SVM après validation des préconditions.
+   */
+  async execute(
+    params: { pump_id: string; action: string; speed_rpm?: number },
+    ctx: CapabilityContext,
+  ): Promise<CapabilityResult> {
+    const { pump_id, action, speed_rpm } = params;
+    const { nodeConfig } = ctx;
+
+    // Résoudre la configuration Modbus de cette pompe
+    const pumpConfig = nodeConfig.pumps[pump_id];
+    if (!pumpConfig) {
+      throw new Error(`Pompe inconnue: ${pump_id}`);
     }
-    
-    // Initialize client
-    this.client = new MyServiceClient({
-      apiKey: config.api_key,
-      baseUrl: config.base_url || 'https://api.myservice.com'
+
+    const modbus = new ModbusClient({
+      host: pumpConfig.modbus_host,
+      port: pumpConfig.modbus_port,
+      unitId: pumpConfig.unit_id,
     });
-    
-    // Test connection
-    await this.client.testConnection();
-    console.log('✅ Connector initialized');
-  }
-  
-  async call(method: string, params: Record<string, any>): Promise<any> {
-    switch (method) {
-      case 'getUserById':
-        return this.getUserById(params.id);
-      case 'createUser':
-        return this.createUser(params);
-      case 'updateUser':
-        return this.updateUser(params.id, params);
-      default:
-        throw new Error(`Unknown method: ${method}`);
+
+    await modbus.connect();
+
+    try {
+      if (action === 'START') {
+        await modbus.writeSingleCoil(pumpConfig.start_coil, true);
+        logger.log(`Pompe ${pump_id} démarrée`);
+
+      } else if (action === 'STOP') {
+        await modbus.writeSingleCoil(pumpConfig.start_coil, false);
+        logger.log(`Pompe ${pump_id} arrêtée`);
+
+      } else if (action === 'SET_SPEED') {
+        if (speed_rpm === undefined) {
+          throw new Error('speed_rpm requis pour SET_SPEED');
+        }
+        // Convertir en valeur registre (0-32767 → 0-3600 rpm)
+        const registerValue = Math.round((speed_rpm / 3600) * 32767);
+        await modbus.writeSingleRegister(pumpConfig.speed_register, registerValue);
+        logger.log(`Pompe ${pump_id} vitesse réglée à ${speed_rpm} rpm`);
+      }
+
+      return {
+        success: true,
+        data: {
+          pump_id,
+          action,
+          speed_rpm,
+          executedAt: new Date().toISOString(),
+        },
+      };
+    } finally {
+      await modbus.close();
     }
-  }
-  
-  async cleanup(): Promise<void> {
-    await this.client.disconnect();
-  }
-  
-  // Specific methods
-  private async getUserById(id: string): Promise<any> {
-    const response = await this.client.get(`/users/${id}`);
-    return response.data;
-  }
-  
-  private async createUser(data: any): Promise<any> {
-    const response = await this.client.post('/users', data);
-    return response.data;
-  }
-  
-  private async updateUser(id: string, data: any): Promise<any> {
-    const response = await this.client.put(`/users/${id}`, data);
-    return response.data;
-  }
-}
-```
+  },
 
-### Step 2: Define Service Capabilities
-
-Create `connectors/my-service.capabilities.yaml`:
-
-```yaml
-id: my_service
-name: My Service
-description: Integration with My Service API
-type: data_management
-
-capabilities:
-  - id: getUserById
-    name: Get User
-    description: Retrieve a single user by ID
-    params:
-      - name: id
-        type: string
-        required: true
-        description: User ID
-    returns:
-      type: object
-      schema:
-        id: string
-        name: string
-        email: string
-        created_at: string
-  
-  - id: createUser
-    name: Create User
-    description: Create a new user
-    params:
-      - name: name
-        type: string
-        required: true
-      - name: email
-        type: string
-        required: true
-      - name: role
-        type: string
-        enum: [admin, user, guest]
-        default: user
-    returns:
-      type: object
-      schema:
-        id: string
-        name: string
-        email: string
-        created_at: string
-  
-  - id: updateUser
-    name: Update User
-    description: Update an existing user
-    params:
-      - name: id
-        type: string
-        required: true
-      - name: name
-        type: string
-      - name: email
-        type: string
-    returns:
-      type: object
-
-authentication:
-  type: api_key
-  location: header
-  name: X-API-Key
-
-rateLimit:
-  requests: 1000
-  per: minute
-
-healthCheck:
-  method: testConnection
-  interval: 5m
-```
-
-### Step 3: Register Connector
-
-In `connectors/index.ts`:
-
-```typescript
-import { MyServiceConnector } from './my-service.connector';
-
-export const connectors = {
-  my_service: {
-    class: MyServiceConnector,
-    capabilities: require('./my-service.capabilities.yaml')
-  }
+  /**
+   * Rollback : appelé si les postconditions échouent ou si une erreur survient.
+   * Doit être idempotent.
+   */
+  async rollback(
+    params: { pump_id: string; action: string },
+    ctx: CapabilityContext,
+  ): Promise<void> {
+    logger.warn(`Rollback pompe ${params.pump_id} — arrêt d'urgence`);
+    // Appeler l'action STOP de manière idempotente
+    await this.execute({ pump_id: params.pump_id, action: 'STOP' }, ctx);
+  },
 };
 ```
 
 ---
 
-## Example: Build a Weather Service Connector
+## 3. Déclarer les types partagés
 
-### Complete Implementation
+Si la capability utilise des données de contexte (état sensors), déclarez les types dans `src/catalog/types/`:
 
 ```typescript
-// weather-service.connector.ts
-import axios from 'axios';
-import { Connector, ConnectorConfig } from '@eyeflow/sdk';
+// src/catalog/types/capability-context.ts
 
-interface WeatherData {
-  temperature: number;
-  condition: string;
-  humidity: number;
-  wind_speed: number;
+export interface CapabilityContext {
+  /** ID du nœud SVM qui exécute la capability */
+  nodeId: string;
+  /** Configuration spécifique au nœud */
+  nodeConfig: Record<string, unknown>;
+  /** État courant du contexte d'exécution (valeurs sensors chargées en amont) */
+  runtimeContext: Record<string, unknown>;
+  /** Client Vault pour résoudre les secrets */
+  vaultClient: VaultClient;
+  /** Logger structuré */
+  logger: Logger;
+  /** Timestamp Unix de démarrage de l'instruction */
+  startedAtMs: number;
 }
 
-export class WeatherServiceConnector implements Connector {
-  private apiKey: string;
-  private baseUrl: string = 'https://api.weatherapi.com/v1';
-  
-  async initialize(config: ConnectorConfig): Promise<void> {
-    if (!config.api_key) {
-      throw new Error('WeatherAPI API key is required');
-    }
-    
-    this.apiKey = config.api_key;
-    
-    // Test the connection immediately
-    try {
-      await this.getWeather({ location: 'London' });
-      console.log('✅ Weather connector initialized');
-    } catch (error) {
-      throw new Error(`Failed to initialize weather connector: ${error.message}`);
-    }
-  }
-  
-  async call(method: string, params: Record<string, any>): Promise<any> {
-    switch (method) {
-      case 'getWeather':
-        return this.getWeather(params);
-      case 'getForecast':
-        return this.getForecast(params);
-      default:
-        throw new Error(`Unknown method: ${method}`);
-    }
-  }
-  
-  async cleanup(): Promise<void> {
-    // No cleanup needed for HTTP-based connector
-  }
-  
-  private async getWeather(params: any): Promise<WeatherData> {
-    const { location, units = 'metric' } = params;
-    
-    if (!location) {
-      throw new Error('location parameter is required');
-    }
-    
-    try {
-      const response = await axios.get(`${this.baseUrl}/current.json`, {
-        params: {
-          key: this.apiKey,
-          q: location,
-          aqi: 'yes'
-        }
-      });
-      
-      const data = response.data.current;
-      
-      return {
-        temperature: data.temp_c,
-        condition: data.condition.text,
-        humidity: data.humidity,
-        wind_speed: data.wind_kph
-      };
-    } catch (error) {
-      if (error.response?.status === 400) {
-        throw new Error(`Location not found: ${location}`);
-      }
-      throw new Error(`Weather API error: ${error.message}`);
-    }
-  }
-  
-  private async getForecast(params: any): Promise<any> {
-    const { location, days = 5 } = params;
-    
-    if (!location) {
-      throw new Error('location parameter is required');
-    }
-    
-    if (days < 1 || days > 10) {
-      throw new Error('days must be between 1 and 10');
-    }
-    
-    try {
-      const response = await axios.get(`${this.baseUrl}/forecast.json`, {
-        params: {
-          key: this.apiKey,
-          q: location,
-          days: days,
-          aqi: 'yes'
-        }
-      });
-      
-      return response.data.forecast.forecastday.map(day => ({
-        date: day.date,
-        max_temp: day.day.maxtemp_c,
-        min_temp: day.day.mintemp_c,
-        condition: day.day.condition.text,
-        chance_of_rain: day.day.daily_chance_of_rain
-      }));
-    } catch (error) {
-      throw new Error(`Forecast error: ${error.message}`);
-    }
-  }
+export interface CapabilityResult {
+  success: boolean;
+  data?: Record<string, unknown>;
+  errorCode?: string;
+  errorMessage?: string;
 }
-```
 
-### Capabilities Definition
-
-```yaml
-# weather-service.capabilities.yaml
-id: weather_service
-name: Weather Service
-description: Get weather data via WeatherAPI.com
-type: data_lookup
-
-capabilities:
-  - id: getWeather
-    name: Get Current Weather
-    description: Get current weather for a location
-    params:
-      - name: location
-        type: string
-        required: true
-        description: City name or coordinates (e.g., "London", "40.71,-74.00")
-      - name: units
-        type: string
-        enum: [metric, imperial]
-        default: metric
-    returns:
-      type: object
-      schema:
-        temperature: number 
-        condition: string
-        humidity: number
-        wind_speed: number
-  
-  - id: getForecast
-    name: Get Weather Forecast
-    description: Get weather forecast (1-10 days)
-    params:
-      - name: location
-        type: string
-        required: true
-      - name: days
-        type: number
-        minimum: 1
-        maximum: 10
-        default: 5
-    returns:
-      type: array
-      items:
-        date: string
-        max_temp: number
-        min_temp: number
-        condition: string
-        chance_of_rain: number
-
-authentication:
-  type: api_key
-  location: query
-  name: key
-
-rateLimit:
-  requests: 1000
-  per: day
+export interface CapabilityHandler {
+  execute(params: unknown, ctx: CapabilityContext): Promise<CapabilityResult>;
+  rollback?(params: unknown, ctx: CapabilityContext): Promise<void>;
+}
 ```
 
 ---
 
-## Testing Your Connector
-
-### Unit Test
+## 4. Enregistrer la capability dans le module
 
 ```typescript
-// weather-service.connector.test.ts
-import { WeatherServiceConnector } from './weather-service.connector';
+// src/catalog/catalog.module.ts
 
-describe('WeatherServiceConnector', () => {
-  let connector: WeatherServiceConnector;
-  
-  beforeEach(async () => {
-    connector = new WeatherServiceConnector();
-    await connector.initialize({
-      api_key: process.env.WEATHER_API_KEY
-    });
-  });
-  
-  it('should get current weather', async () => {
-    const weather = await connector.call('getWeather', {
-      location: 'London'
-    });
-    
-    expect(weather).toHaveProperty('temperature');
-    expect(weather).toHaveProperty('condition');
-    expect(typeof weather.temperature).toBe('number');
-  });
-  
-  it('should get forecast', async () => {
-    const forecast = await connector.call('getForecast', {
-      location: 'London',
-      days: 3
-    });
-    
-    expect(Array.isArray(forecast)).toBe(true);
-    expect(forecast[0]).toHaveProperty('date');
-    expect(forecast[0]).toHaveProperty('max_temp');
-  });
-  
-  it('should reject invalid location', async () => {
-    await expect(
-      connector.call('getWeather', { location: 'InvalidCity123!' })
-    ).rejects.toThrow('Location not found');
-  });
-  
-  afterEach(async () => {
-    await connector.cleanup();
-  });
-});
-```
+import { Module } from '@nestjs/common';
+import { CatalogService } from './catalog.service';
+import { handler as valveControlHandler } from './capabilities/valve_control/handler';
+import { handler as pumpCentrifugeHandler } from './capabilities/custom_pump_centrifuge/handler';
 
-### Integration Test in EyeFlow
-
-```typescript
-describe('Weather Connector Integration', () => {
-  it('should work in a task', async () => {
-    // Create task using connector
-    const task = await client.tasks.create({
-      name: 'get_weather_test',
-      actions: [
-        {
-          type: 'connector',
-          connector: 'weather_service',
-          function: 'getWeather',
-          params: { location: 'New York' }
-        }
-      ]
-    });
-    
-    // Execute task
-    const result = await client.tasks.execute('get_weather_test');
-    
-    expect(result.status).toBe('success');
-    expect(result.output).toHaveProperty('temperature');
-  });
-});
+@Module({
+  providers: [
+    CatalogService,
+    // Enregistrement automatique via le répertoire capabilities/
+    // Ou manuellement :
+    {
+      provide: 'CAPABILITY_HANDLERS',
+      useValue: {
+        valve_control: valveControlHandler,
+        custom_pump_centrifuge: pumpCentrifugeHandler,
+      },
+    },
+  ],
+  exports: [CatalogService],
+})
+export class CatalogModule {}
 ```
 
 ---
 
-## Publishing Your Connector
-
-### Step 1: Publish to NPM
+## 5. Signer et enregistrer
 
 ```bash
-# Create package.json
-{
-  "name": "@myorg/eyeflow-weather-connector",
-  "version": "1.0.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "peerDependencies": {
-    "@eyeflow/sdk": "^1.0.0"
+# Signer le fichier de déclaration
+openssl dgst -sha256 -sign /etc/eyeflow/keys/ir_signing.pem \
+  -out capability.json.sig \
+  src/catalog/capabilities/custom_pump_centrifuge/capability.json
+
+# Convertir en base64
+SIG=$(base64 -w 0 capability.json.sig)
+
+# Ajouter la signature dans capability.json
+jq --arg sig "$SIG" '. + {"signature": $sig}' \
+  capability.json > capability_signed.json
+
+# Enregistrer via CLI
+eyeflow catalog register \
+  --file capability_signed.json \
+  --sign-with /etc/eyeflow/keys/ir_signing.pem
+
+# Vérification
+eyeflow catalog get custom_pump_centrifuge
+```
+
+---
+
+## 6. Tester la capability
+
+```typescript
+// test/capabilities/custom_pump_centrifuge.spec.ts
+
+import { Test } from '@nestjs/testing';
+import { CatalogService } from '@/catalog/catalog.service';
+import { handler } from '@/catalog/capabilities/custom_pump_centrifuge/handler';
+
+describe('CustomPumpCentrifuge capability', () => {
+  let catalogService: CatalogService;
+
+  beforeEach(async () => {
+    const module = await Test.createTestingModule({
+      providers: [CatalogService],
+    }).compile();
+    catalogService = module.get(CatalogService);
+  });
+
+  it('should start a pump successfully', async () => {
+    const mockCtx = {
+      nodeId: 'test-node',
+      nodeConfig: {
+        pumps: {
+          'PUMP-01': {
+            modbus_host: 'localhost',
+            modbus_port: 5020, // simulateur Modbus
+            unit_id: 1,
+            start_coil: 0,
+            speed_register: 10,
+          },
+        },
+      },
+      runtimeContext: {
+        pump_status: 'STOPPED',
+        suction_level_m: 1.2,
+      },
+      vaultClient: { get: jest.fn() },
+      logger: { log: jest.fn(), warn: jest.fn() },
+      startedAtMs: Date.now(),
+    };
+
+    const result = await handler.execute(
+      { pump_id: 'PUMP-01', action: 'START' },
+      mockCtx as any,
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.data?.action).toBe('START');
+  });
+
+  it('should validate preconditions before executing', async () => {
+    const capability = await catalogService.getCatalogCapability('custom_pump_centrifuge');
+    
+    // Simuler un état d'arrêt d'urgence
+    const ctx = { runtimeContext: { pump_status: 'EMERGENCY_STOP', suction_level_m: 1.0 } };
+    
+    const precheck = await catalogService.checkPreconditions(capability, {}, ctx as any);
+    expect(precheck.passed).toBe(false);
+    expect(precheck.failedConditions[0].errorCode).toBe('PUMP_EMERGENCY_STOP');
+  });
+});
+```
+
+---
+
+## 7. Connecteur source custom
+
+Pour créer une source d'événements custom (non couverte par les connecteurs built-in) :
+
+```typescript
+// src/event-sources/custom-rs485/source.ts
+
+import { EventSource, EventSourceConfig, EventPayload } from '@/event-sources/types';
+import { SerialPort } from 'serialport';
+
+export class RS485Source implements EventSource {
+  id = 'rs485-source';
+  private port: SerialPort;
+
+  async connect(config: EventSourceConfig): Promise<void> {
+    this.port = new SerialPort({
+      path: config.device,      // ex: /dev/ttyUSB0
+      baudRate: config.baudRate, // ex: 9600
+    });
+  }
+
+  onEvent(callback: (payload: EventPayload) => void): void {
+    this.port.on('data', (data: Buffer) => {
+      const value = this.parseRS485Frame(data);
+      callback({
+        source: `rs485:${this.id}`,
+        value,
+        timestamp: new Date().toISOString(),
+        nodeId: process.env.NODE_ID!,
+      });
+    });
+  }
+
+  private parseRS485Frame(data: Buffer): Record<string, number> {
+    // Parsing custom selon le protocole du capteur
+    return { raw: data.readFloatBE(0) };
+  }
+
+  async disconnect(): Promise<void> {
+    await new Promise((res) => this.port.close(res as any));
   }
 }
-
-# Build
-npm run build
-
-# Publish
-npm publish
-```
-
-### Step 2: Register with EyeFlow
-
-Submit to the [EyeFlow Connector Registry](https://registry.eyeflow.io):
-
-```yaml
-name: Weather Service Connector
-author: Your Name
-version: 1.0.0
-package: "@myorg/eyeflow-weather-connector"
-npm_url: https://www.npmjs.com/package/@myorg/eyeflow-weather-connector
-capabilities:
-  - getWeather
-  - getForecast
-tags:
-  - weather
-  - data-lookup
-```
-
-### Step 3: Community
-
-Share your connector:
-- GitHub discussions
-- EyeFlow Slack community
-- Connector marketplace
-
----
-
-## Best Practices
-
-### Error Handling
-
-```typescript
-// ✅ Good: Specific, actionable errors
-throw new Error('Location not found: coordinates [-90.5, -180]');
-
-// ❌ Bad: Vague error
-throw new Error('API error');
-```
-
-### Validation
-
-```typescript
-// ✅ Validate early
-if (!params.email || !params.email.includes('@')) {
-  throw new Error('Invalid email format');
-}
-
-// ✅ Type safety
-async call(method: string, params: Record<string, any>): Promise<any> {
-  if (typeof method !== 'string') {
-    throw new TypeError('method must be a string');
-  }
-}
-```
-
-### Performance
-
-```typescript
-// ✅ Cache connections
-private client: ApiClient;  // Reuse across calls
-
-// ✅ Implement timeout
-const response = await Promise.race([
-  this.client.get(url),
-  this.timeout(30000)
-]);
-
-// ❌ Don't create new connection per call
-async call() {
-  const client = new Client();  // Slow!
-}
-```
-
-### Documentation
-
-```typescript
-/**
- * Get weather for a location
- * 
- * @param location - City name or coordinates
- * @param units - Temperature units (metric/imperial)
- * @returns Weather data with temperature, condition, humidity
- * @throws Error if location not found or API unreachable
- */
-async getWeather(params: {
-  location: string;
-  units?: 'metric' | 'imperial';
-}): Promise<WeatherData>
 ```
 
 ---
 
-## Advanced Topics
+## Checklist de validation d'une capability
 
-### Streaming Data
+Avant de mettre en production :
 
-```typescript
-async *streamWeather(location: string) {
-  for (let hour = 0; hour < 24; hour++) {
-    const weather = await this.getWeatherAtTime(location, hour);
-    yield weather;
-  }
-}
-```
-
-### Async Patterns
-
-```typescript
-// Poll for completion
-async createJob(data: any): Promise<string> {
-  const response = await this.client.post('/jobs', data);
-  return response.job_id;
-}
-
-async getJobStatus(jobId: string): Promise<any> {
-  return this.client.get(`/jobs/${jobId}`);
-}
-```
-
-### Batch Operations
-
-```typescript
-async getWeatherBatch(locations: string[]): Promise<WeatherData[]> {
-  return Promise.all(
-    locations.map(loc => this.getWeather({ location: loc }))
-  );
-}
-```
-
----
-
-## Debugging Tips
-
-```typescript
-// Add debug output
-console.log('[weather-connector] Calling API:', url);
-console.log('[weather-connector] Response:', data);
-
-// Or use debug module
-import debug from 'debug';
-const log = debug('eyeflow:weather');
-log('API response: %O', data);
-
-// Enable with: DEBUG=eyeflow:* npm start
-```
-
----
-
-## Next Steps
-
-- [Share on GitHub](https://github.com/topics/eyeflow-connector)
-- [Join community](https://github.com/eyeflow-ai/eyeflow/discussions)
-- [View connector marketplace](https://registry.eyeflow.io)
-
----
-
-Build powerful integrations with EyeFlow! 🚀
+- [ ] Préconditions couvrent tous les états dangereux
+- [ ] Postconditions vérifiées avec timeout réaliste
+- [ ] Stratégie de rollback testée en isolation
+- [ ] Timeout global ≤ `instruction_timeout_ms` du SVM config
+- [ ] Handler est **idempotent** (appel multiple sans effet de bord)
+- [ ] Secrets résolus via Vault (pas de credentials hardcodés)
+- [ ] Tests unitaires avec mock Modbus/GPIO/REST
+- [ ] Tests d'intégration avec simulateur hardware
+- [ ] Signature Ed25519 valide
+- [ ] Enregistré dans un environnement de staging avant production

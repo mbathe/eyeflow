@@ -1,0 +1,32 @@
+{
+  "unversionedId": "concepts/physical-control",
+  "id": "concepts/physical-control",
+  "title": "Contrôle physique",
+  "description": "Sécurité des actionneurs — TimeWindow, fenêtre d'annulation, postconditions, garde-fous pour actions irréversibles en environnements industriels et médicaux.",
+  "source": "@site/docs/concepts/physical-control.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/physical-control",
+  "permalink": "/docs/concepts/physical-control",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/physical-control.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 7,
+  "frontMatter": {
+    "id": "physical-control",
+    "sidebar_position": 7,
+    "title": "Contrôle physique",
+    "description": "Sécurité des actionneurs — TimeWindow, fenêtre d'annulation, postconditions, garde-fous pour actions irréversibles en environnements industriels et médicaux."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Exécution distribuée",
+    "permalink": "/docs/concepts/distributed-execution"
+  },
+  "next": {
+    "title": "Appels LLM avancés",
+    "permalink": "/docs/concepts/llm-calls"
+  }
+}

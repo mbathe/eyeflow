@@ -1,0 +1,32 @@
+{
+  "unversionedId": "concepts/semantic-compilation",
+  "id": "concepts/semantic-compilation",
+  "title": "Compilation sémantique",
+  "description": "Les 6 phases de transformation d'une règle en langage naturel vers un binaire LLM-IR signé et vérifiable formellement.",
+  "source": "@site/docs/concepts/semantic-compilation.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/semantic-compilation",
+  "permalink": "/docs/concepts/semantic-compilation",
+  "draft": false,
+  "editUrl": "https://github.com/eyeflow-ai/eyeflow-docs/edit/main/docs/concepts/semantic-compilation.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedAt": 1539502055,
+  "formattedLastUpdatedAt": "14 oct. 2018",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "id": "semantic-compilation",
+    "sidebar_position": 1,
+    "title": "Compilation sémantique",
+    "description": "Les 6 phases de transformation d'une règle en langage naturel vers un binaire LLM-IR signé et vérifiable formellement."
+  },
+  "sidebar": "mainSidebar",
+  "previous": {
+    "title": "Dashboard — Tableau de bord",
+    "permalink": "/docs/getting-started/dashboard"
+  },
+  "next": {
+    "title": "Format LLM-IR",
+    "permalink": "/docs/concepts/llm-ir"
+  }
+}

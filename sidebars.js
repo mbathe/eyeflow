@@ -1,34 +1,78 @@
+/** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
-  tutorialSidebar: [
-    'intro/what-is-eyeflow',
-    'intro/why-eyeflow',
-    'intro/vs-openclaw',
-    'for-end-users/quickstart',
-    'for-end-users/first-task',
-    'for-end-users/first-rule',
-    'for-end-users/ui-dashboard',
-    'for-end-users/cli-basics',
-    'for-developers/architecture',
-    'for-developers/api-reference',
-    'for-developers/sdks',
-    'for-developers/deployment',
-    'for-developers/connectors/overview',
-    'for-developers/connectors/slack',
-    'for-developers/connectors/postgresql',
-    'for-developers/connectors/custom',
-    'for-decision-makers/roi-analysis',
-    'for-decision-makers/use-cases',
-    'for-decision-makers/compliance-security',
-    'for-decision-makers/scaling-performance',
-    'for-decision-makers/technology-selection',
-    'technical-deep-dive/semantic-compilation',
-    'technical-deep-dive/llm-ir',
-    'technical-deep-dive/svm-runtime',
-    'technical-deep-dive/capability-catalog',
-    'technical-deep-dive/determinism-guarantees',
-    'technical-deep-dive/edge-computing',
-    'technical-deep-dive/security-sandbox',
-    'technical-deep-dive/performance-benchmarking',
+  mainSidebar: [
+    {
+      type: 'category',
+      label: '🎯 Introduction',
+      collapsed: false,
+      items: [
+        'intro/what-is-eyeflow',
+        'intro/why-eyeflow',
+        'intro/vs-alternatives',
+      ],
+    },
+    {
+      type: 'category',
+      label: '⚡ Démarrer rapidement',
+      collapsed: false,
+      items: [
+        'getting-started/quickstart',
+        'getting-started/first-workflow',
+        'getting-started/dashboard',
+      ],
+    },
+    {
+      type: 'category',
+      label: '🧠 Comment ça marche',
+      items: [
+        'concepts/semantic-compilation',
+        'concepts/llm-ir',
+        'concepts/capability-catalog',
+        'concepts/svm-runtime',
+        'concepts/event-sources',
+        'concepts/distributed-execution',
+        'concepts/physical-control',
+        'concepts/llm-calls',
+        'concepts/audit-observability',
+        'concepts/security',
+      ],
+    },
+    {
+      type: 'category',
+      label: '🏭 Secteurs verticaux',
+      items: [
+        'verticals/medical',
+        'verticals/industrial',
+        'verticals/agriculture',
+        'verticals/finance',
+        'verticals/iot',
+      ],
+    },
+    {
+      type: 'category',
+      label: '👨‍💻 Développeurs',
+      items: [
+        'for-developers/architecture',
+        'for-developers/api-reference',
+        'for-developers/deployment',
+        'for-developers/sdks',
+        {
+          type: 'category',
+          label: 'Connecteurs',
+          items: [
+            'for-developers/connectors/connectors-overview',
+            'for-developers/connectors/connectors-custom',
+          ],
+        },
+      ],
+    },
+    {
+      type: 'category',
+      label: '🗺️ Roadmap',
+      items: [
+        'roadmap/roadmap',
+      ],
+    },
   ],
 };
 

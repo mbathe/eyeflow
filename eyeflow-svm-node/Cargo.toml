@@ -1,0 +1,72 @@
+[package]
+name = "eyeflow-svm-node"
+version = "0.1.0"
+edition = "2021"
+description = "Eyeflow Rust SVM node — edge/embedded execution engine (spec §6, §8)"
+license = "MIT"
+authors = ["Eyeflow Team"]
+
+[[bin]]
+name = "eyeflow-svm-node"
+path = "src/main.rs"
+
+[dependencies]
+# Async runtime
+tokio        = { version = "1",   features = ["full"] }
+
+# WebSocket client — persistent connection to NestJS central node (spec §8.2)
+tokio-tungstenite = { version = "0.21", features = ["native-tls"] }
+tungstenite       = { version = "0.21" }
+futures-util      = { version = "0.3" }
+
+# HTTP client for health / one-shot REST calls (spec §8.2)
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+
+# Serialisation
+serde      = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+
+# Base64 encoding (IR artifact wrapper)
+base64 = { version = "0.22" }
+
+# Protocol Buffers — LLM-IR binary decode (spec §5, prost = Rust protobuf)
+prost       = { version = "0.12" }
+prost-types = { version = "0.12" }
+bytes       = { version = "1" }
+
+# Cryptography — Ed25519 signature verification + SHA-256 audit chain (spec §12.1)
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+sha2          = { version = "0.10" }
+hex           = { version = "0.4" }
+
+# Secure random — ephemeral node identity
+rand = { version = "0.8" }
+uuid = { version = "1", features = ["v4"] }
+
+# Date/time — ISO 8601 timestamps in audit events
+chrono = { version = "0.4", features = ["serde"] }
+
+# Configuration from environment / dotenv
+dotenvy = { version = "0.15" }
+
+# Logging
+tracing           = { version = "0.1" }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
+anyhow = { version = "1" }
+thiserror = { version = "1" }
+
+# Lightweight regex for template injection (VaultClient §13.2)
+regex-lite = { version = "0.1" }
+
+[build-dependencies]
+# Compile .proto files to Rust structs (mirrors llm_ir.proto from NestJS side)
+prost-build = { version = "0.12" }
+
+[profile.release]
+# Optimised for embedded Linux (Raspberry Pi) — small + fast binary (~200KB goal)
+opt-level     = "z"
+lto           = true
+codegen-units = 1
+strip         = true

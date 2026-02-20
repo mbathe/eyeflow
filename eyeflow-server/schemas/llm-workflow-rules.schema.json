@@ -1,0 +1,209 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LLM Workflow Rules Schema",
+  "description": "JSON Schema for validating LLM-generated workflow rules responses",
+  "type": "object",
+  "required": ["workflow_rules"],
+  "properties": {
+    "workflow_rules": {
+      "type": "object",
+      "required": ["rules", "summary", "confidence"],
+      "properties": {
+        "rules": {
+          "type": "array",
+          "description": "List of generated workflow rules",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["name", "description", "trigger", "actions"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Unique rule name/identifier",
+                "pattern": "^[a-zA-Z0-9_-]+$",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "description": {
+                "type": "string",
+                "description": "Human-readable rule description",
+                "minLength": 10,
+                "maxLength": 500
+              },
+              "trigger": {
+                "type": "object",
+                "description": "Rule trigger definition",
+                "required": ["type"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "ON_EVENT",
+                      "ON_SCHEDULE",
+                      "ON_DEMAND",
+                      "ON_CREATE",
+                      "ON_UPDATE",
+                      "ON_DELETE",
+                      "ON_ERROR"
+                    ],
+                    "description": "Trigger type"
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "Trigger source connector/node ID"
+                  },
+                  "schedule": {
+                    "type": "string",
+                    "description": "Cron expression for scheduled triggers",
+                    "pattern": "^(((\\d+,)+\\d+|(\\d+-\\d+)|\\d+|\\*)\\s?){5}$|^@(annually|yearly|monthly|weekly|daily|hourly|reboot)$"
+                  }
+                }
+              },
+              "conditions": {
+                "type": "array",
+                "description": "Optional conditions to evaluate before firing actions",
+                "items": {
+                  "type": "object",
+                  "required": ["type", "operator", "value"],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "description": "Field/condition type",
+                      "minLength": 1,
+                      "maxLength": 100
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "equals",
+                        "not_equals",
+                        "contains",
+                        "not_contains",
+                        "starts_with",
+                        "ends_with",
+                        "greater_than",
+                        "less_than",
+                        "greater_or_equal",
+                        "less_or_equal",
+                        "in_list",
+                        "not_in_list",
+                        "is_null",
+                        "is_not_null"
+                      ],
+                      "description": "Comparison operator"
+                    },
+                    "value": {
+                      "description": "Value to compare against"
+                    }
+                  }
+                }
+              },
+              "actions": {
+                "type": "array",
+                "description": "Actions to execute when rule fires",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["type"],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "description": "Action type/function name",
+                      "minLength": 1,
+                      "maxLength": 100
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Human-readable action name"
+                    },
+                    "channel": {
+                      "type": ["string", "null"],
+                      "description": "Target channel (for communication actions)"
+                    },
+                    "payload": {
+                      "type": "object",
+                      "description": "Action parameters",
+                      "properties": {
+                        "connector": {
+                          "type": "string",
+                          "description": "Connector ID"
+                        },
+                        "connectorId": {
+                          "type": "string",
+                          "description": "Alternative connector ID field"
+                        },
+                        "functionId": {
+                          "type": "string",
+                          "description": "Function ID to execute"
+                        },
+                        "action": {
+                          "type": "string",
+                          "description": "Action identifier"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "metadata": {
+                "type": "object",
+                "description": "Optional rule metadata",
+                "properties": {
+                  "priority": {
+                    "type": "integer",
+                    "enum": [1, 2, 3, 4, 5],
+                    "description": "Rule execution priority (1=highest, 5=lowest)"
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "Whether rule is enabled"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": {
+          "type": "string",
+          "description": "Overall summary of generated rules",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "confidence": {
+          "type": "number",
+          "description": "Overall confidence score (0-1)",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "debug": {
+      "type": "object",
+      "description": "Optional debug information",
+      "properties": {
+        "parsingSteps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "matchedFunctions": {
+          "type": "array"
+        },
+        "resolvedSchemas": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

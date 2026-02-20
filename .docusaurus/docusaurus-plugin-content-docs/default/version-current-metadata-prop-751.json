@@ -8,357 +8,501 @@
   "className": "docs-version-current",
   "isLast": true,
   "docsSidebars": {
-    "tutorialSidebar": [
+    "mainSidebar": [
       {
-        "type": "link",
-        "label": "What is EyeFlow?",
-        "href": "/eyeflow/fr/docs/intro/what-is-eyeflow",
-        "docId": "intro/what-is-eyeflow"
+        "type": "category",
+        "label": "🎯 Introduction",
+        "collapsed": false,
+        "items": [
+          {
+            "type": "link",
+            "label": "Qu'est-ce qu'EyeFlow ?",
+            "href": "/docs/intro/what-is-eyeflow",
+            "docId": "intro/what-is-eyeflow"
+          },
+          {
+            "type": "link",
+            "label": "Pourquoi EyeFlow ?",
+            "href": "/docs/intro/why-eyeflow",
+            "docId": "intro/why-eyeflow"
+          },
+          {
+            "type": "link",
+            "label": "EyeFlow vs. les alternatives",
+            "href": "/docs/intro/vs-alternatives",
+            "docId": "intro/vs-alternatives"
+          }
+        ],
+        "collapsible": true
       },
       {
-        "type": "link",
-        "label": "Why EyeFlow?",
-        "href": "/eyeflow/fr/docs/intro/why-eyeflow",
-        "docId": "intro/why-eyeflow"
+        "type": "category",
+        "label": "⚡ Démarrer rapidement",
+        "collapsed": false,
+        "items": [
+          {
+            "type": "link",
+            "label": "Quickstart — 10 minutes",
+            "href": "/docs/getting-started/quickstart",
+            "docId": "getting-started/quickstart"
+          },
+          {
+            "type": "link",
+            "label": "Premier workflow complet",
+            "href": "/docs/getting-started/first-workflow",
+            "docId": "getting-started/first-workflow"
+          },
+          {
+            "type": "link",
+            "label": "Dashboard — Tableau de bord",
+            "href": "/docs/getting-started/dashboard",
+            "docId": "getting-started/dashboard"
+          }
+        ],
+        "collapsible": true
       },
       {
-        "type": "link",
-        "label": "EyeFlow vs OpenClaw",
-        "href": "/eyeflow/fr/docs/intro/vs-openclaw",
-        "docId": "intro/vs-openclaw"
+        "type": "category",
+        "label": "🧠 Comment ça marche",
+        "items": [
+          {
+            "type": "link",
+            "label": "Compilation sémantique",
+            "href": "/docs/concepts/semantic-compilation",
+            "docId": "concepts/semantic-compilation"
+          },
+          {
+            "type": "link",
+            "label": "Format LLM-IR",
+            "href": "/docs/concepts/llm-ir",
+            "docId": "concepts/llm-ir"
+          },
+          {
+            "type": "link",
+            "label": "Catalog de capabilities",
+            "href": "/docs/concepts/capability-catalog",
+            "docId": "concepts/capability-catalog"
+          },
+          {
+            "type": "link",
+            "label": "SVM — Semantic Virtual Machine",
+            "href": "/docs/concepts/svm-runtime",
+            "docId": "concepts/svm-runtime"
+          },
+          {
+            "type": "link",
+            "label": "Sources d'événements",
+            "href": "/docs/concepts/event-sources",
+            "docId": "concepts/event-sources"
+          },
+          {
+            "type": "link",
+            "label": "Exécution distribuée",
+            "href": "/docs/concepts/distributed-execution",
+            "docId": "concepts/distributed-execution"
+          },
+          {
+            "type": "link",
+            "label": "Contrôle physique",
+            "href": "/docs/concepts/physical-control",
+            "docId": "concepts/physical-control"
+          },
+          {
+            "type": "link",
+            "label": "Appels LLM avancés",
+            "href": "/docs/concepts/llm-calls",
+            "docId": "concepts/llm-calls"
+          },
+          {
+            "type": "link",
+            "label": "Audit et observabilité",
+            "href": "/docs/concepts/audit-observability",
+            "docId": "concepts/audit-observability"
+          },
+          {
+            "type": "link",
+            "label": "Sécurité",
+            "href": "/docs/concepts/security",
+            "docId": "concepts/security"
+          }
+        ],
+        "collapsed": true,
+        "collapsible": true
       },
       {
-        "type": "link",
-        "label": "Quickstart",
-        "href": "/eyeflow/fr/docs/for-end-users/quickstart",
-        "docId": "for-end-users/quickstart"
+        "type": "category",
+        "label": "🏭 Secteurs verticaux",
+        "items": [
+          {
+            "type": "link",
+            "label": "Secteur médical",
+            "href": "/docs/verticals/medical",
+            "docId": "verticals/medical"
+          },
+          {
+            "type": "link",
+            "label": "Secteur industriel",
+            "href": "/docs/verticals/industrial",
+            "docId": "verticals/industrial"
+          },
+          {
+            "type": "link",
+            "label": "Secteur agriculture",
+            "href": "/docs/verticals/agriculture",
+            "docId": "verticals/agriculture"
+          },
+          {
+            "type": "link",
+            "label": "Secteur finance",
+            "href": "/docs/verticals/finance",
+            "docId": "verticals/finance"
+          },
+          {
+            "type": "link",
+            "label": "Secteur IoT",
+            "href": "/docs/verticals/iot",
+            "docId": "verticals/iot"
+          }
+        ],
+        "collapsed": true,
+        "collapsible": true
       },
       {
-        "type": "link",
-        "label": "Create Your First Task",
-        "href": "/eyeflow/fr/docs/for-end-users/first-task",
-        "docId": "for-end-users/first-task"
+        "type": "category",
+        "label": "👨‍💻 Développeurs",
+        "items": [
+          {
+            "type": "link",
+            "label": "Architecture système",
+            "href": "/docs/for-developers/architecture",
+            "docId": "for-developers/architecture"
+          },
+          {
+            "type": "link",
+            "label": "Référence API REST",
+            "href": "/docs/for-developers/api-reference",
+            "docId": "for-developers/api-reference"
+          },
+          {
+            "type": "link",
+            "label": "Déploiement",
+            "href": "/docs/for-developers/deployment",
+            "docId": "for-developers/deployment"
+          },
+          {
+            "type": "link",
+            "label": "SDKs & CLI",
+            "href": "/docs/for-developers/sdks",
+            "docId": "for-developers/sdks"
+          },
+          {
+            "type": "category",
+            "label": "Connecteurs",
+            "items": [
+              {
+                "type": "link",
+                "label": "Vue d'ensemble des connecteurs",
+                "href": "/docs/for-developers/connectors/connectors-overview",
+                "docId": "for-developers/connectors/connectors-overview"
+              },
+              {
+                "type": "link",
+                "label": "Créer un connecteur custom",
+                "href": "/docs/for-developers/connectors/connectors-custom",
+                "docId": "for-developers/connectors/connectors-custom"
+              }
+            ],
+            "collapsed": true,
+            "collapsible": true
+          }
+        ],
+        "collapsed": true,
+        "collapsible": true
       },
       {
-        "type": "link",
-        "label": "Create Your First Rule",
-        "href": "/eyeflow/fr/docs/for-end-users/first-rule",
-        "docId": "for-end-users/first-rule"
-      },
-      {
-        "type": "link",
-        "label": "Dashboard Tour",
-        "href": "/eyeflow/fr/docs/for-end-users/ui-dashboard",
-        "docId": "for-end-users/ui-dashboard"
-      },
-      {
-        "type": "link",
-        "label": "CLI Basics",
-        "href": "/eyeflow/fr/docs/for-end-users/cli-basics",
-        "docId": "for-end-users/cli-basics"
-      },
-      {
-        "type": "link",
-        "label": "Architecture Overview",
-        "href": "/eyeflow/fr/docs/for-developers/architecture",
-        "docId": "for-developers/architecture"
-      },
-      {
-        "type": "link",
-        "label": "API Reference",
-        "href": "/eyeflow/fr/docs/for-developers/api-reference",
-        "docId": "for-developers/api-reference"
-      },
-      {
-        "type": "link",
-        "label": "SDKs & Client Libraries",
-        "href": "/eyeflow/fr/docs/for-developers/sdks",
-        "docId": "for-developers/sdks"
-      },
-      {
-        "type": "link",
-        "label": "Deployment",
-        "href": "/eyeflow/fr/docs/for-developers/deployment",
-        "docId": "for-developers/deployment"
-      },
-      {
-        "type": "link",
-        "label": "Connectors Overview",
-        "href": "/eyeflow/fr/docs/for-developers/connectors/overview",
-        "docId": "for-developers/connectors/overview"
-      },
-      {
-        "type": "link",
-        "label": "Slack Connector",
-        "href": "/eyeflow/fr/docs/for-developers/connectors/slack",
-        "docId": "for-developers/connectors/slack"
-      },
-      {
-        "type": "link",
-        "label": "PostgreSQL Connector",
-        "href": "/eyeflow/fr/docs/for-developers/connectors/postgresql",
-        "docId": "for-developers/connectors/postgresql"
-      },
-      {
-        "type": "link",
-        "label": "Custom Connectors",
-        "href": "/eyeflow/fr/docs/for-developers/connectors/custom",
-        "docId": "for-developers/connectors/custom"
-      },
-      {
-        "type": "link",
-        "label": "ROI Analysis",
-        "href": "/eyeflow/fr/docs/for-decision-makers/roi-analysis",
-        "docId": "for-decision-makers/roi-analysis"
-      },
-      {
-        "type": "link",
-        "label": "Use Cases",
-        "href": "/eyeflow/fr/docs/for-decision-makers/use-cases",
-        "docId": "for-decision-makers/use-cases"
-      },
-      {
-        "type": "link",
-        "label": "Compliance & Security",
-        "href": "/eyeflow/fr/docs/for-decision-makers/compliance-security",
-        "docId": "for-decision-makers/compliance-security"
-      },
-      {
-        "type": "link",
-        "label": "Scaling & Performance",
-        "href": "/eyeflow/fr/docs/for-decision-makers/scaling-performance",
-        "docId": "for-decision-makers/scaling-performance"
-      },
-      {
-        "type": "link",
-        "label": "Technology Selection",
-        "href": "/eyeflow/fr/docs/for-decision-makers/technology-selection",
-        "docId": "for-decision-makers/technology-selection"
-      },
-      {
-        "type": "link",
-        "label": "Semantic Compilation",
-        "href": "/eyeflow/fr/docs/technical-deep-dive/semantic-compilation",
-        "docId": "technical-deep-dive/semantic-compilation"
-      },
-      {
-        "type": "link",
-        "label": "LLM-IR (Intermediate Representation)",
-        "href": "/eyeflow/fr/docs/technical-deep-dive/llm-ir",
-        "docId": "technical-deep-dive/llm-ir"
-      },
-      {
-        "type": "link",
-        "label": "SVM Runtime",
-        "href": "/eyeflow/fr/docs/technical-deep-dive/svm-runtime",
-        "docId": "technical-deep-dive/svm-runtime"
-      },
-      {
-        "type": "link",
-        "label": "Capability Catalog",
-        "href": "/eyeflow/fr/docs/technical-deep-dive/capability-catalog",
-        "docId": "technical-deep-dive/capability-catalog"
-      },
-      {
-        "type": "link",
-        "label": "Determinism Guarantees",
-        "href": "/eyeflow/fr/docs/technical-deep-dive/determinism-guarantees",
-        "docId": "technical-deep-dive/determinism-guarantees"
-      },
-      {
-        "type": "link",
-        "label": "Edge Computing & IoT",
-        "href": "/eyeflow/fr/docs/technical-deep-dive/edge-computing",
-        "docId": "technical-deep-dive/edge-computing"
-      },
-      {
-        "type": "link",
-        "label": "Security Sandbox",
-        "href": "/eyeflow/fr/docs/technical-deep-dive/security-sandbox",
-        "docId": "technical-deep-dive/security-sandbox"
-      },
-      {
-        "type": "link",
-        "label": "Performance Benchmarking",
-        "href": "/eyeflow/fr/docs/technical-deep-dive/performance-benchmarking",
-        "docId": "technical-deep-dive/performance-benchmarking"
+        "type": "category",
+        "label": "🗺️ Roadmap",
+        "items": [
+          {
+            "type": "link",
+            "label": "Feuille de route",
+            "href": "/docs/roadmap/roadmap",
+            "docId": "roadmap/roadmap"
+          }
+        ],
+        "collapsed": true,
+        "collapsible": true
       }
     ]
   },
   "docs": {
+    "concepts/audit-observability": {
+      "id": "concepts/audit-observability",
+      "title": "Audit et observabilité",
+      "description": "Chaîne d'audit cryptographique SHA-256, traçabilité par instruction, export Kafka, dashboards Grafana/InfluxDB et conformité RGPD/NIS2.",
+      "sidebar": "mainSidebar"
+    },
+    "concepts/capability-catalog": {
+      "id": "concepts/capability-catalog",
+      "title": "Catalog de capabilities",
+      "description": "Gouvernance des capabilities — signature Ed25519, versionnage, préconditions/postconditions/rollback, révocation à chaud et 5 secteurs verticaux.",
+      "sidebar": "mainSidebar"
+    },
+    "concepts/distributed-execution": {
+      "id": "concepts/distributed-execution",
+      "title": "Exécution distribuée",
+      "description": "Topologie multi-nœuds EyeFlow — load balancing, résilience offline, buffer Kafka local, réconciliation, déploiement MCU Embassy STM32/nRF52.",
+      "sidebar": "mainSidebar"
+    },
+    "concepts/event-sources": {
+      "id": "concepts/event-sources",
+      "title": "Sources d'événements",
+      "description": "Les 11 types de sources d'événements supportés par EyeFlow — Kafka, MQTT, Modbus, OPC-UA, HTTP webhook, Cron, FS watcher, CDC, Email, BLE, AMQP.",
+      "sidebar": "mainSidebar"
+    },
+    "concepts/llm-calls": {
+      "id": "concepts/llm-calls",
+      "title": "Appels LLM avancés",
+      "description": "CompiledLLMContext figé, pipeline multi-LLM, boucles de raisonnement bornées, génération contrainte par logit_bias et résolution de slots dynamiques.",
+      "sidebar": "mainSidebar"
+    },
+    "concepts/llm-ir": {
+      "id": "concepts/llm-ir",
+      "title": "Format LLM-IR",
+      "description": "Structure du format binaire LLM-IR — protobuf, schéma des messages, versionnage semver, matrice de compatibilité et signature Ed25519.",
+      "sidebar": "mainSidebar"
+    },
+    "concepts/physical-control": {
+      "id": "concepts/physical-control",
+      "title": "Contrôle physique",
+      "description": "Sécurité des actionneurs — TimeWindow, fenêtre d'annulation, postconditions, garde-fous pour actions irréversibles en environnements industriels et médicaux.",
+      "sidebar": "mainSidebar"
+    },
+    "concepts/security": {
+      "id": "concepts/security",
+      "title": "Sécurité",
+      "description": "Modèle de menace EyeFlow — protection contre l'injection de prompt, permissions compilées, Vault HashiCorp, certifications par secteur et isolation d'exécution.",
+      "sidebar": "mainSidebar"
+    },
+    "concepts/semantic-compilation": {
+      "id": "concepts/semantic-compilation",
+      "title": "Compilation sémantique",
+      "description": "Les 6 phases de transformation d'une règle en langage naturel vers un binaire LLM-IR signé et vérifiable formellement.",
+      "sidebar": "mainSidebar"
+    },
+    "concepts/svm-runtime": {
+      "id": "concepts/svm-runtime",
+      "title": "SVM — Semantic Virtual Machine",
+      "description": "Architecture de la SVM Rust — scheduler Tokio, 3 couches mémoire, FallbackEngine 5 stratégies, ResourceArbiter PriorityPolicy, exécution embedded Embassy.",
+      "sidebar": "mainSidebar"
+    },
     "for-decision-makers/compliance-security": {
       "id": "for-decision-makers/compliance-security",
       "title": "Compliance & Security",
-      "description": "Regulatory compliance and security guarantees",
-      "sidebar": "tutorialSidebar"
+      "description": "Regulatory compliance and security guarantees"
     },
     "for-decision-makers/roi-analysis": {
       "id": "for-decision-makers/roi-analysis",
       "title": "ROI Analysis",
-      "description": "Financial analysis and return on investment",
-      "sidebar": "tutorialSidebar"
+      "description": "Financial analysis and return on investment"
     },
     "for-decision-makers/scaling-performance": {
       "id": "for-decision-makers/scaling-performance",
       "title": "Scaling & Performance",
-      "description": "Enterprise-scale performance characteristics",
-      "sidebar": "tutorialSidebar"
+      "description": "Enterprise-scale performance characteristics"
     },
     "for-decision-makers/technology-selection": {
       "id": "for-decision-makers/technology-selection",
       "title": "Technology Selection",
-      "description": "Vendor comparison and implementation roadmap",
-      "sidebar": "tutorialSidebar"
+      "description": "Vendor comparison and implementation roadmap"
     },
     "for-decision-makers/use-cases": {
       "id": "for-decision-makers/use-cases",
       "title": "Use Cases",
-      "description": "Real-world applications and scenarios",
-      "sidebar": "tutorialSidebar"
+      "description": "Real-world applications and scenarios"
     },
     "for-developers/api-reference": {
       "id": "for-developers/api-reference",
-      "title": "API Reference",
-      "description": "Complete REST API documentation",
-      "sidebar": "tutorialSidebar"
+      "title": "Référence API REST",
+      "description": "Tous les endpoints REST exposés par eyeflow-server — compilation, déploiement, exécution, audit, connecteurs et WebSocket.",
+      "sidebar": "mainSidebar"
     },
     "for-developers/architecture": {
       "id": "for-developers/architecture",
-      "title": "Architecture Overview",
-      "description": "System design and core components",
-      "sidebar": "tutorialSidebar"
+      "title": "Architecture système",
+      "description": "Architecture complète d'EyeFlow — NestJS compilateur, SVM Rust, LLM service Python, protobuf, Kafka, Vault, WebSocket TLS et déploiement edge/MCU.",
+      "sidebar": "mainSidebar"
     },
-    "for-developers/connectors/custom": {
-      "id": "for-developers/connectors/custom",
-      "title": "Custom Connectors",
-      "description": "Build your own EyeFlow connectors",
-      "sidebar": "tutorialSidebar"
+    "for-developers/connectors/connectors-custom": {
+      "id": "for-developers/connectors/connectors-custom",
+      "title": "Créer un connecteur custom",
+      "description": "Guide complet pour implémenter, tester, signer et enregistrer une capability custom dans EyeFlow.",
+      "sidebar": "mainSidebar"
     },
-    "for-developers/connectors/overview": {
-      "id": "for-developers/connectors/overview",
-      "title": "Connectors Overview",
-      "description": "Available integrations and services",
-      "sidebar": "tutorialSidebar"
+    "for-developers/connectors/connectors-overview": {
+      "id": "for-developers/connectors/connectors-overview",
+      "title": "Vue d'ensemble des connecteurs",
+      "description": "Architecture des connecteurs EyeFlow — sources d'événements, capabilities d'action, configuration et connecteurs built-in.",
+      "sidebar": "mainSidebar"
     },
     "for-developers/connectors/postgresql": {
       "id": "for-developers/connectors/postgresql",
       "title": "PostgreSQL Connector",
-      "description": "Connect to PostgreSQL databases",
-      "sidebar": "tutorialSidebar"
+      "description": "Connect to PostgreSQL databases"
     },
     "for-developers/connectors/slack": {
       "id": "for-developers/connectors/slack",
       "title": "Slack Connector",
-      "description": "Send messages, files, and manage channels in Slack",
-      "sidebar": "tutorialSidebar"
+      "description": "Send messages, files, and manage channels in Slack"
     },
     "for-developers/deployment": {
       "id": "for-developers/deployment",
-      "title": "Deployment",
-      "description": "Deploy EyeFlow to production environments",
-      "sidebar": "tutorialSidebar"
+      "title": "Déploiement",
+      "description": "Docker Compose, Kubernetes/Helm, cross-compile ARMv7/STM32F4, Vault, InfluxDB et variables d'environnement.",
+      "sidebar": "mainSidebar"
     },
     "for-developers/sdks": {
       "id": "for-developers/sdks",
-      "title": "SDKs & Client Libraries",
-      "description": "Official SDKs for popular languages",
-      "sidebar": "tutorialSidebar"
+      "title": "SDKs & CLI",
+      "description": "SDK TypeScript/Node.js, client Rust embarqué, CLI eyeflow et exemples d'intégration complets.",
+      "sidebar": "mainSidebar"
     },
     "for-end-users/cli-basics": {
       "id": "for-end-users/cli-basics",
       "title": "CLI Basics",
-      "description": "Command-line interface for scripting and automation",
-      "sidebar": "tutorialSidebar"
+      "description": "Command-line interface for scripting and automation"
     },
     "for-end-users/first-rule": {
       "id": "for-end-users/first-rule",
       "title": "Create Your First Rule",
-      "description": "Add automation logic with conditionals",
-      "sidebar": "tutorialSidebar"
+      "description": "Add automation logic with conditionals"
     },
     "for-end-users/first-task": {
       "id": "for-end-users/first-task",
       "title": "Create Your First Task",
-      "description": "Build a practical task with connectors",
-      "sidebar": "tutorialSidebar"
+      "description": "Build a practical task with connectors"
     },
     "for-end-users/quickstart": {
       "id": "for-end-users/quickstart",
       "title": "Quickstart",
-      "description": "Get EyeFlow running in 5 minutes",
-      "sidebar": "tutorialSidebar"
+      "description": "Get EyeFlow running in 5 minutes"
     },
     "for-end-users/ui-dashboard": {
       "id": "for-end-users/ui-dashboard",
       "title": "Dashboard Tour",
-      "description": "Navigate the EyeFlow web interface",
-      "sidebar": "tutorialSidebar"
+      "description": "Navigate the EyeFlow web interface"
     },
-    "intro/vs-openclaw": {
-      "id": "intro/vs-openclaw",
-      "title": "EyeFlow vs OpenClaw",
-      "description": "Technical comparison of compilation-based vs agentic-loop approaches",
-      "sidebar": "tutorialSidebar"
+    "getting-started/dashboard": {
+      "id": "getting-started/dashboard",
+      "title": "Dashboard — Tableau de bord",
+      "description": "Guide du dashboard EyeFlow React — visualisation temps réel des exécutions, audit trail, gestion des règles et monitoring des nœuds SVM.",
+      "sidebar": "mainSidebar"
+    },
+    "getting-started/first-workflow": {
+      "id": "getting-started/first-workflow",
+      "title": "Premier workflow complet",
+      "description": "Créez un workflow avec conditions, branchements, appels LLM figés et contrôle d'un actionneur physique.",
+      "sidebar": "mainSidebar"
+    },
+    "getting-started/quickstart": {
+      "id": "getting-started/quickstart",
+      "title": "Quickstart — 10 minutes",
+      "description": "Lancez EyeFlow localement, compilez votre première règle métier et exécutez-la sur la SVM en moins de 10 minutes.",
+      "sidebar": "mainSidebar"
+    },
+    "intro/vs-alternatives": {
+      "id": "intro/vs-alternatives",
+      "title": "EyeFlow vs. les alternatives",
+      "description": "Comparaison technique approfondie entre EyeFlow et les alternatives d'automatisation IA — n8n, AutoGen, LangGraph, CrewAI, SCADA, OpenClaw.",
+      "sidebar": "mainSidebar"
     },
     "intro/what-is-eyeflow": {
       "id": "intro/what-is-eyeflow",
-      "title": "What is EyeFlow?",
-      "description": "Semantic compilation for deterministic automation at scale",
-      "sidebar": "tutorialSidebar"
+      "title": "Qu'est-ce qu'EyeFlow ?",
+      "description": "EyeFlow est un compilateur sémantique qui transforme des règles métier en langage naturel en programmes exécutables déterministes, certifiables et déployables sur systèmes embarqués critiques.",
+      "sidebar": "mainSidebar"
     },
     "intro/why-eyeflow": {
       "id": "intro/why-eyeflow",
-      "title": "Why EyeFlow?",
-      "description": "Performance gains, ROI, and competitive advantages",
-      "sidebar": "tutorialSidebar"
+      "title": "Pourquoi EyeFlow ?",
+      "description": "Analyse comparative, ROI et avantages concurrentiels de la compilation sémantique déterministe.",
+      "sidebar": "mainSidebar"
+    },
+    "roadmap/roadmap": {
+      "id": "roadmap/roadmap",
+      "title": "Feuille de route",
+      "description": "Roadmap d'implémentation EyeFlow en 4 phases sur 18 mois — compilateur sémantique, SVM Rust, MCU Embassy, 5 secteurs et certifications réglementaires.",
+      "sidebar": "mainSidebar"
     },
     "technical-deep-dive/capability-catalog": {
       "id": "technical-deep-dive/capability-catalog",
       "title": "Capability Catalog",
-      "description": "Service registry and capability discovery",
-      "sidebar": "tutorialSidebar"
+      "description": "Service registry and capability discovery"
     },
     "technical-deep-dive/determinism-guarantees": {
       "id": "technical-deep-dive/determinism-guarantees",
       "title": "Determinism Guarantees",
-      "description": "Formal correctness proofs and zero hallucinations",
-      "sidebar": "tutorialSidebar"
+      "description": "Formal correctness proofs and zero hallucinations"
     },
     "technical-deep-dive/edge-computing": {
       "id": "technical-deep-dive/edge-computing",
       "title": "Edge Computing & IoT",
-      "description": "Deployment on edge devices and IoT systems",
-      "sidebar": "tutorialSidebar"
+      "description": "Deployment on edge devices and IoT systems"
     },
     "technical-deep-dive/llm-ir": {
       "id": "technical-deep-dive/llm-ir",
       "title": "LLM-IR (Intermediate Representation)",
-      "description": "Bytecode format and execution semantics",
-      "sidebar": "tutorialSidebar"
+      "description": "Bytecode format and execution semantics"
     },
     "technical-deep-dive/performance-benchmarking": {
       "id": "technical-deep-dive/performance-benchmarking",
       "title": "Performance Benchmarking",
-      "description": "Detailed latency analysis and throughput metrics",
-      "sidebar": "tutorialSidebar"
+      "description": "Detailed latency analysis and throughput metrics"
     },
     "technical-deep-dive/security-sandbox": {
       "id": "technical-deep-dive/security-sandbox",
       "title": "Security Sandbox",
-      "description": "Closed-world security model and threat mitigation",
-      "sidebar": "tutorialSidebar"
+      "description": "Closed-world security model and threat mitigation"
     },
     "technical-deep-dive/semantic-compilation": {
       "id": "technical-deep-dive/semantic-compilation",
       "title": "Semantic Compilation",
-      "description": "How EyeFlow compiles natural language tasks to bytecode",
-      "sidebar": "tutorialSidebar"
+      "description": "How EyeFlow compiles natural language tasks to bytecode"
     },
     "technical-deep-dive/svm-runtime": {
       "id": "technical-deep-dive/svm-runtime",
       "title": "SVM Runtime",
-      "description": "Semantic Virtual Machine execution and correctness",
-      "sidebar": "tutorialSidebar"
+      "description": "Semantic Virtual Machine execution and correctness"
+    },
+    "verticals/agriculture": {
+      "id": "verticals/agriculture",
+      "title": "Secteur agriculture",
+      "description": "EyeFlow pour l'agriculture de précision — irrigation intelligente, dosage phytosanitaire, monitoring sol/météo, déploiement offline Raspberry Pi terrain.",
+      "sidebar": "mainSidebar"
+    },
+    "verticals/finance": {
+      "id": "verticals/finance",
+      "title": "Secteur finance",
+      "description": "EyeFlow en finance — conformité AMF/RGPD/NIS2, détection fraude déterministe, validation transactions, audit SOC2, reporting réglementaire automatisé.",
+      "sidebar": "mainSidebar"
+    },
+    "verticals/industrial": {
+      "id": "verticals/industrial",
+      "title": "Secteur industriel",
+      "description": "EyeFlow pour l'industrie 4.0 — certifiable SIL2, catalog d'actionneurs, intégration SCADA/DCS, Modbus/OPC-UA, contrôle de processus déterministe.",
+      "sidebar": "mainSidebar"
+    },
+    "verticals/iot": {
+      "id": "verticals/iot",
+      "title": "Secteur IoT",
+      "description": "EyeFlow pour l'IoT — gestion de flotte d'appareils, mises à jour OTA sécurisées, télémétrie multi-protocoles, edge AI embarqué STM32/nRF52.",
+      "sidebar": "mainSidebar"
+    },
+    "verticals/medical": {
+      "id": "verticals/medical",
+      "title": "Secteur médical",
+      "description": "EyeFlow en environnement médical — conformité IEC 62304, catalog de capabilities médicales, exemples de workflows ICU, dosage médicament et coordination soins.",
+      "sidebar": "mainSidebar"
     }
   }
 }

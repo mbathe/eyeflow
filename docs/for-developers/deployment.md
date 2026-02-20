@@ -1,566 +1,427 @@
 ---
-sidebar_position: 7
-title: Deployment
-description: Deploy EyeFlow to production environments
+id: deployment
+sidebar_position: 3
+title: Déploiement
+description: Docker Compose, Kubernetes/Helm, cross-compile ARMv7/STM32F4, Vault, InfluxDB et variables d'environnement.
 ---
 
-# Deployment Guide
+# Déploiement
 
-Deploy EyeFlow securely and reliably to your production environment.
-
-## Deployment Architectures
-
-### Development (Local)
-
-```bash
-docker-compose up -d
-
-# Runs on localhost:3000 and localhost:3001
-```
-
-**When to use:** Learning, testing, development
-
-### Staging (Pre-production)
-
-```bash
-docker-compose -f docker-compose.staging.yml up -d
-```
-
-**When to use:** QA, performance testing, final validation
-
-### Production (AWS)
-
-Recommended setup for business-critical workloads.
+Cette page couvre tous les scénarios de déploiement : développement local, production Linux, edge ARM et MCU embarqué.
 
 ---
 
-## Production Deployment (AWS)
+## Déploiement local (développement)
 
-### Architecture Overview
-
-```
-┌─────────────────────────────────────────────────┐
-│         CloudFront (CDN)                        │
-│  - Caches dashboard                             │
-│  - DDoS protection                              │
-└────────────────────┬────────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────────┐
-│         Application Load Balancer               │
-│  - HTTPS / SSL termination                      │
-│  - Health checks                                │
-└────────────────────┬────────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────────┐
-│    ECS Cluster (Auto-scaling)                   │
-│  - 3-10 API server instances                    │
-│  - 2 Dashboard instances                        │
-│  - Each in different AZs                        │
-└────────────────────┬────────────────────────────┘
-                     │
-        ┌────────────┼────────────┬──────────────┐
-        │            │            │              │
-┌───────▼───┐  ┌─────▼───┐  ┌────▼────┐  ┌────▼─────┐
-│PostgreSQL │  │  Kafka  │  │  Redis  │  │ S3 (logs)│
-│ (RDS HA)  │  │ (3 node)│  │(cluster)│  │          │
-└───────────┘  └─────────┘  └─────────┘  └──────────┘
-```
-
-### Step 1: Prepare AWS
-
-**Required AWS Services:**
-- ECS (container orchestration)
-- RDS PostgreSQL (database)
-- ElastiCache Redis (caching)
-- MSK Kafka (message queue)
-- ALB (load balancer)
-- CloudFront (CDN)
-- S3 (logs, backups)
-- Secrets Manager (credentials)
-
-### Step 2: Create RDS Database
+### Prérequis
 
 ```bash
-# Create PostgreSQL 14+ on RDS
-AWS_REGION=us-east-1
-
-aws rds create-db-instance \
-  --db-instance-identifier eyeflow-prod \
-  --db-instance-class db.t3.medium \
-  --engine postgres \
-  --master-username postgres \
-  --master-user-password $(openssl rand -base64 32) \
-  --allocated-storage 100 \
-  --storage-type gp3 \
-  --backup-retention-days 30 \
-  --multi-az \
-  --enable-iam-database-authentication \
-  --enable-deletion-protection
-
-# Output: Database endpoint, master password
+# Outils requis
+node --version   # ≥ 20.0
+rustup --version # stable 1.75+
+docker --version # ≥ 24.0
+docker compose version # ≥ 2.20
 ```
 
-### Step 3: Create ElastiCache Redis
-
-```bash
-aws elasticache create-cache-cluster \
-  --cache-cluster-id eyeflow-redis \
-  --cache-node-type cache.t3.micro \
-  --engine redis \
-  --num-cache-nodes 3 \
-  --automatic-failover-enabled
-
-# Output: Redis endpoint (cluster.abc.ng.0001.use1.cache.amazonaws.com)
-```
-
-### Step 4: Create MSK Kafka Cluster
-
-```bash
-aws kafka create-cluster \
-  --cluster-name eyeflow-kafka \
-  --broker-node-group-info BrokerNodeGroupInfo \
-  --number-of-broker-nodes 3 \
-  --kafka-version 3.4.0
-
-# Output: Kafka bootstrap servers
-```
-
-### Step 5: Create ECS Task Definition
-
-Create `ecs-task-definition.json`:
-
-```json
-{
-  "family": "eyeflow-api",
-  "networkMode": "awsvpc",
-  "requiresCompatibilities": ["FARGATE"],
-  "cpu": "512",
-  "memory": "1024",
-  "containerDefinitions": [
-    {
-      "name": "eyeflow-server",
-      "image": "your-registry/eyeflow-server:latest",
-      "portMappings": [
-        {
-          "containerPort": 3000,
-          "hostPort": 3000,
-          "protocol": "tcp"
-        }
-      ],
-      "environment": [
-        {
-          "name": "NODE_ENV",
-          "value": "production"
-        },
-        {
-          "name": "DATABASE_URL",
-          "value": "postgresql://user:pass@eyeflow-prod.abc.us-east-1.rds.amazonaws.com:5432/eyeflow"
-        },
-        {
-          "name": "REDIS_URL",
-          "value": "redis://eyeflow-redis.abc.ng.0001.use1.cache.amazonaws.com:6379"
-        },
-        {
-          "name": "KAFKA_BROKERS",
-          "value": "broker1:9092,broker2:9092,broker3:9092"
-        }
-      ],
-      "secrets": [
-        {
-          "name": "API_KEY",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:123456789:secret:eyeflow/api-key"
-        }
-      ],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/eyeflow-api",
-          "awslogs-region": "us-east-1",
-          "awslogs-stream-prefix": "prod"
-        }
-      }
-    }
-  ]
-}
-```
-
-### Step 6: Create ECS Service
-
-```bash
-aws ecs create-service \
-  --cluster eyeflow-prod \
-  --service-name eyeflow-api \
-  --task-definition eyeflow-api:1 \
-  --desired-count 3 \
-  --launch-type FARGATE \
-  --network-configuration \
-    "awsvpcConfiguration={subnets=[subnet-xxx,subnet-yyy,subnet-zzz],securityGroups=[sg-abc123],assignPublicIp=DISABLED}" \
-  --load-balancers \
-    "targetGroupArn=arn:aws:elasticloadbalancing:...,containerName=eyeflow-server,containerPort=3000" \
-  --auto-scaling \
-    --minimum=3 \
-    --maximum=10 \
-    --target-cpu-utilization=70
-```
-
----
-
-## Docker Deployment
-
-### Multi-stage Build
-
-Create `Dockerfile`:
-
-```dockerfile
-# Stage 1: Build
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-
-# Stage 2: Runtime
-FROM node:18-alpine
-WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY src/ ./src/
-COPY package.json ./
-
-ENV NODE_ENV=production
-EXPOSE 3000
-
-CMD ["node", "src/main.js"]
-```
-
-### Build & Push
-
-```bash
-# Build image
-docker build -t my-registry/eyeflow:v1.0.0 .
-
-# Push to registry
-docker push my-registry/eyeflow:v1.0.0
-
-# Or use AWS ECR
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789.dkr.ecr.us-east-1.amazonaws.com
-docker tag eyeflow:v1.0.0 123456789.dkr.ecr.us-east-1.amazonaws.com/eyeflow:v1.0.0
-docker push 123456789.dkr.ecr.us-east-1.amazonaws.com/eyeflow:v1.0.0
-```
-
----
-
-## Kubernetes Deployment
-
-### Helm Chart
-
-Create `helm/values.yaml`:
+### Stack Docker Compose
 
 ```yaml
-image:
-  repository: my-registry/eyeflow
-  tag: v1.0.0
+# eyeflow/docker-compose.yml
+version: '3.9'
 
-replicas: 3
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: eyeflow
+      POSTGRES_PASSWORD: eyeflow_secret
+      POSTGRES_DB: eyeflow_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
-resources:
-  requests:
-    memory: "512Mi"
-    cpu: "250m"
-  limits:
-    memory: "1Gi"
-    cpu: "1000m"
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    depends_on: [zookeeper]
+    ports:
+      - "9092:9092"
 
-postgresql:
-  enabled: true
-  auth:
-    password: secure_password_123
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
 
-redis:
-  enabled: true
-  replica:
-    replicaCount: 3
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
 
-kafka:
-  enabled: true
-  brokers: 3
+  influxdb:
+    image: influxdb:2.7
+    ports:
+      - "8086:8086"
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: influx_secret
+      DOCKER_INFLUXDB_INIT_ORG: eyeflow
+      DOCKER_INFLUXDB_INIT_BUCKET: eyeflow_metrics
+
+  vault:
+    image: hashicorp/vault:1.15
+    cap_add: [IPC_LOCK]
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: root-dev-token
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    ports:
+      - "8200:8200"
+
+  llm-service:
+    build: ./eyeflow-llm-service
+    ports:
+      - "8001:8001"
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+
+volumes:
+  postgres_data:
 ```
 
-### Deploy to Kubernetes
+### Démarrage
 
 ```bash
-# Add Helm repo
+cd eyeflow
+
+# 1. Démarrer l'infrastructure
+docker compose up -d postgres kafka redis influxdb vault llm-service
+
+# 2. Créer le schéma base de données
+cd eyeflow-server
+npx prisma migrate deploy
+
+# 3. Démarrer le serveur NestJS
+npm run start:dev
+
+# 4. Compiler et démarrer le SVM Rust
+cd ../eyeflow-svm-node
+cargo run --release
+
+# 5. Démarrer le dashboard
+cd ../eyeflow-dashboard
+npm run dev -- --port 3001
+```
+
+---
+
+## Variables d'environnement
+
+### eyeflow-server
+
+```env
+# Base de données
+DATABASE_URL=postgresql://eyeflow:eyeflow_secret@localhost:5432/eyeflow_db
+
+# Authentification
+JWT_SECRET=your-super-secret-key-minimum-256-bits
+JWT_EXPIRES_IN=86400
+
+# Kafka
+KAFKA_BROKERS=localhost:9092
+KAFKA_CLIENT_ID=eyeflow-server
+KAFKA_AUDIT_TOPIC=eyeflow.audit
+
+# Vault
+VAULT_ADDR=http://localhost:8200
+VAULT_TOKEN=root-dev-token
+VAULT_MOUNT_PATH=eyeflow
+
+# LLM Service
+LLM_SERVICE_URL=http://localhost:8001
+
+# Signature IR
+IR_SIGNING_PRIVATE_KEY=/etc/eyeflow/keys/ir_signing.pem
+
+# InfluxDB
+INFLUXDB_URL=http://localhost:8086
+INFLUXDB_TOKEN=your-influx-token
+INFLUXDB_ORG=eyeflow
+INFLUXDB_BUCKET=eyeflow_metrics
+
+# Environnement
+NODE_ENV=production
+PORT=3000
+LOG_LEVEL=info
+```
+
+### eyeflow-svm-node (config.toml)
+
+```toml
+[server]
+url = "wss://eyeflow-server:3000/ws"
+node_id = "svm-nœud-usine-A"
+tls_cert = "/etc/eyeflow/certs/node.crt"
+tls_key = "/etc/eyeflow/certs/node.key"
+ca_cert = "/etc/eyeflow/certs/ca.crt"
+
+[vault]
+addr = "https://vault.internal:8200"
+role = "eyeflow-svm-role"
+auth_method = "kubernetes"  # ou "token" pour dev
+
+[kafka]
+brokers = ["kafka:9092"]
+topic = "eyeflow.audit"
+
+[executor]
+max_concurrent_executions = 8
+default_instruction_timeout_ms = 5000
+max_llm_retries = 3
+
+[offline]
+enabled = true
+buffer_path = "/var/lib/eyeflow/offline_buffer.db"
+max_buffer_mb = 256
+```
+
+### eyeflow-llm-service
+
+```env
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+GOOGLE_API_KEY=AIza...
+DEFAULT_PROVIDER=openai
+DEFAULT_MODEL=gpt-4o
+MAX_TOKENS=2048
+REQUEST_TIMEOUT_SECONDS=30
+```
+
+---
+
+## Déploiement production (Kubernetes / Helm)
+
+### Installation Helm
+
+```bash
 helm repo add eyeflow https://charts.eyeflow.io
 helm repo update
 
-# Install
 helm install eyeflow eyeflow/eyeflow \
   --namespace eyeflow \
   --create-namespace \
-  -f values.yaml
-
-# Verify
-kubectl get pods -n eyeflow
-kubectl logs -n eyeflow -f deployment/eyeflow-api
+  --set server.replicaCount=3 \
+  --set server.image.tag=1.4.0 \
+  --set database.host=postgres.internal \
+  --set vault.addr=https://vault.internal:8200 \
+  --values ./production-values.yaml
 ```
 
----
-
-## Environment Configuration
-
-### Production Secrets
-
-Store in AWS Secrets Manager or HashiCorp Vault:
-
-```bash
-# PostgreSQL
-DATABASE_URL=postgresql://user:pass@host:5432/eyeflow
-DATABASE_POOL_MIN=5
-DATABASE_POOL_MAX=20
-
-# Redis
-REDIS_URL=redis://host:6379/0
-REDIS_PASSWORD=secure_password
-
-# Kafka
-KAFKA_BROKERS=broker1:9092,broker2:9092,broker3:9092
-KAFKA_USERNAME=eyeflow
-KAFKA_PASSWORD=secure_password
-
-# API Keys
-JWT_SECRET=very_long_random_string_here
-API_KEY=sk_live_abc123xyz789
-
-# Monitoring
-DATADOG_API_KEY=dd_api_key_here
-SENTRY_DSN=https://...@sentry.io/123456
-
-# Feature Flags
-LOG_LEVEL=info
-ENABLE_AUDIT_LOGGING=true
-ENABLE_METRICS=true
-```
-
-### Connection Pooling
-
-```
-# PostgreSQL
-DATABASE_POOL_MIN: 5
-DATABASE_POOL_MAX: 20
-CONNECTION_TIMEOUT: 30000
-
-# Redis
-REDIS_POOL_SIZE: 10
-
-# Kafka
-KAFKA_CONNECTIONS: 3
-```
-
----
-
-## Monitoring & Health
-
-### Health Checks
-
-```bash
-# Liveness probe (is service running?)
-GET /health/live
-Response: { "status": "alive" }
-
-# Readiness probe (can accept traffic?)
-GET /health/ready
-Response: { "status": "ready", "services": {...} }
-
-# Detailed status
-GET /health/status
-Response: {
-  "api": "healthy",
-  "database": "healthy",
-  "redis": "healthy",
-  "kafka": "healthy"
-}
-```
-
-### Kubernetes Probes
+### `production-values.yaml` (extrait)
 
 ```yaml
-livenessProbe:
-  httpGet:
-    path: /health/live
-    port: 3000
-  initialDelaySeconds: 30
-  periodSeconds: 10
+server:
+  replicaCount: 3
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "512Mi"
+    limits:
+      cpu: "2"
+      memory: "2Gi"
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
 
-readinessProbe:
-  httpGet:
-    path: /health/ready
-    port: 3000
-  initialDelaySeconds: 10
-  periodSeconds: 5
-```
+llmService:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
 
-### Metrics Collection
+svmNodes:
+  # Géré en dehors de K8s — edge devices
+  # Enregistrement automatique via bootstrap token
 
-```bash
-# Prometheus endpoint
-GET /metrics
-Returns Prometheus-formatted metrics:
-  eyeflow_tasks_executed_total{status="success"} 12847
-  eyeflow_execution_duration_ms{quantile="0.99"} 120
-  eyeflow_active_tasks 35
-```
-
----
-
-## Database Migrations
-
-```bash
-# Run migrations on startup
-npm run migrate
-
-# Or with npx
-npx typeorm migration:run
-
-# Rollback if needed
-npx typeorm migration:revert
-```
-
----
-
-## Backup & Recovery
-
-### Automated Backups
-
-```bash
-# RDS: Automatic daily backups
-BACKUP_RETENTION_DAYS: 30
-
-# S3: Export database weekly
-aws rds start-export-task \
-  --export-task-identifier eyeflow-backup-$(date +%Y%m%d) \
-  --source-arn arn:aws:rds:us-east-1:123456789:db:eyeflow-prod \
-  --s3-bucket-name eyeflow-backups \
-  --iam-role-arn arn:aws:iam::123456789:role/rds-export-role
-```
-
-### Point-in-Time Recovery
-
-```bash
-# Restore database to specific point in time
-aws rds restore-db-instance-to-point-in-time \
-  --source-db-instance-identifier eyeflow-prod \
-  --target-db-instance-identifier eyeflow-prod-restored \
-  --restore-time 2024-10-02T14:00:00Z
-```
-
----
-
-## Monitoring Dashboard
-
-### Datadog Integration
-
-```yaml
-# datadog-agent-config.yaml
-dd_api_key: ${DATADOG_API_KEY}
-
-logs:
-  - type: docker
-    service: eyeflow-api
-
-apm:
+ingress:
   enabled: true
-  port: 8126
-```
-
-### Key Metrics to Monitor
-
-- **Execution latency** (p50, p99)
-- **Success rate** (%)
-- **Active tasks** (count)
-- **Database connections** (used vs pool size)
-- **Redis memory** (used vs available)
-- **Kafka lag** (consumer group lag)
-
----
-
-## Scaling
-
-### Horizontal Scaling
-
-```
-3 instances → Can handle: 10K tasks/day
-6 instances → Can handle: 20K tasks/day
-10 instances → Can handle: 33K tasks/day
-
-Linear scaling across CPU cores
-```
-
-### Auto-scaling Policy
-
-```
-Target metrics:
-- CPU > 70% → Scale up
-- CPU < 30% for 5 min → Scale down
-- Min: 3 instances
-- Max: 10 instances
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: api.eyeflow.example.com
+      paths: [{path: /, pathType: Prefix}]
+  tls:
+    - secretName: eyeflow-tls
+      hosts: [api.eyeflow.example.com]
 ```
 
 ---
 
-## Troubleshooting
+## Cross-compilation edge ARM
 
-### "Database Connection Failed"
+### Raspberry Pi 4 (ARMv7 / AArch64)
 
-```
-Check:
-1. RDS security group allows inbound: 5432
-2. Database is in AVAILABLE state
-3. Credentials are correct
-4. Connection string format is correct
-```
+```bash
+# Installer la cible Rust
+rustup target add aarch64-unknown-linux-gnu
 
-### "Out of Memory"
+# Installer le cross-compilateur
+sudo apt install gcc-aarch64-linux-gnu
 
-```
-Solution:
-1. Increase container memory limit
-2. Check for memory leaks: 
-   - Monitor memory over time
-   - Check Redis is not growing unbounded
-3. Enable debug logging to find leaks
-```
+# Configurer Cargo (.cargo/config.toml)
+cat >> .cargo/config.toml <<EOF
+[target.aarch64-unknown-linux-gnu]
+linker = "aarch64-linux-gnu-gcc"
+EOF
 
-### "Task Executions Slow"
+# Compiler
+cd eyeflow-svm-node
+cargo build --release --target aarch64-unknown-linux-gnu
 
-```
-Check:
-1. CPU utilization (scale up if >80%)
-2. Database connection pool not exhausted
-3. Kafka lag (check broker health)
-4. Network latency to external services
+# Copier sur le RPi
+scp target/aarch64-unknown-linux-gnu/release/eyeflow-svm \
+  pi@raspberry-edge:/usr/local/bin/
+
+# Démarrer comme service systemd
+ssh pi@raspberry-edge "sudo systemctl enable --now eyeflow-svm"
 ```
 
 ---
 
-## Security Checklist
+## Cross-compilation MCU (Embassy no-std)
 
-- [ ] Use HTTPS/TLS for all communications
-- [ ] Enable encryption at rest (EBS, RDS)
-- [ ] Restrict security group ingress
-- [ ] Rotate API keys monthly
-- [ ] Enable audit logging
-- [ ] Use VPC for database (not public)
-- [ ] Enable MFA for AWS console
-- [ ] Backup tested and verified
-- [ ] Disaster recovery plan documented
-- [ ] Penetration testing completed
+### STM32F7 (Cortex-M7)
+
+```bash
+# Cibles embedded
+rustup target add thumbv7em-none-eabihf
+cargo install probe-rs-tools --locked
+
+# Compiler le firmware
+cd eyeflow-svm-mcu
+cargo build --release --target thumbv7em-none-eabihf
+
+# Flasher via probe-rs
+probe-rs flash --chip STM32F767ZITx \
+  target/thumbv7em-none-eabihf/release/eyeflow-svm-mcu
+
+# Moniteur série
+probe-rs run --chip STM32F767ZITx
+```
+
+### nRF52840 (BLE + bord)
+
+```bash
+rustup target add thumbv7em-none-eabihf
+
+cargo build --release --target thumbv7em-none-eabihf \
+  --features nrf52840
+
+probe-rs flash --chip nRF52840_xxAA \
+  target/thumbv7em-none-eabihf/release/eyeflow-svm-mcu
+```
 
 ---
 
-## Next Steps
+## Configuration Vault (production)
 
-- [Architecture Deep Dive](./architecture.md)
-- [API Reference](./api-reference.md)
-- [Monitoring & Observability](../for-decision-makers/scaling-performance.md)
+```bash
+# Activer le moteur KV v2
+vault secrets enable -path=eyeflow kv-v2
+
+# Créer une politique SVM
+vault policy write eyeflow-svm - <<EOF
+path "eyeflow/data/llm-keys/*" {
+  capabilities = ["read"]
+}
+path "eyeflow/data/capabilities/*" {
+  capabilities = ["read"]
+}
+EOF
+
+# Activer l'auth Kubernetes
+vault auth enable kubernetes
+vault write auth/kubernetes/config \
+  kubernetes_host="https://kubernetes.default.svc"
+
+# Créer le rôle SVM
+vault write auth/kubernetes/role/eyeflow-svm \
+  bound_service_account_names=eyeflow-svm \
+  bound_service_account_namespaces=eyeflow \
+  policies=eyeflow-svm \
+  ttl=24h
+
+# Stocker les clés API LLM
+vault kv put eyeflow/llm-keys/openai \
+  api_key="sk-..."
+
+vault kv put eyeflow/llm-keys/anthropic \
+  api_key="sk-ant-..."
+```
 
 ---
 
-**Ready for production?** Follow this guide for reliable, scalable deployment. 🚀
+## InfluxDB + Grafana
+
+### Créer les métriques InfluxDB
+
+```bash
+# Token d'écriture
+influx auth create \
+  --org eyeflow \
+  --write-buckets \
+  --description "eyeflow-server write token"
+
+# Importer le dashboard Grafana
+curl -X POST http://localhost:3001/api/dashboards/import \
+  -H "Content-Type: application/json" \
+  -d @grafana/eyeflow-dashboard.json
+```
+
+### Métriques exposées
+
+| Métrique InfluxDB | Tags | Description |
+|-------------------|------|-------------|
+| `execution_duration_ms` | `rule_id`, `node_id`, `status` | Durée d'exécution |
+| `instruction_count` | `opcode`, `rule_id` | Instructions par type |
+| `llm_call_duration_ms` | `provider`, `model` | Latence LLM |
+| `llm_token_usage` | `provider`, `model` | Tokens consommés |
+| `fallback_triggered` | `strategy`, `rule_id` | Déclenchements fallback |
+| `audit_chain_length` | `node_id` | Longueur chaîne audit |
+| `active_rules` | `node_id` | Règles déployées |
+| `svm_memory_mb` | `node_id` | Consommation mémoire SVM |
+
+---
+
+## Checklist de sécurité production
+
+```bash
+# 1. Générer les clés de signature IR
+openssl genpkey -algorithm ed25519 -out /etc/eyeflow/keys/ir_signing.pem
+openssl pkey -in /etc/eyeflow/keys/ir_signing.pem -pubout \
+  -out /etc/eyeflow/keys/ir_signing.pub
+
+# 2. Configurer mTLS entre server et SVM nodes
+# (Certificats à générer avec cfssl ou cert-manager)
+
+# 3. Vérifier que VAULT_DEV_ROOT_TOKEN_ID n'est pas utilisé en prod
+
+# 4. Activer l'audit Vault
+vault audit enable file file_path=/var/log/vault/audit.log
+
+# 5. Activer le network policy Kubernetes
+kubectl apply -f k8s/network-policy.yaml
+
+# 6. Scanner les images Docker
+docker scout cves eyeflow/server:1.4.0
+```
