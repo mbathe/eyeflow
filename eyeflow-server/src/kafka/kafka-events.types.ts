@@ -109,6 +109,12 @@ export const KAFKA_TOPICS = {
     results: 'agent.results',
     logs: 'agent.logs',
   },
+
+  // Audit chain events — spec §12.3
+  audit: {
+    events: 'audit-events',   // Signed AuditChainEvent records (Ed25519 + SHA-256)
+    violations: 'audit-violations', // Chain verification failures
+  },
 };
 
 /**

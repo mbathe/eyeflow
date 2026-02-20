@@ -1,422 +1,190 @@
 ---
-sidebar_position: 4
-title: Connectors Overview
-description: Available integrations and services
+id: connectors-overview
+sidebar_position: 5
+title: Vue d'ensemble des connecteurs
+description: Architecture des connecteurs EyeFlow — sources d'événements, capabilities d'action, configuration et connecteurs built-in.
 ---
 
-# Connectors: Integrations & Services
+# Connecteurs — Vue d'ensemble
 
-EyeFlow connects to 40+ services out-of-the-box. Here's the complete list.
-
-## Communication
-
-### Slack
-- Send messages
-- Post reactions
-- Upload files
-- Create channels
-- Managing users
-
-[→ Full Slack Guide](./slack.md)
-
-### Email (SMTP)
-- Send emails
-- HTML templates
-- Attachments
-- BCC/CC
-
-### Twilio
-- Send SMS
-- Make calls
-- Voice messages
-
-### Discord
-- Send messages
-- Manage roles
-- Create channels
-
-### Microsoft Teams
-- Send messages
-- Adaptive cards
-- Channel notifications
-
-## Data & Storage
-
-### PostgreSQL
-- Query databases
-- Insert/Update records
-- Run migrations
-- Backup/restore
-
-[→ Full PostgreSQL Guide](./postgresql.md)
-
-### MongoDB
-- CRUD operations
-- Aggregations
-- Indexes
-
-### MySQL / MariaDB
-- Query databases
-- Transactions
-- Replication
-
-### AWS S3
-- Upload files
-- Get objects
-- List buckets
-- Delete files
-
-### Google Drive
-- Upload files
-- Share documents
-- Create folders
-- Manage permissions
-
-## Analytics & Monitoring
-
-### Google Analytics
-- Get page views
-- Query events
-- Analyze user behavior
-
-### Datadog
-- Send metrics
-- Create monitors
-- Query logs
-
-### Prometheus
-- Query metrics
-- Alert handling
-
-### Splunk
-- Search logs
-- Run reports
-- Create dashboards
-
-## Development & CI/CD
-
-### GitHub
-- Create issues
-- Manage PRs
-- Trigger workflows
-- Deploy releases
-
-### GitLab
-- Manage projects
-- Pipeline control
-- Issue tracking
-
-### Jenkins
-- Trigger builds
-- Get job status
-- Run parameterized builds
-
-### Docker
-- Pull images
-- Build containers
-- Manage registries
-
-### Kubernetes
-- Deploy pods
-- Scale workloads
-- Manage secrets
-
-## Payment & Commerce
-
-### Stripe
-- Create charges
-- Manage customers
-- Process refunds
-- Webhook handling
-
-### PayPal
-- Create invoices
-- Process payments
-- Manage subscriptions
-
-### Shopify
-- Get products
-- Create orders
-- Manage inventory
-
-## CRM & Business
-
-### Salesforce
-- Create leads
-- Update opportunities
-- Manage accounts
-- Run reports
-
-### HubSpot
-- Manage contacts
-- Create deals
-- Track interactions
-
-### Pipedrive
-- Manage pipelines
-- Track deals
-- Contact management
-
-## Event Streaming
-
-### Kafka
-- Publish messages
-- Consumer groups
-- Topic management
-
-[→ Full Kafka Guide](./kafka.md)
-
-### RabbitMQ
-- Publish messages
-- Queue management
-- Consume messages
-
-### AWS SNS/SQS
-- Publish to SNS
-- Send to SQS
-- Manage topics/queues
-
-## APIs
-
-### REST API
-- Generic HTTP calls
-- Authentication
-- Custom headers
-- Body transformation
-
-[→ Full REST Guide](./rest-api.md)
-
-### GraphQL
-- Run queries
-- Run mutations
-- Variable support
-
-### SOAP
-- WSDL parsing
-- Complex types
-- Envelope handling
-
-## Infrastructure
-
-### AWS EC2
-- Launch instances
-- Manage security groups
-- Manage elastic IPs
-
-### Azure VMs
-- Create resources
-- Manage VMs
-- Scaling
-
-### Digital Ocean
-- Droplet management
-- Load balancing
-
-### SSH
-- Run remote commands
-- File transfer
-- Key authentication
-
-## Scheduling & Workflow
-
-### Cron
-- Schedule jobs
-- Time-based triggers
-
-### Calendar
-- Google Calendar
-- Outlook Calendar
-- Event creation
-
-## Creating Custom Connectors
-
-Don't see what you need? Create a custom connector:
-
-[→ Custom Connector Guide](./custom.md)
-
-**Process:**
-1. Implement ConnectorInterface
-2. Define capabilities
-3. Register in Catalog
-4. Test and validate
-5. Deploy
+Un **connecteur** EyeFlow est un module qui associe une source d'événements externe (capteur, API, MQTT…) ou une action physique (vanne, pompe, API tierce) au moteur de compilation et au SVM Rust. Les connecteurs sont définis comme des **capabilities du catalog** et signés Ed25519.
 
 ---
 
-## Connector Comparison
+## Deux types de connecteurs
 
-| Service | Type | Auth | RateLimit | Priority |
-|---------|------|------|-----------|----------|
-| Slack | Communication | OAuth2 | 120/min | ⭐⭐⭐ |
-| PostgreSQL | Data | Password | Unlimited | ⭐⭐⭐ |
-| Stripe | Payment | API Key | 100/sec | ⭐⭐⭐ |
-| GitHub | DevOps | OAuth2/Token | 5000/hr | ⭐⭐⭐ |
-| Kafka | Streaming | SASL | Unlimited | ⭐⭐⭐ |
-| AWS S3 | Storage | IAM | 3500/sec | ⭐⭐ |
-| MongoDB | Data | Password | Unlimited | ⭐⭐ |
-| Twilio | Communication | API Key | 100/sec | ⭐⭐ |
+### 1. Connecteurs sources d'événements
 
----
+Ils produisent des `EventPayload` qui déclenchent l'exécution des règles.
 
-## Getting Started
-
-### Step 1: Choose Connector
-
-Browse the list above and select one that matches your service.
-
-### Step 2: Gather Credentials
-
-Each connector needs authentication:
-- **API Key**: Usually a string (Stripe, Twilio)
-- **OAuth2**: Requires browser login (Slack, GitHub)
-- **Username/Password**: Self-hosted services (PostgreSQL, MongoDB)
-- **Custom Auth**: Service-specific (AWS IAM, Azure managed identity)
-
-### Step 3: Add Connector in Dashboard
-
-1. Go to **Settings → Connectors**
-2. Click **+ Connect Service**
-3. Select desired service
-4. Enter credentials
-5. Click **[Test Connection]**
-6. If ✅ appears, success!
-
-### Step 4: Use in Tasks
-
-In any task, reference connectors:
+```typescript
+interface EventPayload {
+  source: string;        // "sensor:temperature_cuve"
+  value: unknown;        // valeur brute
+  unit?: string;         // "°C", "bar", "pH"
+  timestamp: string;     // ISO8601
+  nodeId: string;        // SVM nœud émetteur
+  metadata?: Record<string, unknown>;
+}
 ```
-Action: Slack Message
-Connector: slack_daily (dropdown)
-Function: send_message
+
+### 2. Connecteurs d'action (capabilities)
+
+Ils exposent des fonctions exécutables depuis un programme LLM-IR via l'opcode `CALL_ACTION`.
+
+```typescript
+interface CatalogCapability {
+  id: string;
+  version: string;
+  sector: 'INDUSTRIAL' | 'MEDICAL' | 'AGRICULTURE' | 'FINANCE' | 'IOT';
+  description: string;
+  handler: string;         // chemin vers le handler TypeScript
+  preconditions: Condition[];
+  postconditions: Condition[];
+  rollbackStrategy: RollbackStrategy;
+  signature: string;       // Ed25519
+}
 ```
 
 ---
 
-## Best Practices
+## Connecteurs sources built-in
 
-### Security
-- ✅ Use API keys specific to integrations (not shared keys)
-- ✅ Rotate credentials regularly
-- ✅ Use TLS 1.2+ only
-- ✅ Never commit secrets to Git
+| Connecteur | Protocole | Secteurs | Config requise |
+|-----------|-----------|---------|---------------|
+| `kafka-source` | Apache Kafka | Tous | `brokers`, `topic`, `groupId` |
+| `mqtt-source` | MQTT 3.1/5.0 | Industrial, IoT, Agri | `broker`, `topic`, `qos` |
+| `modbus-tcp` | Modbus TCP | Industrial | `host`, `port`, `unitId` |
+| `opcua-source` | OPC-UA DA | Industrial | `endpoint`, `nodeIds` |
+| `http-webhook` | HTTP/HTTPS | Tous | `path`, `method`, `auth` |
+| `cron-trigger` | Cron (système) | Tous | `expression` |
+| `fs-watch` | inotify/kqueue | IoT, Edge | `path`, `events` |
+| `cdc-postgres` | PostgreSQL CDC | Finance | `connectionUrl`, `table` |
+| `email-imap` | IMAP | Finance | `host`, `credentials`, `folder` |
+| `ble-scanner` | Bluetooth LE | IoT, Medical | `serviceUUIDs`, `interface` |
+| `amqp-source` | AMQP 0.9.1 | Finance, IoT | `url`, `queue` |
 
-### Performance
-- ✅ Connection reuse (EyeFlow pools connections)
-- ✅ Batch operations when possible
-- ✅ Cache results when safe
-- ✅ Watch rate limits
+## Connecteurs d'action built-in
 
-### Reliability
-- ✅ Enable fallback actions for critical connectors
-- ✅ Test connectors after rotation
-- ✅ Monitor connector health
-- ✅ Have backups for sensitive operations
-
----
-
-## Troubleshooting
-
-### "Connection Failed"
-
-```
-Likely causes:
-1. Invalid credentials
-2. Service is down
-3. Firewall blocking access
-4. IP address not whitelisted
-
-Solution:
-- Click [Test Connection] to verify
-- Check credentials are correct
-- Verify service status page
-```
-
-### "Rate Limit Exceeded"
-
-```
-You've hit the service's rate limit
-
-Solution:
-- Reduce execution frequency
-- Use connector pooling
-- Contact service provider for quota increase
-- Consider caching responses
-```
-
-### "Authentication Expired"
-
-```
-OAuth token or API key expired
-
-Solution:
-- Re-authenticate via Settings
-- Generate new API key
-- Rotate credentials
-- Test connection again
-```
+| Capability | Secteur | Description |
+|-----------|---------|-------------|
+| `valve_control` | Industrial | Commande vannes FOUNDATION Fieldbus |
+| `pump_control` | Industrial | Commande pompes centrifuges |
+| `modbus_write` | Industrial | Écriture registres Modbus |
+| `opcua_write` | Industrial | Écriture nœuds OPC-UA |
+| `irrigation_control` | Agriculture | Pilotage électrovannes irrigation |
+| `drone_waypoint` | Agriculture | Envoi waypoint drone |
+| `patient_alert` | Medical | Alerte patient urgente (HL7 FHIR) |
+| `alarm_trigger` | Medical | Déclenchement alarme clinique |
+| `gpio_write` | IoT, Industrial | Écriture GPIO Raspberry Pi / STM32 |
+| `http_call` | Tous | Appel REST API externe |
+| `kafka_publish` | Tous | Publication Kafka |
+| `email_send` | Tous | Envoi email SMTP |
+| `sms_send` | Tous | Envoi SMS (Twilio/OVH) |
+| `slack_message` | Tous | Message Slack |
+| `webhook_call` | Tous | Webhook sortant |
 
 ---
 
-## Advanced Topics
+## Configuration d'une source
 
-### Connector Pooling
+Les sources sont configurées dans `config.toml` du nœud SVM :
 
-EyeFlow automatically pools connections:
-```
-Task 1: Use Slack connector → 1 connection
-Task 2: Use Slack connector → Reuse connection (faster)
-Task 3: Use Slack connector → Reuse connection
-Result: 3x faster than separate connections
-```
+```toml
+[[event_sources]]
+id = "temperature-sensor-cuve-01"
+connector = "mqtt-source"
+enabled = true
 
-### Request Timeout
+[event_sources.config]
+broker = "mqtt://192.168.1.10:1883"
+topic = "factory/sensors/cuve01/temperature"
+qos = 1
+client_id = "eyeflow-svm-factory"
+username = "eyeflow"
+password_vault_path = "eyeflow/data/mqtt/factory-password"
 
-Default timeout: 30 seconds
-Can be customized per task:
-```
-Action: REST API Call
-URL: https://slow-api.example.com
-Timeout: 60 seconds (override default)
-```
+[[event_sources]]
+id = "pressure-modbus"
+connector = "modbus-tcp"
 
-### Fallback Connectors
-
-If primary fails, use secondary:
-```
-Action: Send notification
-Primary: Slack
-Fallback: Email
-Result: Always succeeds, via one method or other
+[event_sources.config]
+host = "192.168.1.20"
+port = 502
+unit_id = 1
+registers = [
+  { name = "pression_bar", address = 100, type = "float32" }
+]
+poll_interval_ms = 500
 ```
 
 ---
 
-## Connector Development
+## Comment les connecteurs d'action sont montés dans le SVM
 
-Ready to extend EyeFlow?
-
-[→ Create Custom Connector](./custom.md)
-
-**Available integrations:**
-- REST APIs
-- WebSockets
-- gRPC
-- Database drivers
-- Message queues
-- File systems
+```
+Programme LLM-IR
+    │
+    │ CALL_ACTION "valve_control" {"valve_id": "V-01", "action": "CLOSE"}
+    ▼
+SVM Rust (executor)
+    │
+    │ 1. Résoudre capability depuis le catalog
+    │ 2. Vérifier la signature Ed25519
+    │ 3. Vérifier les préconditions
+    │ 4. Acquérir le ResourcePermit (ResourceArbiter)
+    │ 5. Exécuter le handler TypeScript (via worker thread)
+    │ 6. Vérifier les postconditions
+    │ 7. Enregistrer dans AuditChain
+    ▼
+Handler ConnectorCapability (TypeScript)
+    │
+    │ - Connexion FOUNDATION Fieldbus / Modbus / REST
+    │ - Timeout + retry intégré
+    │ - Résultats sérialisés
+    ▼
+Résultat → SVM → instruction suivante du programme
+```
 
 ---
 
-**Popular connectors:**
-- [Slack](./slack.md)
-- [PostgreSQL](./postgresql.md)
-- [REST API](./rest-api.md)
-- [Kafka](./kafka.md)
-- [Google Drive](./google-drive.md)
+## Versionnage et révocation
 
-**Or create your own:**
-- [Custom Connector Guide](./custom.md)
+```bash
+# Enregistrer version 1.1.0 d'une capability
+eyeflow catalog register \
+  --file valve_control_v1.1.0.json \
+  --sign-with /etc/eyeflow/keys/ir_signing.pem
+
+# Les programmes signés avec v1.0.x continuent de fonctionner
+# jusqu'à leur révocation explicite
+
+# Révoquer toutes les capabilities < 1.1.0
+eyeflow catalog revoke valve_control \
+  --version "<1.1.0" \
+  --reason "Correctif sécurité CVE-2024-XXXX"
+```
+
+La révocation est propagée à tous les nœuds SVM via WebSocket dans les 30 secondes. Les programmes utilisant la capability révoquée ne sont **plus exécutés** jusqu'à leur recompilation.
 
 ---
 
-Integrate with your entire tech stack within 5 minutes. 🚀
+## Métriques connecteurs
+
+Les connecteurs publient automatiquement des métriques dans InfluxDB :
+
+| Métrique | Tags |
+|---------|------|
+| `connector_call_duration_ms` | `capability_id`, `version`, `status` |
+| `connector_precondition_failures` | `capability_id`, `condition` |
+| `connector_rollback_count` | `capability_id`, `strategy` |
+| `event_source_received` | `source_id`, `connector` |
+| `event_source_lag_ms` | `source_id` |
+
+---
+
+## Prochaines étapes
+
+👉 [Créer un connecteur custom](./custom) — implémenter sa propre capability  
+👉 [Sources d'événements](../concepts/event-sources) — documentation détaillée de chaque source  
+👉 [Catalog de capabilities](../concepts/capability-catalog) — préconditions, postconditions, rollback

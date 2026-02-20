@@ -43,6 +43,7 @@ import { AgentBrokerService } from './agent-broker.service';
 import { RuleCompilerService } from './rule-compiler.service';
 import { CompilationFeedbackService } from './compilation-feedback.service';
 import { LLMContextEnricherService } from './llm-context-enricher.service';
+import { LLMSessionService } from './llm-session.service';
 
 @Injectable()
 export class TaskCompilerService {
@@ -73,6 +74,7 @@ export class TaskCompilerService {
     private readonly ruleCompiler: RuleCompilerService,
     private readonly compilationFeedback: CompilationFeedbackService,
     private readonly contextEnricher: LLMContextEnricherService,
+    private readonly llmSessionService: LLMSessionService,
   ) {}
 
   async createTask(userId: string, dto: CreateTaskDto): Promise<TaskCompilationResultDto> {
@@ -445,13 +447,29 @@ export class TaskCompilerService {
    * Generate rule(s) from a natural language description using the configured LLM parser.
    * If `create` is true, persist the first suggested rule and return it.
    */
-  async generateEventRuleFromIntent(userId: string, description: string, create = false): Promise<any> {
+  async generateEventRuleFromIntent(userId: string, description: string, create = false, sessionId?: string): Promise<any> {
     // Try to write to process.stderr  
     process.stderr.write(`\n${'█'.repeat(50)} GENERATEEVENTRULEFROMINTENT CALLED ${'█'.repeat(50)}\n`);
     console.error('█████ GENERATEEVENTRULEFROMINTENT CALLED █████');
-    fs.appendFileSync('/tmp/debug.log', `[${new Date().toISOString()}] generateEventRuleFromIntent called. userId=${userId}, create=${create}, description=${description.substring(0, 50)}\n`);
+    fs.appendFileSync('/tmp/debug.log', `[${new Date().toISOString()}] generateEventRuleFromIntent called. userId=${userId}, create=${create}, description=${description.substring(0, 50)}, sessionId=${sessionId}\n`);
+
     // Build enriched rule-specific LLM context
-    const llmContext = await this.getEnrichedRuleContext(userId);
+    let llmContext = await this.getEnrichedRuleContext(userId);
+
+    // If a session is provided, apply session-based filtering (ephemeral scoping)
+    if (sessionId) {
+      try {
+        const session = await this.llmSessionService.getSession(sessionId);
+        if (!session || session.userId !== userId) {
+          throw new BadRequestException('Invalid or expired LLM session');
+        }
+
+        llmContext = this.llmSessionService.filterLLMContext(llmContext, session as any);
+        fs.appendFileSync('/tmp/debug.log', `[${new Date().toISOString()}] LLM context filtered by session ${sessionId}\n`);
+      } catch (err) {
+        throw err;
+      }
+    }
 
     // Ask the LLM parser to build rule(s)
     const parsed = await this.llmParser.buildRuleFromDescription(description, llmContext, userId);

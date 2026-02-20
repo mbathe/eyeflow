@@ -248,9 +248,9 @@ describe('Layer 5: Semantic Virtual Machine', () => {
       const result = await vm.execute(workflow, {});
 
       expect(result.instructionsExecuted).toBe(1);
-      expect(result.servicesOalled.length).toBe(1);
-      expect(result.servicesOalled[0].serviceId).toBe('sentiment-analyzer');
-      expect(result.servicesOalled[0].format).toBe('WASM');
+      expect(result.servicesCalled.length).toBe(1);
+      expect(result.servicesCalled[0].serviceId).toBe('sentiment-analyzer');
+      expect(result.servicesCalled[0].format).toBe('WASM');
     });
 
     it('should call MCP service', async () => {
@@ -320,8 +320,8 @@ describe('Layer 5: Semantic Virtual Machine', () => {
 
       const result = await vm.execute(workflow, {});
 
-      expect(result.servicesOalled.length).toBe(1);
-      expect(result.servicesOalled[0].format).toBe('MCP');
+      expect(result.servicesCalled.length).toBe(1);
+      expect(result.servicesCalled[0].format).toBe('MCP');
     });
 
     it('should call DOCKER service', async () => {
@@ -382,8 +382,8 @@ describe('Layer 5: Semantic Virtual Machine', () => {
 
       const result = await vm.execute(workflow, {});
 
-      expect(result.servicesOalled.length).toBe(1);
-      expect(result.servicesOalled[0].format).toBe('DOCKER');
+      expect(result.servicesCalled.length).toBe(1);
+      expect(result.servicesCalled[0].format).toBe('DOCKER');
     });
 
     it('should fail if service not pre-loaded', async () => {
@@ -554,7 +554,7 @@ describe('Layer 5: Semantic Virtual Machine', () => {
 
       const result = await vm.execute(workflow, {});
 
-      expect(result.servicesOalled[0].durationMs).toBeGreaterThanOrEqual(0);
+      expect(result.servicesCalled[0].durationMs).toBeGreaterThanOrEqual(0);
     });
   });
 });

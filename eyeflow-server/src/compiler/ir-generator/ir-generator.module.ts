@@ -10,6 +10,7 @@ import { ResourceReificationService } from './services/resource-reification.serv
 import { ValidationInjectorService } from './services/validation-injector.service';
 import { ParallelizationCodeGenService } from './services/parallelization-codegen.service';
 import { SemanticContextBindingService } from './services/semantic-context-binding.service';
+import { PriorityPolicyInjectorService } from './services/priority-policy-injector.service';
 import { IROptimizerService } from './services/ir-optimizer.service';
 
 @Module({
@@ -28,6 +29,7 @@ import { IROptimizerService } from './services/ir-optimizer.service';
     ValidationInjectorService,
     ParallelizationCodeGenService,
     SemanticContextBindingService,
+    PriorityPolicyInjectorService,
     IROptimizerService,
     IRGeneratorService,
   ],

@@ -5,9 +5,12 @@
  * Flux complet: User Request → IR Generation → Stage 7 → Stage 8 → Layer 5
  */
 
-import { Injectable, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, Logger, Optional } from '@nestjs/common';
 import { ServiceResolutionService } from './stages/stage-7-service-resolution.service';
 import { ServicePreloaderService } from './stages/stage-8-service-preloader.service';
+import { DistributionPlannerService } from './stages/stage-9-distribution-planner.service';
+import { FormalVerifierService } from './stages/stage-5-formal-verifier.service';
+import { IRSerializerService } from './services/ir-serializer.service';
 import { SemanticVirtualMachine } from '../runtime/semantic-vm.service';
 import {
   LLMIntermediateRepresentation,
@@ -43,10 +46,17 @@ export interface TaskExecutionResult {
 export class TaskExecutionService {
   private readonly logger = new Logger(TaskExecutionService.name);
 
+  /** In-memory cache of the most recent compiled IR per workflow ID.
+   *  Used by DagVisualizerController to retrieve IR without re-compilation. */
+  private readonly irCache = new Map<string, LLMIntermediateRepresentation>();
+
   constructor(
     private resolutionService: ServiceResolutionService,
     private preloaderService: ServicePreloaderService,
     private vm: SemanticVirtualMachine,
+    @Optional() private plannerService?: DistributionPlannerService,
+    @Optional() private formalVerifier?: FormalVerifierService,
+    @Optional() private irSerializer?: IRSerializerService,
   ) {}
 
   /**
@@ -114,11 +124,64 @@ export class TaskExecutionService {
         `[Task ${taskId}] [Stage 8] Pre-loading complete. Workflow ID: ${compiled.metadata.id}`
       );
 
+      // Cache compiled IR for DAG visualizer (spec §3.2 Phase 4)
+      this.irCache.set(compiled.metadata.id, compiled.ir as LLMIntermediateRepresentation);
+      this.logger.debug(`[Task ${taskId}] IR cached under workflow=${compiled.metadata.id}`);
+
+      // STEP 5: Stage 5 — Formal Verification
+      // Runs AFTER Stage 7 (services are resolved) so that dispatchMetadata
+      // is available for LLM_CALL safety checks and precondition proofs.
+      if (this.formalVerifier) {
+        this.logger.log(`[Task ${taskId}] [Stage 5] Running formal verification…`);
+        const report = this.formalVerifier.verify(resolved);
+        if (!report.passed) {
+          const errorSummary = report.errors.map(e => `  [${e.ruleId}] ${e.message}`).join('\n');
+          throw new BadRequestException(
+            `Formal verification failed for task '${request.action}':\n${errorSummary}\n` +
+            `(${report.errors.length} error(s), ${report.warnings.length} warning(s) in ${report.durationMs}ms)`
+          );
+        }
+        this.logger.log(
+          `[Task ${taskId}] [Stage 5] Formal verification PASSED in ${report.durationMs}ms` +
+          (report.warnings.length ? ` (${report.warnings.length} warning(s))` : '')
+        );
+      }
+
+      // STEP 6: Stage 6 — Serialize + sign the IR artifact
+      // Produces a cryptographically signed binary that Rust SVM nodes can
+      // verify before accepting the artifact for execution.
+      if (this.irSerializer) {
+        this.logger.log(`[Task ${taskId}] [Stage 6] Serializing and signing IR artifact…`);
+        const artifact = this.irSerializer.serialize(compiled.ir);
+        (compiled.metadata as any).irArtifactChecksum = artifact.payloadChecksum;
+        (compiled.metadata as any).irArtifactSignedAt = artifact.signedAt;
+        (compiled.metadata as any).irArtifactSignature = artifact.signature;
+        this.logger.log(
+          `[Task ${taskId}] [Stage 6] IR signed — sha256:${artifact.payloadChecksum.substring(0, 16)}…, ` +
+          `size: ${artifact.buffer.length}B`
+        );
+      }
+
+      // STEP 5.5: Stage 9 — Distribution Planning (optional, only when nodes are available)
+      let finalWorkflow = compiled;
+      if (this.plannerService) {
+        this.logger.log(`[Task ${taskId}] [Stage 9] Building distribution plan...`);
+        const plannedIR = await this.plannerService.plan(compiled.ir as any);
+        // Attach the distribution plan to the compiled workflow
+        (finalWorkflow as any).ir = plannedIR;
+        const plan = plannedIR.distributionPlan!;
+        this.logger.log(
+          `[Task ${taskId}] [Stage 9] Plan: ${plan.slices.length} slices, ` +
+          `${plan.nodeCount} nodes, distributed=${plan.isDistributed}, ` +
+          `estimated=${plan.estimatedTotalLatencyMs}ms`
+        );
+      }
+
       // STEP 6: Layer 5 - Execute
       this.logger.log(`[Task ${taskId}] [Layer 5] Executing workflow...`);
       const executionStartTime = Date.now();
 
-      const executionResult = await this.vm.execute(compiled, {});
+      const executionResult = await this.vm.execute(finalWorkflow, {});
 
       const executionTime = Date.now() - executionStartTime;
       const totalTime = Date.now() - totalStartTime;
@@ -294,6 +357,17 @@ export class TaskExecutionService {
    */
   private isActionAvailable(action: string): boolean {
     return action in AVAILABLE_ACTIONS;
+  }
+
+  /**
+   * Retrieve a previously compiled IR from the in-memory cache.
+   * Used by DagVisualizerController (spec §3.2 Phase 4).
+   *
+   * @param workflowId  The workflow metadata ID returned during compilation
+   * @returns           The cached LLMIntermediateRepresentation or undefined
+   */
+  getCompiledIR(workflowId: string): LLMIntermediateRepresentation | undefined {
+    return this.irCache.get(workflowId);
   }
 
   /**

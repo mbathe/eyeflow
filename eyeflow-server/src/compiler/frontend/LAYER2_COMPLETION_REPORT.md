@@ -49,38 +49,15 @@ error handling
 - Error handling and graceful failure
 - Capability validation integration
 
-#### 2. FrontendOrchestratorService Tests (16 tests) ✅
-**File:** `src/compiler/frontend/frontend-orchestrator.service.spec.ts`
+#### 2. FrontendOrchestratorService (removed)
+This component and its test-suite have been removed from the codebase. The
+responsibilities for NL→AST orchestration have been migrated to the Planning
+layer (Python LLM service). Historical tests and implementation remain in git
+history and the repository changelog/PR notes.
 
-```
-✓ should be defined
-compile()
-  ✓ should complete full compilation pipeline successfully
-  ✓ should handle parse errors gracefully
-  ✓ should cache successful compilations
-  ✓ should aggregate errors from all pipeline stages
-  ✓ should invoke type inference during compilation
-  ✓ should invoke constraint validation during compilation
-  ✓ should collect performance metrics
-  ✓ should include operation count in metrics
-  ✓ should include variable count in metrics
-  ✓ should preserve warnings with successful compilation
-clearCache()
-  ✓ should clear specific cache entry when parameters provided
-  ✓ should clear all cache entries when no parameters provided
-getStatistics()
-  ✓ should return parser statistics
-  ✓ should include workflow duration in statistics
-  ✓ should list all supported verbs
-```
-
-**Key Coverage:**
-- Full compilation pipeline (parse → typecheck → validate)
-- Caching layer integration (Redis)
-- Performance metrics collection
-- Error aggregation across all stages
-- Cache management
-- Statistics reporting
+**Key note:** Consumers should use the Planning layer API for NL parsing and
+pipeline orchestration; helper services (type-inferencer, constraint-validator)
+remain available for internal use.
 
 ---
 
@@ -196,11 +173,11 @@ Message: "Layer 2 Finalized: NLParserService (14 tests) + FrontendOrchestratorSe
 - ✅ `src/compiler/frontend/services/nl-parser.service.spec.ts` (192 lines)
 - ✅ `src/compiler/frontend/services/type-inferencer.service.ts` (320 lines)
 - ✅ `src/compiler/frontend/services/constraint-validator.service.ts` (390 lines)
-- ✅ `src/compiler/frontend/frontend-orchestrator.service.ts` (278 lines)
-- ✅ `src/compiler/frontend/frontend-orchestrator.service.spec.ts` (577 lines)
+- REMOVED: `src/compiler/frontend/frontend-orchestrator.service.ts` (removed in PR)
+- REMOVED: `src/compiler/frontend/frontend-orchestrator.service.spec.ts` (removed in PR)
 - ✅ `src/compiler/frontend/interfaces/semantic-node.interface.ts` (350 lines)
-- ✅ `src/compiler/frontend/frontend.module.ts` (20 lines)
-- ✅ `src/compiler/frontend/index.ts` (10 lines)
+- REMOVED: `src/compiler/frontend/frontend.module.ts` (removed in PR)
+- ✅ `src/compiler/frontend/index.ts` (updated)
 - ✅ `src/compiler/index.ts` (5 lines)
 - ✅ `src/common/cache/cache.module.ts` (15 lines)
 - ✅ `src/compiler/frontend/LAYER2_README.md` (400+ lines)

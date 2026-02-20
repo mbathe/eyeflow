@@ -1,7 +1,35 @@
 import { Injectable, Logger } from '@nestjs/common';
+import * as crypto from 'crypto';
 import { ComponentRegistry, CapabilityCatalog } from './component-registry.service';
 import { RedisCacheService } from '../services/redis-cache.service';
 import { Capability, CapabilityParameter, CompilableComponent } from './compilable-component.interface';
+import { CatalogVerticalService, VerticalScore, CatalogVertical } from './catalog-vertical.service';
+
+// ── Catalog signing (spec §4 — CryptoSignature per entry) ────────────────────
+
+const CATALOG_SIGNING_SECRET = process.env['CATALOG_SIGNING_SECRET'] ?? 'eyeflow-catalog-default-hmac-key';
+
+/**
+ * HMAC-SHA256 signature bound to a single catalog entry.
+ * Covers: id + name + category + description (compile-time identity).
+ * Verified at SVM acceptance — revoked entries are refused even if sig valid.
+ */
+export interface CatalogEntrySignature {
+  /** Always 'HMAC-SHA256' */
+  algorithm: 'HMAC-SHA256';
+  /** Hex-encoded HMAC-SHA256 digest */
+  signature: string;
+  /** ISO 8601 timestamp when the signature was issued */
+  signedAt: string;
+  /** First 8 chars of the signing secret hash — identifies the key rotation */
+  keyId: string;
+}
+
+/** Revoked entry IDs from env (comma-separated). Entries in this set are
+ *  refused by the SVM even if their signature is cryptographically valid. */
+const REVOKED_ENTRY_IDS: ReadonlySet<string> = new Set(
+  (process.env['CATALOG_REVOKED_ENTRIES'] ?? '').split(',').map(s => s.trim()).filter(Boolean),
+);
 
 /**
  * Builds and manages the Capability Catalog (Layer 1 of Semantic Compiler)
@@ -12,10 +40,17 @@ export class CapabilityCatalogBuilder {
   private static readonly CATALOG_CACHE_KEY = 'compiler:catalog:latest';
   private static readonly CATALOG_CACHE_TTL = 86400; // 24 hours
   private logger = new Logger(CapabilityCatalogBuilder.name);
+  /** Precomputed keyId — first 8 chars of HMAC(secret, 'eyeflow-keyid') */
+  private readonly keyId = crypto
+    .createHmac('sha256', CATALOG_SIGNING_SECRET)
+    .update('eyeflow-keyid')
+    .digest('hex')
+    .slice(0, 8);
 
   constructor(
     private registry: ComponentRegistry,
     private cache: RedisCacheService,
+    private verticalService: CatalogVerticalService,
   ) {}
 
   /**
@@ -56,26 +91,41 @@ export class CapabilityCatalogBuilder {
     const registryCatalog = await this.registry.buildCatalog();
     const components = this.registry.getAllComponents();
 
+    const signedAt = new Date().toISOString();
     const capabilities: CapabilityInfo[] = this.registry
       .getAllCapabilities()
-      .map((cap, index) => ({
-        index: index,
-        id: cap.id,
-        name: cap.name,
-        description: cap.description,
-        category: cap.category,
-        inputs: cap.inputs,
-        outputs: cap.outputs,
-        executor: cap.executor,
-        metadata: {
-          estimatedDuration: cap.estimatedDuration,
-          cacheable: cap.cacheable,
-          cacheTTL: cap.cacheTTL,
-          supportsParallel: cap.supportsParallel,
-          isLLMCall: cap.isLLMCall,
-          estimatedCost: cap.estimatedCost,
-        },
-      }));
+      .map((cap, index) => {
+        const entry: CapabilityInfo = {
+          index,
+          id:          cap.id,
+          name:        cap.name,
+          description: cap.description,
+          category:    cap.category,
+          inputs:      cap.inputs,
+          outputs:     cap.outputs,
+          executor:    cap.executor,
+          metadata: {
+            estimatedDuration: cap.estimatedDuration,
+            cacheable:         cap.cacheable,
+            cacheTTL:          cap.cacheTTL,
+            supportsParallel:  cap.supportsParallel,
+            isLLMCall:         cap.isLLMCall,
+            estimatedCost:     cap.estimatedCost,
+          },
+          // ── CryptoSignature (spec §4) ───────────────────────────────────
+          signature:  this.signEntry(cap.id, cap.name, cap.category, cap.description, signedAt),
+          revoked:    REVOKED_ENTRY_IDS.has(cap.id),
+          // ── Vertical tags (populated below) ────────────────────────────
+          verticals:  [],
+        };
+        return entry;
+      });
+
+    // Annotate each capability with vertical relevance scores
+    const withVerticals = this.verticalService.annotateCapabilities(capabilities);
+    withVerticals.forEach((cap, i) => {
+      capabilities[i]!.verticals = cap.verticals;
+    });
 
     const componentInfos: ComponentInfo[] = components.map(comp => ({
       id: comp.id,
@@ -238,6 +288,48 @@ export class CapabilityCatalogBuilder {
     } catch (error) {
       this.logger.warn(`Failed to cache catalog: ${error}`);
     }
+  }
+
+  // ── Signature helpers (spec §4) ─────────────────────────────────────────
+
+  /**
+   * Compute a per-entry HMAC-SHA256 signature.
+   * Input: `{id}:{name}:{category}:{description}:{signedAt}`
+   */
+  private signEntry(
+    id: string,
+    name: string,
+    category: string,
+    description: string,
+    signedAt: string,
+  ): CatalogEntrySignature {
+    const payload = `${id}:${name}:${category}:${description}:${signedAt}`;
+    const signature = crypto
+      .createHmac('sha256', CATALOG_SIGNING_SECRET)
+      .update(payload)
+      .digest('hex');
+    return { algorithm: 'HMAC-SHA256', signature, signedAt, keyId: this.keyId };
+  }
+
+  /**
+   * Verify the signature bound to a catalog entry.
+   * Returns `false` if the entry has been tampered with or is revoked.
+   */
+  verifyEntrySignature(entry: CapabilityInfo): boolean {
+    if (!entry.signature) return false;
+    if (entry.revoked) return false;
+    const recomputed = crypto
+      .createHmac('sha256', CATALOG_SIGNING_SECRET)
+      .update(`${entry.id}:${entry.name}:${entry.category}:${entry.description}:${entry.signature.signedAt}`)
+      .digest('hex');
+    return recomputed === entry.signature.signature;
+  }
+
+  /**
+   * Returns true if the given entry ID is in the revocation list.
+   */
+  isRevoked(entryId: string): boolean {
+    return REVOKED_ENTRY_IDS.has(entryId);
   }
 
   /**
@@ -412,6 +504,12 @@ export interface CapabilityInfo {
     isLLMCall?: boolean;
     estimatedCost?: any;
   };
+  /** HMAC-SHA256 signature over this entry's identity fields (spec §4) */
+  signature?: CatalogEntrySignature;
+  /** True if this entry has been revoked via CATALOG_REVOKED_ENTRIES env var */
+  revoked?: boolean;
+  /** Vertical relevance scores — populated by CatalogVerticalService */
+  verticals?: VerticalScore[];
 }
 
 export interface CatalogIndex {

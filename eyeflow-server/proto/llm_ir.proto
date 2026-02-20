@@ -1,0 +1,243 @@
+// LLM-IR Protocol Buffers Schema — spec §3 + §16.3
+// Version 1.0 — 2025
+//
+// This is the canonical binary format for LLM Intermediate Representation
+// artifacts exchanged between the NestJS orchestrator and Rust SVM nodes.
+//
+// Rust side: use the `prost` crate (spec §16.3)
+//   [dependencies]
+//   prost = "0.12"
+//   prost-types = "0.12"
+//
+// NestJS side: this file is loaded dynamically via protobufjs.
+
+syntax = "proto3";
+
+package llmir;
+
+// ── Enumerations ──────────────────────────────────────────────────────────────
+
+enum IROpcode {
+  LOAD_RESOURCE    = 0;
+  STORE_MEMORY     = 1;
+  VALIDATE         = 2;
+  BRANCH           = 3;
+  LOOP             = 4;
+  JUMP             = 5;
+  CALL_SERVICE     = 6;
+  CALL_ACTION      = 7;
+  CALL_MCP         = 8;
+  TRANSFORM        = 9;
+  AGGREGATE        = 10;
+  FILTER           = 11;
+  PARALLEL_SPAWN   = 12;
+  PARALLEL_MERGE   = 13;
+  LLM_CALL         = 14;
+  RETURN           = 15;
+}
+
+enum RegisterType {
+  INT    = 0;
+  FLOAT  = 1;
+  STRING = 2;
+  BUFFER = 3;
+  OBJECT = 4;
+  ANY    = 5;
+}
+
+enum ServiceFormat {
+  HTTP            = 0;
+  GRPC            = 1;
+  WASM            = 2;
+  NATIVE          = 3;
+  DOCKER          = 4;
+  MCP             = 5;
+  EMBEDDED_JS     = 6;
+  CONNECTOR       = 7;
+  LLM_CALL_FORMAT = 8;
+}
+
+// ── Core IR types ─────────────────────────────────────────────────────────────
+
+// A compiled few-shot example frozen at compile time (spec §3.4)
+// Injected verbatim into the LLM context — never constructed at runtime.
+message FewShotExample {
+  string input_json  = 1;  // JSON-encoded input example
+  string output_json = 2;  // JSON-encoded expected output
+  string label       = 3;  // Optional descriptive label (debugging)
+}
+
+// A dynamic slot for runtime data injection (spec §3.4 + §13.2)
+// slot_id matches a {{placeholder}} in prompt_template.
+// source_type = "vault"   → fetched from VaultClient at runtime (secret never in IR)
+// source_type = "runtime" → extracted from event payload using source_key as dot-path
+message DynamicSlot {
+  string slot_id     = 1;
+  string source_type = 2;  // "vault" | "runtime"
+  string source_key  = 3;  // vault path or payload key-path
+}
+
+// Dispatch metadata injected by Stage 7 — frozen at compile time
+message DispatchMetadata {
+  string      service_id      = 1;
+  string      service_version = 2;
+  ServiceFormat format        = 3;
+  string      endpoint_url    = 4;
+  string      method          = 5;
+  string      auth_type       = 6;
+  string      credentials_vault_path = 7;
+  string      provider        = 8;
+  string      model           = 9;
+  string      system_prompt   = 10;  // frozen system prompt (spec §3.4)
+  string      prompt_template = 11;  // template with {{slot}} placeholders
+  float       temperature     = 12;  // calibrated at compile time (spec §3.4)
+  int32       max_tokens      = 13;  // formally bounded (spec §3.4)
+  string      output_schema   = 14;  // JSON-encoded output schema (spec §3.4)
+  map<string, string> static_headers  = 15;
+  map<string, string> output_mapping  = 16;
+  repeated FewShotExample few_shot_examples = 17; // frozen at compile time (spec §3.4)
+  repeated DynamicSlot    dynamic_slots     = 18; // runtime injection slots (spec §3.4 + §13.2)
+}
+
+// Convergence predicate for bounded loops
+message LoopConvergencePredicate {
+  int32  register_index = 1;
+  string operator       = 2;  // "==", "!=", "<", "<=", ">", ">=", "exists", "truthy"
+  string value_json     = 3;  // JSON-encoded expected value (optional)
+}
+
+// Operands for LOOP instructions (spec §3.5 / §10.4)
+message LoopOperands {
+  int32                    iterator_register    = 1;
+  int32                    max_iterations       = 2;
+  int32                    timeout_ms           = 3;
+  int32                    body_start_index     = 4;
+  int32                    exit_index           = 5;
+  LoopConvergencePredicate convergence_predicate = 6;
+  int32                    fallback_instruction  = 7;
+}
+
+// Priority policy for resource contention (spec §6.5)
+// When multiple workflows compete for the same resource simultaneously,
+// the SVM applies this compile-time policy — never a runtime decision.
+message PriorityPolicy {
+  uint32 priority_level = 1;  // 0 = critical, 255 = lowest priority
+  bool   preemptible    = 2;  // true → higher-priority workflows can interrupt
+  uint32 max_wait_ms    = 3;  // max wait for resource before fallback triggers
+}
+
+// A single IR instruction (register-based bytecode)
+message IRInstruction {
+  int32             index             = 1;
+  IROpcode          opcode            = 2;
+  int32             dest              = 3;   // destination register
+  repeated int32    src               = 4;   // source registers
+  string            operands_json     = 5;   // JSON-encoded generic operands
+  string            service_id        = 6;
+  string            service_version   = 7;
+  DispatchMetadata  dispatch_metadata = 8;
+  int32             target_instruction = 9;
+  int32             parallel_group_id  = 10;
+  string            target_node_id     = 11;
+  string            required_tier      = 12;  // "CENTRAL"|"LINUX"|"MCU"|"ANY"
+  LoopOperands      loop_operands      = 13;  // only for LOOP instructions
+  PriorityPolicy    priority_policy   = 14;  // resource contention policy (spec §6.5)
+}
+
+// ── Full IR artifact ─────────────────────────────────────────────────────────
+
+// Metadata about the compiled workflow
+message WorkflowMetadata {
+  string id              = 1;
+  string workflow_name   = 2;
+  string compiled_at     = 3;  // ISO 8601
+  string compiler_version = 4;
+  string source          = 5;
+  string validated_by    = 6;  // user ID of human validator
+  int32  version         = 7;  // incremental version number (spec §11.1)
+  string parent_version  = 8;  // parent version checksum for traceability
+  string change_reason   = 9;
+}
+
+// Semantic context stored in IR (for LLM traceability)
+message SemanticContext {
+  repeated string embeddings          = 1;
+  repeated string relationships       = 2;
+  repeated string fallback_strategies = 3;
+}
+
+// Resource table entry
+message ResourceEntry {
+  string resource_id   = 1;
+  string resource_type = 2;
+  string location      = 3;
+  string schema_json   = 4;  // JSON-encoded schema
+}
+
+// Complete LLM Intermediate Representation
+message LLMIntermediateRepresentation {
+  map<int32, IRInstruction> instructions        = 1;
+  repeated int32            instruction_order   = 2;
+  string                    dependency_graph_json = 3; // JSON adjacency
+  repeated ResourceEntry    resource_table      = 4;
+  repeated int32            parallelization_groups = 5;
+  repeated string           schemas_json        = 6;
+  SemanticContext           semantic_context    = 7;
+  int32                     input_register      = 8;
+  int32                     output_register     = 9;
+  WorkflowMetadata          metadata            = 10;
+}
+
+// ── Signed artifact envelope ─────────────────────────────────────────────────
+
+// Signed LLM-IR artifact distributed to Rust SVM nodes (spec §3 + §13)
+// Wire format mirrors ir-serializer.service.ts binary envelope.
+message SignedIRArtifact {
+  uint32 magic           = 1;  // 0x4C4C4D49 = "LLMI"
+  uint32 version         = 2;  // format version = 1
+  bytes  payload         = 3;  // serialized LLMIntermediateRepresentation
+  bytes  signature       = 4;  // Ed25519 signature over payload (64 bytes)
+  string public_key_pem  = 5;  // signer's public key for verification
+  string payload_checksum = 6; // SHA-256 hex of payload
+  string signed_at       = 7;  // ISO 8601 timestamp
+}
+
+// ── Node communication messages ───────────────────────────────────────────────
+
+// Distribution message from NestJS orchestrator to Rust SVM node
+message IRDistributionMessage {
+  string            workflow_id  = 1;
+  int32             version      = 2;
+  SignedIRArtifact  artifact     = 3;
+  string            target_node  = 4;
+  string            dispatched_at = 5;
+}
+
+// Execution result sent back from Rust node to NestJS orchestrator
+message SliceExecutionResult {
+  string plan_id      = 1;
+  string slice_id     = 2;
+  string node_id      = 3;
+  string status       = 4;  // "SUCCESS" | "PARTIAL" | "FAILED"
+  string error        = 5;
+  int32  duration_ms  = 6;
+  map<int32, string> output_registers = 7; // register index → JSON value
+  repeated AuditEventProto audit_events = 8;
+}
+
+// Lightweight audit event for wire transport (spec §12.1)
+message AuditEventProto {
+  string event_id           = 1;
+  string timestamp          = 2;
+  string node_id            = 3;
+  string workflow_id        = 4;
+  int32  workflow_version   = 5;
+  string instruction_id     = 6;
+  string event_type         = 7;
+  string input_hash         = 8;
+  string output_hash        = 9;
+  int32  duration_ms        = 10;
+  string previous_event_hash = 11;
+  string self_hash          = 12;
+  string signature          = 13;
+}

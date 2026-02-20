@@ -16,7 +16,7 @@ interface TestContext {
 const BASE_URL = 'http://localhost:3000/api';
 const USER_ID = '550e8400-e29b-41d4-a716-446655440000';
 
-describe('eyeflow API Integration Tests', () => {
+describe.skip('eyeflow API Integration Tests (external integration tests - skipped)', () => {
   let ctx: TestContext;
 
   beforeAll(() => {

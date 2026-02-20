@@ -10,4 +10,9 @@ export class GenerateRuleFromIntentDto {
   @IsOptional()
   @IsBoolean()
   create?: boolean = false;
+
+  @ApiPropertyOptional({ description: 'Optional ephemeral LLM session id to scope catalog visibility' })
+  @IsOptional()
+  @IsString()
+  sessionId?: string;
 }

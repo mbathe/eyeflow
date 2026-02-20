@@ -357,7 +357,7 @@ export class TasksController {
   ): Promise<any> {
     const fs = require('fs');
     fs.writeFileSync('/tmp/controller_was_called.txt', `CONTROLLER HIT AT ${new Date().toISOString()}`);
-    const result = await this.taskCompilerService.generateEventRuleFromIntent(userId, dto.description, dto.create || false);
+    const result = await this.taskCompilerService.generateEventRuleFromIntent(userId, dto.description, dto.create || false, dto.sessionId);
     // Return full result including compilation data
     return result;
   }

@@ -19,6 +19,7 @@ import { ResourceReificationService } from './resource-reification.service';
 import { ValidationInjectorService } from './validation-injector.service';
 import { ParallelizationCodeGenService } from './parallelization-codegen.service';
 import { SemanticContextBindingService } from './semantic-context-binding.service';
+import { PriorityPolicyInjectorService } from './priority-policy-injector.service';
 import { IROptimizerService } from './ir-optimizer.service';
 
 @Injectable()
@@ -32,6 +33,7 @@ export class IRGeneratorService {
     @Inject(ValidationInjectorService) private validationInjector: ValidationInjectorService,
     @Inject(ParallelizationCodeGenService) private parallelizationCodeGen: ParallelizationCodeGenService,
     @Inject(SemanticContextBindingService) private semanticContextBinding: SemanticContextBindingService,
+    @Inject(PriorityPolicyInjectorService) private priorityPolicyInjector: PriorityPolicyInjectorService,
     @Inject(IROptimizerService) private irOptimizer: IROptimizerService,
   ) {}
 
@@ -96,6 +98,11 @@ export class IRGeneratorService {
         ir,
       );
       ir.semanticContext = semanticResult.semanticContext;
+
+      // Stage 5b: Priority Policy Injection (spec §6.5)
+      this.logger.debug('Stage 5b: Priority Policy Injection', { context: 'IRGenerator' });
+      const priorityResult = this.priorityPolicyInjector.injectPriorityPolicies(ir);
+      ir.instructions = priorityResult.annotatedInstructions;
 
       // Stage 6: IR Optimization
       this.logger.debug('Stage 6: IR Optimization', { context: 'IRGenerator' });

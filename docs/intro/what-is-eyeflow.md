@@ -1,188 +1,150 @@
 ---
+id: what-is-eyeflow
 sidebar_position: 1
-title: What is EyeFlow?
-description: Semantic compilation for deterministic automation at scale
+title: Qu'est-ce qu'EyeFlow ?
+description: EyeFlow est un compilateur sémantique qui transforme des règles métier en langage naturel en programmes exécutables déterministes, certifiables et déployables sur systèmes embarqués critiques.
 ---
 
-# What is EyeFlow?
+# Qu'est-ce qu'EyeFlow ?
 
-## The Problem
+**EyeFlow** est une plateforme de **compilation sémantique** : elle transforme des règles métier rédigées en langage naturel en **programmes exécutables, déterministes et signés cryptographiquement**, sans que le LLM n'intervienne jamais à l'exécution.
 
-Modern automation systems face a fundamental contradiction:
-
-- **Agent frameworks** (OpenClaw, AutoGen) are powerful but **too slow** (1-3 seconds per action) and **unpredictable** (hallucinations, variable outputs)
-- **Traditional automation** (Make, Zapier, Airflow) is fast but **rigid** and requires manual configuration for every task
-- **IoT systems** need **instant reactions** (milliseconds) to sensor events, not seconds with LLM inference
-
-## The Solution: Semantic Compilation
-
-EyeFlow is a **compile-once, run-anywhere** automation engine that:
-
-1. **Understands** your intent in natural language
-2. **Compiles** it into deterministic bytecode (once, offline)
-3. **Executes** it at lightning speed (milliseconds, zero hallucinations)
-
-```
-Human Intent
-    ↓
-"Send alert if temp > 80°C"
-    ↓
-[COMPILATION PHASE - powered by LLM]
-    ↓
-Optimized Bytecode (LLM-IR)
-    ↓
-[EXECUTION PHASE - powered by SVM]
-    ↓
-Instant, Predictable Results
-(No hallucinations, deterministic)
-```
-
-## Key Differentiators
-
-| Aspect | OpenClaw | Make/Zapier | **EyeFlow** |
-|--------|----------|------------|-----------|
-| **Latency** | 1.9s - 3.2s | 500ms - 2s | **10-50ms** ⚡ |
-| **Intelligence** | Runtime LLM | Static rules | **Compiled LLM** ⭐ |
-| **Determinism** | Probabilistic | Yes | **100% Guaranteed** ✅ |
-| **Hallucinations** | Possible | N/A | **Impossible** 🛡️ |
-| **IoT Ready** | ❌ Too slow | ⚠️ Limited | **✅ Event-driven** |
-| **Customization** | Very high | Medium | **High** |
-
-## How It Works (3-Layer Architecture)
-
-### Layer 1: Compilation Phase (Offline)
-
-```
-Intent: "Monitor database and send Slack alert if error"
-           ↓
-    [Catalog Analysis]
-    - Find PostgreSQL connector
-    - Find Slack connector
-    - Validate permissions
-           ↓
-    [LLM Parsing & Optimization]
-    - Generate execution plan
-    - Calculate dependencies
-    - Find parallelization opportunities
-           ↓
-    [LLM-IR Generation]
-    Binary-safe intermediate representation
-```
-
-### Layer 2: Validation Phase (Offline)
-
-```
-LLM-IR → [Type Checker]
-       → [Permissions Verifier]
-       → [Resource Analyzer]
-       → ✅ APPROVED (or ❌ REJECTED)
-```
-
-### Layer 3: Execution Phase (Runtime)
-
-```
-Event Triggered (e.g., DB error)
-    ↓
-[Semantic Virtual Machine]
-    - Read pre-compiled bytecode
-    - Execute 1000s transactions/sec
-    - 0 LLM calls
-    - 0 hallucinations
-    ↓
-Results: Instant, predictable, auditable
-```
-
-## Real-World Example
-
-### Traditional Approach (OpenClaw)
-```
-Error detected in DB
-→ Invoke LLM (1.2s) - might hallucinate
-→ Invoke LLM (1.5s) - decide on action
-→ Execute tool (0.8s)
-→ Total: ~3.5s
-Problem: Too slow for critical alerts!
-```
-
-### EyeFlow Approach
-```
-Error detected in DB
-→ Execute pre-compiled bytecode
-→ Total: ~45ms
-Benefit: 77x faster, zero hallucinations!
-```
-
-## Who Should Use EyeFlow?
-
-### ✅ Perfect For
-
-- **IoT & Manufacturing**: Real-time sensor monitoring and response
-- **Finance**: Trade alerts, fraud detection, compliance checks
-- **DevOps**: Infrastructure automation, incident response
-- **Healthcare**: Data processing, HIPAA-compliant workflows
-- **Enterprise**: Data integration, ETL with guarantees
-
-### ⚠️ Consider If
-
-- Your workflows are truly unpredictable
-- You need maximum flexibility over speed
-- You're building conversational agents (try OpenClaw instead)
-
-## Architecture at a Glance
-
-```mermaid
-graph TB
-    A["Natural Language Intent"] -->|"Compilation Phase"| B["LLM Parser"]
-    B --> C["Optimizer"]
-    C --> D["LLM-IR Generator"]
-    D --> E["Validation Layer"]
-    E -->|"Runtime Phase"| F["Semantic Virtual Machine"]
-    F --> G["Connector Execution"]
-    G --> H["Results"]
-    
-    style A fill:#e1f5
-    style B fill:#fff4e1
-    style D fill:#ffe1e1
-    style F fill:#e1f5e1
-    style H fill:#f0e1ff
-```
-
-## Core Components
-
-| Component | Role | Technology |
-|-----------|------|-----------|
-| **LLM Parser** | Understand intent | Claude/GPT-4 |
-| **Optimizer** | Plan execution | Custom algorithm |
-| **LLM-IR** | Intermediate bytecode | Type-safe, deterministic |
-| **SVM** | Runtime execution | Node.js + native modules |
-| **Capability Catalog** | Resource registry | YAML + TypeScript |
-| **Connectors** | External integrations | 25+ built-in |
-
-## Performance Metrics
-
-- **Latency**: 10-50ms (vs 1900ms for OpenClaw)
-- **Throughput**: 3,333 tasks/second
-- **Success Rate**: 100% (deterministic)
-- **Memory**: 45MB base + task-specific
-- **CPU**: <5% idle, scales linearly
-
-## Security Features
-
-- ✅ No prompt injection vulnerabilities
-- ✅ Closed-world permissions model
-- ✅ Type-safe bytecode validation
-- ✅ Audit trail for all executions
-- ✅ Zero secrets exposed at runtime
-
-## Getting Started
-
-Choose your path:
-
-- **👥 Non-technical user?** → [5-minute quickstart](../for-end-users/quickstart.md)
-- **👨‍💻 Developer?** → [API Reference](../for-developers/api-reference.md)
-- **🏭 Decision maker?** → [ROI Analysis](../for-decision-makers/roi-analysis.md)
-- **📚 Deep into details?** → [Semantic Compilation](../technical-deep-dive/semantic-compilation.md)
+:::tip Principe fondateur
+Le LLM est un **compilateur statique**, pas un décideur dynamique. Une fois compilé, le programme s'exécute de manière **100 % reproductible**, auditée et certifiable IEC 62304 / SIL.
+:::
 
 ---
 
-**Next**: [Why EyeFlow?](./why-eyeflow.md) → Learn about performance gains and ROI
+## Vue d'ensemble
+
+```
+Règle métier (langage naturel)
+        │
+        ▼
+┌─────────────────────────────────┐
+│    Compilateur Sémantique       │
+│    (NestJS + LLM statique)      │
+│                                 │
+│  ① NLP → AST                   │
+│  ② AST → DAG de tâches          │
+│  ③ Validation humaine           │
+│  ④ Vérification formelle Z3     │
+│  ⑤ Injection CompiledLLMContext │
+│  ⑥ PriorityPolicy injection     │
+│  ⑦ Binaire LLM-IR signé Ed25519 │
+└──────────────┬──────────────────┘
+               │  Programme protobuf signé
+               ▼
+┌──────────────────────────────────┐
+│   SVM — Semantic Virtual Machine │
+│   (Rust + Tokio)                 │
+│   Zéro LLM à l'exécution        │
+└──────────┬───────────────────────┘
+           │
+    ┌──────┴───────┐
+    ▼              ▼
+Linux Edge     MCU Embassy
+(RPi, x86)    (STM32, nRF52)
+```
+
+---
+
+## Les 4 piliers
+
+### 1. Déterminisme absolu
+
+Le LLM est invoqué **une seule fois** — à la compilation. Chaque instruction `LLM_CALL` embarque un `CompiledLLMContext` figé :
+
+| Champ | Description |
+|-------|-------------|
+| `model` | Modèle exact utilisé à la compilation |
+| `temperature` | Calibrée au type : 0.0 extraction · 0.3 raisonnement · 0.7 génération |
+| `fewShotExamples` | Exemples figés compilés dans le binaire |
+| `outputSchema` | JSON Schema pour le masquage `logit_bias` |
+| `dynamicSlots` | Slots résolus depuis Vault ou runtime |
+
+À l'exécution, la SVM envoie ce contexte figé — aucune décision dynamique.
+
+### 2. Vérification formelle Z3
+
+Chaque programme passe par **Z3 Theorem Prover** avant signature :
+
+- Détection de code mort (unreachable branches)
+- Contradiction de conditions (`temp > 80 AND temp < 20`)
+- Boucles LLM bornées (`max_iterations` obligatoire)
+- Cohérence des permissions de capabilities
+
+### 3. Catalog de capabilities signé
+
+Toute interaction physique ou numérique passe par une `CatalogCapability` :
+
+- Signature **Ed25519** par l'administrateur
+- Sémantique préconditions / postconditions / rollback
+- Révocable à chaud sans redéploiement
+- 5 secteurs : médical · industriel · agriculture · finance · IoT
+
+### 4. Exécution edge-first
+
+La SVM Rust compile pour plusieurs cibles :
+
+| Plateforme | Support |
+|-----------|---------|
+| x86_64 Linux | ✅ Production |
+| ARM64 / ARMv7 (RPi 4) | ✅ Production |
+| STM32F4 (Embassy no-std) | ✅ Sans OS, sans heap |
+| nRF52840 (BLE edge) | ✅ Firmware certifiable |
+
+---
+
+## Ce qu'EyeFlow n'est PAS
+
+| Idée reçue | Réalité |
+|---|---|
+| Orchestrateur IA (AutoGen, CrewAI) | Le LLM ne décide rien à l'exécution |
+| No-code LLM (n8n + AI nodes) | Le langage est compilé, pas interprété |
+| ChatBot avec outils | Sortie déterministe, pas génératrice |
+| Framework de prompt engineering | Prompts figés à la compilation uniquement |
+
+---
+
+## Architecture en couches
+
+```
+┌──────────────────────────────────────────────────────┐
+│              Interface utilisateur                   │
+│  Dashboard React · CLI · API REST NestJS             │
+├──────────────────────────────────────────────────────┤
+│              Compilateur Sémantique                  │
+│  NLP Parser → AST Builder → DAG Optimizer            │
+│  Z3 Verifier → CompiledContext Injector              │
+│  PriorityPolicy Injector → IR Serializer (protobuf)  │
+├──────────────────────────────────────────────────────┤
+│              LLM-IR (Binaire protobuf)               │
+│  Signé Ed25519 · Versionné semver · SHA-256          │
+├──────────────────────────────────────────────────────┤
+│              SVM — Semantic Virtual Machine          │
+│  Scheduler Tokio · ResourceArbiter (PriorityPolicy) │
+│  VaultClient · FallbackEngine (5 stratégies)         │
+│  AuditChain crypto · Multi-LLM Pipeline              │
+├────────────────────────┬─────────────────────────────┤
+│   Linux Edge Runtime   │   MCU Embassy Runtime       │
+│   x86 · ARM · RPi      │   STM32 · nRF52 · no-alloc  │
+└────────────────────────┴─────────────────────────────┘
+```
+
+---
+
+## Pour qui ?
+
+- **Industriels** : automatisation de processus critiques sans dérive LLM
+- **Équipes médicales** : workflows IEC 62304 certifiables et auditables
+- **DevOps embarqués** : déploiement MCU sans OS ni allocateur dynamique
+- **Architectes logiciels** : garanties formelles sur les comportements IA
+
+---
+
+## Prochaines étapes
+
+👉 [Pourquoi EyeFlow ?](./why-eyeflow) — avantages concurrentiels et ROI  
+👉 [EyeFlow vs. les alternatives](./vs-alternatives) — comparaison technique  
+👉 [Quickstart](../getting-started/quickstart) — opérationnel en 10 minutes

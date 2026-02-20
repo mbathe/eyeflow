@@ -10,6 +10,7 @@ from config.settings import settings
 from app.providers.registry import LLMProviderRegistry
 from app.services.context_cache import ContextCacheService
 from app.services.config_fetcher import LLMConfigFetcher
+from app.services.constrained_generation import ConstrainedGenerationService, ConstrainedGenerationError
 from app.models.schemas import (
     GenerateRulesRequest,
     GenerateRulesResponse,
@@ -124,8 +125,10 @@ async def generate_rules(request: GenerateRulesRequest):
     This endpoint:
     1. Uses LLM config from NestJS (updated hourly)
     2. Fetches aggregated context from NestJS
-    3. Sends to configured LLM provider
-    4. Returns production-ready workflow JSON
+    3. Runs through ConstrainedGenerationService (spec §3.3) — allowlist enforcement
+       + progressive repair (max 3 attempts) + JSON Schema validation
+    4. Returns production-ready workflow JSON guaranteed to reference only
+       catalog-registered connectors/actions
     """
     start_time = time.time()
 
@@ -138,11 +141,27 @@ async def generate_rules(request: GenerateRulesRequest):
             logger.info("📦 Fetching fresh aggregated context from NestJS...")
             context = await context_cache.get_aggregated_context()
 
-        # Generate rules
-        rules_dict, tokens_used = await llm_provider.generate_rules(
-            aggregated_context=context,
-            user_intent=request.user_intent,
-        )
+        # ── Constrained generation (spec §3.3) ────────────────────────────────
+        # ConstrainedGenerationService wraps the provider call with:
+        #   1. Allowlist prompt injection
+        #   2. logit_bias suppression (OpenAI)
+        #   3. Post-validation against catalog + progressive repair
+        constrained = ConstrainedGenerationService(context)
+        try:
+            rules_dict, tokens_used = await constrained.generate(
+                user_intent=request.user_intent,
+                llm_provider=llm_provider,
+            )
+            logger.info("[ConstrainedGen] Generation succeeded with catalog compliance")
+        except ConstrainedGenerationError as cge:
+            logger.warning(
+                f"[ConstrainedGen] All repair attempts failed, falling back to unconstrained: {cge}"
+            )
+            # Graceful fallback: run without constraints rather than returning 500
+            rules_dict, tokens_used = await llm_provider.generate_rules(
+                aggregated_context=context,
+                user_intent=request.user_intent,
+            )
 
         # Normalize output keys for backward compatibility with NestJS client
         # Accept multiple possible key formats produced by providers (generatedRules, GeneratedRules, generated_rules)

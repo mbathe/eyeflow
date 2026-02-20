@@ -1,306 +1,150 @@
 ---
+id: why-eyeflow
 sidebar_position: 2
-title: Why EyeFlow?
-description: Performance gains, ROI, and competitive advantages
+title: Pourquoi EyeFlow ?
+description: Analyse comparative, ROI et avantages concurrentiels de la compilation sémantique déterministe.
 ---
 
-# Why EyeFlow? The Business Case
+# Pourquoi EyeFlow ?
 
-## Performance Gains
+## Le problème que personne ne résout vraiment
 
-### Latency Reduction: From Seconds to Milliseconds
+Les outils d'automatisation basés sur LLM existants souffrent tous du même défaut fondamental : **le modèle décide à l'exécution**. Cela entraîne :
 
-EyeFlow achieves **77-320x faster** execution compared to agentic approaches:
+- Résultats non reproductibles entre deux exécutions identiques
+- Impossibilité d'audit formal (que s'est-il passé exactement ?)
+- Certification impossible en environnement critique (médical, industriel)
+- Coût LLM à chaque exécution (latence + tokens)
+- Surface d'attaque par injection de prompt à l'exécution
 
-```
-Traditional Agent Loop:    3000-3200ms
-├─ LLM call 1             1200ms
-├─ Tool execution         800ms
-├─ LLM call 2             1000ms
-└─ Result formatting      200ms
-
-EyeFlow Runtime:          40-50ms
-├─ Bytecode fetch         <1ms
-├─ Connector execution    30-45ms
-└─ Result formatting      <5ms
-
-⏱️  SPEEDUP: 77x faster
-```
-
-For high-frequency operations:
-
-| Operation | Traditional | EyeFlow | Speedup |
-|-----------|------------|---------|---------|
-| Single check | 3s | 45ms | 67x |
-| 1000 checks/day | 3000s (50 min) | 45s | **67x** |
-| 1M checks/day | 3M seconds (833 hrs) | 45,000s (12.5 hrs) | **67x** |
-
-### Real-World Impact
-
-**Scenario**: Financial compliance monitoring across 10,000 trading accounts
-
-```
-OpenClaw:
-- 3 seconds per account
-- 10,000 accounts = 8.3 hours per check ❌
-- Only feasible: hourly checks
-
-EyeFlow:
-- 45ms per account
-- 10,000 accounts = 7.5 minutes per check ✅
-- Feasible: real-time continuous monitoring
-```
-
-## Reliability & Determinism
-
-### Zero Hallucinations Guarantee
-
-EyeFlow's **closed-world model** eliminates hallucinations at execution time:
-
-```
-OpenClaw Risk Scenarios:
-├─ Hallucinated API endpoint
-├─ Wrong parameter types
-├─ Non-existent file paths
-├─ Mistyped credentials
-└─ Result: Unpredictable failures
-
-EyeFlow Guarantee:
-├─ All resources pre-bound
-├─ All types validated
-├─ All paths verified
-├─ All permissions checked
-└─ Result: 100% predictable
-```
-
-### Audit Trail & Reproducibility
-
-Every execution is **perfectly reproducible**:
-
-```
-EyeFlow Execution Log:
-[12:34:56.001] Task: compliance-check-v2.1.0
-[12:34:56.002] Resources: db=prod, api=stripe-live
-[12:34:56.003] Step 1: Query database (25 records)
-[12:34:56.028] Step 2: Check each record (25x parallel)
-[12:34:56.045] Step 3: Log results
-[12:34:56.047] Status: SUCCESS
-[12:34:56.048] Audit: 100% reproducible ✅
-```
-
-## Cost Savings
-
-### Operational Efficiency
-
-```
-Annual Cost Analysis (100 tasks/day):
-
-OpenClaw Approach:
-├─ LLM API calls: 100 tasks × 2 calls × 365 = 73,000 calls/year
-├─ Cost @ $0.01/call: $730/year per task
-├─ 100 tasks: $73,000/year ❌
-└─ Plus infrastructure costs
-
-EyeFlow Approach:
-├─ LLM API calls: 100 tasks × 1 call (compilation) = 100 calls/year
-├─ Cost @ $0.01/call: $1/year per task
-├─ 100 tasks: $100/year ✅
-├─ Plus infrastructure costs (lighter)
-└─ SAVINGS: $72,900/year per task class
-```
-
-### Infrastructure Implications
-
-```
-OpenClaw Requirements:
-├─ Always-on LLM service (GPU required)
-├─ Context caching layer
-├─ Message queue for concurrency
-├─ 3x server redundancy
-└─ Estimated: $5,000-15,000/month
-
-EyeFlow Requirements:
-├─ Compilation server (shared, can be offline)
-├─ Lightweight SVM runtime
-├─ Minimal memory footprint
-├─ Standard server redundancy
-└─ Estimated: $500-2,000/month
-```
-
-## Risk Mitigation
-
-### Security Advantages
-
-| Risk Category | OpenClaw | EyeFlow |
-|---------------|----------|---------|
-| Prompt injection | High ⚠️ | None 🔒 |
-| Unintended API calls | Medium | Impossible |
-| Credential exposure | Medium | Low |
-| Resource exhaustion | Medium | Controlled |
-| Audit compliance | Manual | Automatic |
-
-### GDPR & Compliance
-
-EyeFlow's deterministic model elegantly handles compliance:
-
-```
-GDPR Requirement: "Right to explanation"
-
-OpenClaw Problem:
-├─ "The LLM decided to..."
-├─ But you can't explain why the LLM decided
-└─ Compliance: ❌ Difficult
-
-EyeFlow Solution:
-├─ Here's the exact bytecode executed
-├─ Here's the compilation reasoning
-├─ Here's the audit log
-└─ Compliance: ✅ Built-in
-```
-
-## Business Scenarios
-
-### Scenario 1: E-commerce Order Processing
-
-```
-Company: 100K orders/day
-Current: Manual + some Zapier (20% automation)
-
-With OpenClaw:
-├─ Real-time processing requires 60+ LLM calls/second
-├─ Cost: $2M+/year in API calls alone
-├─ Latency: Orders sit 3-5 seconds before processing
-└─ Risk: Occasional hallucinations causing order errors
-
-With EyeFlow:
-├─ Compile once, run 100K times
-├─ Cost: $100K/year in compilation + runtime
-├─ Latency: Instant (45ms per order)
-├─ Risk: Zero hallucinations
-└─ ROI: $1.9M savings + quality improvement
-```
-
-### Scenario 2: IoT Manufacturing Floor
-
-```
-Factory: 500 sensors, 1-second update intervals
-
-With OpenClaw:
-├─ 500 events/second × 3s latency = 1500 pending events ❌
-├─ Impossible to maintain
-└─ System unusable
-
-With EyeFlow:
-├─ 500 events/second × 45ms latency = 22 pending events ✅
-├─ Fully manageable
-├─ Real-time production alerts
-└─ System production-ready
-```
-
-### Scenario 3: Financial Institution Compliance
-
-```
-Bank: 10,000 accounts, compliance checks every hour
-
-With OpenClaw:
-├─ 10,000 accounts × 3s per check = 8.3 hours per round
-├─ Only feasible: once/day
-├─ Miss regulatory requirements
-└─ Compliance risk: ❌ High
-
-With EyeFlow:
-├─ 10,000 accounts × 45ms per check = 7.5 minutes
-├─ Fully capable: 8 times per day
-├─ Exceed regulatory requirements
-└─ Compliance status: ✅ Exceed targets
-```
-
-## Competitive Comparison
-
-### vs. OpenClaw
-
-| Factor | OpenClaw | EyeFlow |
-|--------|----------|---------|
-| Speed | Slow (3s) | Super-fast (45ms) |
-| Real-time IoT | ❌ No | ✅ Yes |
-| Predictability | Variable | 100% |
-| Scale | 100s tasks | 1000s/sec |
-| Use case | Conversational | Mission-critical |
-
-→ **EyeFlow** for automation that can't fail.
-
-### vs. Make/Zapier
-
-| Factor | Make | EyeFlow |
-|--------|------|---------|
-| Speed | Fast (500ms) | Ultra-fast (45ms) |
-| Intelligence | Static rules | Semantic understanding |
-| Customization | Limited | Unlimited |
-| Determinism | Good | Perfect |
-| LLM-powered | ❌ No | ✅ Yes |
-
-→ **EyeFlow** for smart + fast automation.
-
-### vs. Airflow
-
-| Factor | Airflow | EyeFlow |
-|--------|---------|---------|
-| Setup complexity | High | Simple |
-| Latency | Seconds-minutes | Milliseconds |
-| Real-time events | Limited | Native |
-| Determinism | Excellent | Excellent |
-| NL understanding | ❌ No | ✅ Yes |
-
-→ **EyeFlow** for fast + intelligent data pipelines.
-
-## ROI Calculator
-
-**Your scenario?**
-
-```
-Baseline: Tasks per day = X
-Latency per task = Y seconds
-API cost per call = $Z
-
-OpenClaw cost:
-- API calls: X × 2 calls × 365 × $Z
-- Inference latency: X × Y seconds × (salary/3600)
-
-EyeFlow cost:
-- API calls: X × 1 call × 365 × $Z (compilation only)
-- Inference latency: X × 0.045 seconds × (salary/3600)
-
-Savings = OpenClaw cost - EyeFlow cost
-```
-
-**Example**: 1,000 tasks/day, 2 calls each, $0.01/call, $30/hour salary
-```
-OpenClaw: $7,300/year + $175,200/year salary = $182,500
-EyeFlow:  $3,650/year + $5,256/year salary = $8,906
-→ SAVINGS: $173,594/year (95% reduction!)
-```
-
-## Time to Value
-
-```
-Week 1:    Setup + training
-Week 2-3:  Build first automations
-Week 4:    First measurable improvements
-Month 2:   Cost savings visible
-Month 3:   ROI positive
-Month 6:   Scaled across organization
-```
-
-## Summary
-
-**EyeFlow is for organizations that need:**
-
-✅ **Speed** - Millisecond response times  
-✅ **Reliability** - Zero hallucinations  
-✅ **Cost efficiency** - 90%+ savings  
-✅ **Compliance** - Perfect audit trails  
-✅ **Determinism** - Reproducible results  
+EyeFlow résout ces problèmes à la racine en **déplaçant toute la logique LLM au moment de la compilation**.
 
 ---
 
-**Next**: [How does it compare to OpenClaw?](./vs-openclaw.md)
+## Comparaison directe
+
+### EyeFlow vs. outils no-code LLM (n8n, Make, Zapier AI)
+
+| Critère | n8n / Make / Zapier AI | **EyeFlow** |
+|---------|----------------------|-------------|
+| LLM à l'exécution | ✅ Oui (décide à chaque run) | ❌ Jamais |
+| Reproductibilité | ❌ Non garantie | ✅ 100 % déterministe |
+| Audit formel | ❌ Logs textuels seulement | ✅ Chaîne crypto immutable |
+| Certifiable IEC / SIL | ❌ Non | ✅ Oui |
+| Déploiement MCU | ❌ Non | ✅ STM32, nRF52 |
+| Vérification Z3 | ❌ Non | ✅ Avant signature |
+| Latence d'exécution | ≥ 1s (appel LLM) | < 10ms (SVM locale) |
+| Coût par exécution | Tokens LLM à chaque run | Zero (binaire compilé) |
+
+### EyeFlow vs. frameworks agents (AutoGen, CrewAI, LangGraph)
+
+| Critère | AutoGen / LangGraph | **EyeFlow** |
+|---------|---------------------|-------------|
+| Paradigme | Agent dynamique | Compilateur statique |
+| Boucle LLM | Non bornée (hallucinations possibles) | Bornée + vérifiée Z3 |
+| Contrôle physique | Risqué sans garde-fous | TimeWindow + postcondition verify |
+| Permissions runtime | Non vérifiées formellement | Catalog signé Ed25519 |
+| Offline | Non | Buffer Kafka + réconciliation |
+| Traces d'audit | Logs textuels | Hash SHA-256 chaîné |
+
+### EyeFlow vs. solutions industrielles classiques (SCADA, PLC)
+
+| Critère | SCADA / PLC | **EyeFlow** |
+|---------|-------------|-------------|
+| Configuration | Ingénierie spécialisée longue | Langage naturel compilé |
+| Flexibilité sémantique | Faible (ladder logic) | Haute (NLP → AST) |
+| Compréhension du contexte | Aucune | LLM statique à la compilation |
+| Multi-protocoles | Partiel (OPC-UA, Modbus) | 11 sources : Kafka, MQTT, Modbus, OPC-UA, HTTP, Cron, FS, CDC, Email... |
+| Déploiement MCU | Environnements propriétaires | Rust Embassy open-source |
+
+---
+
+## ROI mesurable
+
+### Réduction des coûts LLM
+
+Dans un système classique basé LLM, chaque exécution d'une règle coûte des tokens.  
+Avec EyeFlow : **0 token à l'exécution** après compilation.
+
+| Volume d'exécutions/jour | Coût LLM classique (gpt-4o) | Coût EyeFlow |
+|--------------------------|------------------------------|--------------|
+| 1 000 exécutions | ~2 USD/jour | **0 USD** |
+| 50 000 exécutions | ~100 USD/jour | **0 USD** |
+| 1 000 000 exécutions | ~2 000 USD/jour | **0 USD** |
+
+*Le LLM est uniquement facturé lors de la (re)compilation d'une règle, ce qui est rare.*
+
+### Réduction des incidents de dérive IA
+
+Les dérives LLM en production (hallucinations, comportements inattendus) coûtent en moyenne :
+- 4h d'enquête ingénieur par incident
+- Risques juridiques en médical / financier
+- Perte de confiance client
+
+EyeFlow élimine cette classe d'incidents par construction (déterminisme prouvé).
+
+### Délai de certification
+
+| Contexte | Sans EyeFlow | Avec EyeFlow |
+|---------|--------------|--------------|
+| Certification IEC 62304 (médical) | 18-36 mois | 6-12 mois (audit trail fourni) |
+| Validation SIL2 (industriel) | 12-24 mois | 4-8 mois (Z3 reports inclus) |
+| Conformité SOC2 (finance) | 6-12 mois | 2-4 mois (chaîne crypto) |
+
+---
+
+## Cas d'usage qui nécessitent EyeFlow
+
+### Systèmes critiques
+
+Partout où l'exécution incorrecte d'une règle IA peut entraîner des dommages physiques ou juridiques :
+
+- **Médical** : dosage médicament, alertes patient, coordination soins ICU
+- **Industriel** : commande d'actionneurs, gestion soupapes, arrêts d'urgence
+- **Agriculture** : irrigation précision, dosage pesticides, seuils phytosanitaires
+- **Finance** : validation transactions, détection fraude réglementée, reporting AMF
+
+### Déploiements edge contraints
+
+Partout où il n'y a pas de réseau stable ou de puissance de calcul pour un LLM :
+
+- Raspberry Pi hors réseau (agriculture terrain)
+- STM32 embarqué dans un équipement médical
+- nRF52 dans un capteur BLE sans cloud
+
+### Audit et conformité
+
+Partout où chaque action doit être prouvée et non-répudiable :
+
+- RGPD (traçabilité des décisions automatisées sur données personnelles)
+- NIS2 (résilience des infrastructures critiques)
+- ISO 13485 (dispositifs médicaux)
+- ISO 26262 (automotive)
+
+---
+
+## Ce que vous gagnez concrètement
+
+:::success Déterminisme
+La même règle produit exactement le même résultat le lundi et le vendredi, en production et en staging.
+:::
+
+:::info Performance
+Exécution < 10ms en local vs ≥ 1s pour un appel LLM. 100x plus rapide pour les règles fréquentes.
+:::
+
+:::warning Sécurité formelle
+Pas d'injection de prompt à l'exécution. Le programme exécute un binaire signé, pas du texte interprété.
+:::
+
+:::danger Certifiabilité
+Les rapports Z3, les chaînes d'audit crypto et les traces d'exécution sont fournis dans le format attendu par les certifications IEC / SIL.
+:::
+
+---
+
+## Prochaines étapes
+
+👉 [EyeFlow vs. alternatives](./vs-alternatives) — comparaison technique approfondie  
+👉 [Comment ça marche : compilation sémantique](../concepts/semantic-compilation) — les 6 phases détaillées  
+👉 [Quickstart](../getting-started/quickstart) — en production en 10 minutes

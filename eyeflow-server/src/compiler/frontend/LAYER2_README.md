@@ -53,35 +53,20 @@ Layer 2 transforms natural language workflow descriptions into a **Semantic Tree
 - Data flow compatibility
 - Invalid reference detection
 
-### 4. **FrontendOrchestratorService**
-**Purpose:** Orchestrate the complete compilation pipeline
+### 4. **Frontend Layer (removed)**
+This repository previously included a "Frontend" (Layer 2) implementation that
+handled natural‑language parsing and orchestration. That module has been **removed**
+and its responsibilities migrated to the Planning layer (Python LLM service).
 
-**Key Methods:**
-- `compile(input: string, workflowName: string): Promise<CompilationResult>`
-- `parseInteractive(input: string, workflowName: string): Promise<CompilationResult>`
-- `clearCache(input?: string, workflowName?: string): Promise<void>`
-- `getStatistics(): Promise<{parserVersion, supportedVerbs, maxWorkflowDuration}>`
-
-**Features:**
-- Full pipeline orchestration: Parse → TypeCheck → Validate
-- Redis caching (1-hour TTL by default)
-- Performance metrics collection
-- Comprehensive error aggregation
+- Removed artifacts: `FrontendModule`, `FrontendOrchestratorService`.
+- Remaining utilities: parser helpers, type inferencer and constraint validator
+  remain available and are maintained for internal tooling and tests.
 
 ## Integration
 
-### FrontendModule
-Located at: `src/compiler/frontend/frontend.module.ts`
-
-**Exports:**
-- FrontendOrchestratorService (main entry point)
-- NLParserService
-- TypeInferencerService
-- ConstraintValidatorService
-
-**Dependencies:**
-- ExtensibilityModule (Layer 1 - Catalog Access)
-- CacheModule (Redis caching)
+### FrontendModule (removed)
+The historical `FrontendModule` has been removed from the codebase. Natural language
+parsing and NL→AST responsibilities are now handled by the Planning service.
 
 ### App Module Integration
 ```typescript

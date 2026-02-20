@@ -9,7 +9,7 @@ const { execSync } = require('child_process');
 const path = require('path');
 
 const projectRoot = __dirname;  // Should be in eyeflow-server/
-const testFile = path.join(projectRoot, 'src/e2e.pipeline.spec.ts');
+const testFile = path.join(projectRoot, 'src/integration-full-pipeline.spec.ts');
 
 console.log('🚀 Starting E2E Pipeline Test Execution...\n');
 console.log(`Project Root: ${projectRoot}`);

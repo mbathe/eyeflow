@@ -182,5 +182,20 @@ export class RuleApprovalService {
       throw new NotFoundException(`Rule ${ruleId} not found`);
     }
 
-    return rule.userApprovalFeedback || null;  }
+    return rule.userApprovalFeedback || null;
+  }
+
+  /**
+   * Return aggregated approval statistics for a user
+   */
+  async getApprovalStats(userId: string): Promise<{ pending: number; approved: number; rejected: number; total: number }> {
+    const rules: EventRuleExtendedEntity[] = await this.ruleRepository.find({ where: { userId } });
+
+    const pending = rules.filter((r) => r.approvalStatus === RuleApprovalStatus.PENDING_APPROVAL).length;
+    const approved = rules.filter((r) => r.approvalStatus === RuleApprovalStatus.APPROVED).length;
+    const rejected = rules.filter((r) => r.approvalStatus === RuleApprovalStatus.REJECTED).length;
+    const total = rules.length;
+
+    return { pending, approved, rejected, total };
+  }
 }
