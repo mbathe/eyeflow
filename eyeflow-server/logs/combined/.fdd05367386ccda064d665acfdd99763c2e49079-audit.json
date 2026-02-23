@@ -6,9 +6,9 @@
     "auditLog": "/home/paul/codes/smart_eneo_server-main/eyeflow/eyeflow-server/logs/combined/.fdd05367386ccda064d665acfdd99763c2e49079-audit.json",
     "files": [
         {
-            "date": 1771459692704,
-            "name": "/home/paul/codes/smart_eneo_server-main/eyeflow/eyeflow-server/logs/combined/combined-2026-02-19.log",
-            "hash": "6685fe962689f520b7e73a8bc090be2452278b97eb894819185f1a1341cd3508"
+            "date": 1771871669867,
+            "name": "/home/paul/codes/smart_eneo_server-main/eyeflow/eyeflow-server/logs/combined/combined-2026-02-23.log",
+            "hash": "bf32796655c46bd0f848008c3955b4ee492361de878c9d3d1324b3ae9ce7fe99"
         }
     ],
     "hashType": "sha256"

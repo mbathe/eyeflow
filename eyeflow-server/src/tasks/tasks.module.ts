@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+// CompilerModule provides WorkflowRuntimeDeploymentService (W2/W3 deployment bridge)
+import { CompilerModule } from '../compiler/compiler.module';
 
 // Entities
 import { GlobalTaskEntity } from './entities/global-task.entity';
@@ -70,6 +72,8 @@ import { AuditController } from './controllers/audit.controller';
     AnalyticsModule,
     NotificationsModule,
     WorkflowModule,
+    // Gives access to WorkflowRuntimeDeploymentService (deployment bridge W2/W3)
+    CompilerModule,
   ],
   providers: [
     // Core LLM & Validation

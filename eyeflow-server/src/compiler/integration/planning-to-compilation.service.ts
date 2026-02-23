@@ -10,9 +10,19 @@
  * @file src/compiler/integration/planning-to-compilation.service.ts
  */
 
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Optional } from '@nestjs/common';
 import { Logger } from 'winston';
-import { CompiledWorkflow } from '../interfaces/compiled-workflow.interface';
+import {
+  CompiledWorkflow,
+  CompiledWorkflowImpl,
+  PreLoadedServices,
+} from '../interfaces/compiled-workflow.interface';
+import {
+  LLMIntermediateRepresentation,
+  IROpcode,
+} from '../interfaces/ir.interface';
+import { ServiceResolutionService } from '../stages/stage-7-service-resolution.service';
+import { ServicePreloaderService } from '../stages/stage-8-service-preloader.service';
 
 /**
  * Mission-like entity from Planning layer
@@ -48,6 +58,8 @@ export class PlanningToCompilationService {
 
   constructor(
     @Inject('LOGGER') logger: Logger,
+    @Optional() private readonly serviceResolution: ServiceResolutionService,
+    @Optional() private readonly servicePreloader: ServicePreloaderService,
   ) {
     this.logger = logger.child({ context: 'PlanningToCompilationService' });
   }
@@ -81,35 +93,61 @@ export class PlanningToCompilationService {
         actionCount: mission.actions?.length || 0,
       });
 
-      // TODO: Implement actual compilation logic
-      // 1. Extract IR from mission structure
-      // 2. Call IRGeneratorService to create bytecode
-      // 3. Call OptimizerService to optimize bytecode
-      // 4. Call ServiceResolutionService to bind services
-      // 5. Call ServicePreloaderService to prepare services
-      
-      // Placeholder return (will be replaced with actual implementation)
-      // Note: Using CompiledWorkflowImpl is not available here at
-      // this point, so this is a stub that will need real implementation
-      const stub = {
-        ir: { stages: [] } as any, // Placeholder IR
-        preLoadedServices: { wasm: new Map(), mcp: new Map(), native: new Map(), docker: new Map() },
-        metadata: {
+      // Step 1: Build LLM-IR from mission actions
+      const ir = this.missionToIR(mission);
+
+      // Step 2: Resolve service dispatch metadata (Stage 7) — if available
+      let resolvedIR: any = ir;
+      if (this.serviceResolution) {
+        try {
+          resolvedIR = await this.serviceResolution.resolveServices(ir);
+          this.logger.info('Stage 7 service resolution complete', {
+            missionId: mission.id,
+          });
+        } catch (resolveError) {
+          this.logger.warn('Stage 7 service resolution failed — continuing without dispatch metadata', {
+            missionId: mission.id,
+            error: (resolveError as Error).message,
+          });
+        }
+      }
+
+      // Step 3: Pre-load services (Stage 8) — if available
+      let compiled: CompiledWorkflow;
+      if (this.servicePreloader) {
+        compiled = await this.servicePreloader.preloadServices(
+          resolvedIR,
+          'system',
+          mission.name,
+        );
+        this.logger.info('Stage 8 service preloading complete', {
+          missionId: mission.id,
+        });
+      } else {
+        // Fallback: wrap the IR in a minimal CompiledWorkflowImpl
+        const emptyServices: PreLoadedServices = {
+          wasm: new Map(),
+          mcp: new Map(),
+          native: new Map(),
+          docker: new Map(),
+        };
+        compiled = new CompiledWorkflowImpl(ir, emptyServices, {
           id: `compiled-${mission.id}`,
           compiledAt: new Date(),
-          compilerVersion: '1.0',
+          compilerVersion: '1.0.0',
           checksum: '',
           userId: 'system',
           workflowName: mission.name,
-        },
-        isHealthy: () => true,
-      };
-      const compiled = stub as unknown as CompiledWorkflow;
+        });
+      }
 
       metadata.status = 'success';
       metadata.endTime = Date.now();
       metadata.duration = metadata.endTime - metadata.startTime;
-      metadata.bytecodeSize = 0; // TODO: Calculate from IR
+      metadata.bytecodeSize = ir.instructions.length;
+      metadata.servicesUsed = ir.instructions
+        .filter(i => i.opcode === IROpcode.CALL_SERVICE || i.opcode === IROpcode.CALL_MCP)
+        .map(i => String(i.serviceId ?? i.index));
 
       this.logger.info('Mission compilation completed', metadata);
       return compiled;
@@ -192,5 +230,79 @@ export class PlanningToCompilationService {
       errors,
       warnings,
     };
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // Internal helpers
+  // ──────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Convert a PlanningMission into a minimal LLMIntermediateRepresentation.
+   * One IR instruction is generated per action.
+   */
+  private missionToIR(mission: PlanningMission): LLMIntermediateRepresentation {
+    const actions = mission.actions ?? [];
+    const instructions: any[] = actions.map((action: any, idx: number) => ({
+      index: idx,
+      opcode: this.actionTypeToOpcode(action.type ?? action.kind ?? 'llm'),
+      serviceId: action.service ?? action.serviceId,
+      operands: action,
+    }));
+
+    return {
+      instructions,
+      instructionOrder: instructions.map((_: any, i: number) => i),
+      dependencyGraph: new Map<number, number[]>(),
+      resourceTable: [],
+      parallelizationGroups: [],
+      schemas: [],
+      semanticContext: { embeddings: [], terms: [], relevanceMatrix: [] } as any,
+      inputRegister: 0,
+      outputRegister: Math.max(0, instructions.length - 1),
+      metadata: {
+        compiledAt: new Date(),
+        compilerVersion: '1.0.0',
+        source: mission.name,
+        workflowId: mission.id,
+      },
+    } as unknown as LLMIntermediateRepresentation;
+  }
+
+  /**
+   * Map an action type string to the nearest IROpcode.
+   */
+  private actionTypeToOpcode(type: string): IROpcode {
+    switch (type?.toLowerCase()) {
+      case 'llm':
+      case 'llm_call':
+      case 'generate':
+        return IROpcode.LLM_CALL;
+      case 'service':
+      case 'service_call':
+      case 'api':
+        return IROpcode.CALL_SERVICE;
+      case 'mcp':
+        return IROpcode.CALL_MCP;
+      case 'branch':
+      case 'condition':
+      case 'if':
+        return IROpcode.BRANCH;
+      case 'loop':
+      case 'for':
+      case 'while':
+        return IROpcode.LOOP;
+      case 'trigger':
+        return IROpcode.TRIGGER;
+      case 'transform':
+        return IROpcode.TRANSFORM;
+      case 'filter':
+        return IROpcode.FILTER;
+      case 'aggregate':
+        return IROpcode.AGGREGATE;
+      case 'validate':
+        return IROpcode.VALIDATE;
+      default:
+        return IROpcode.LLM_CALL;
+    }
   }
 }

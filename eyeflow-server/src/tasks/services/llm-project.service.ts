@@ -9,7 +9,7 @@
  * - Manage versions (create, validate, activate)
  */
 
-import { Injectable, BadRequestException, NotFoundException, Logger, ForbiddenException, ConflictException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, Logger, ForbiddenException, ConflictException, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,6 +22,7 @@ import { ExecutionRecordEntity } from '../entities/execution-record.entity';
 
 import { CreateLLMProjectDto, UpdateLLMProjectDto, LLMProjectDto, CreateProjectVersionDto, ProjectVersionDto } from '../dto/project.dto';
 import { ProjectStatus, ProjectVersionStatus, ExecutionStatus } from '../types/project.types';
+import { WorkflowRuntimeDeploymentService } from '../../compiler/integration/workflow-runtime-deployment.service';
 
 @Injectable()
 export class LLMProjectService {
@@ -39,6 +40,8 @@ export class LLMProjectService {
     
     @InjectRepository(ExecutionRecordEntity)
     private readonly executionRecordRepository: Repository<ExecutionRecordEntity>,
+    @Optional()
+    private readonly runtimeDeployment: WorkflowRuntimeDeploymentService,
   ) {}
 
   // ==========================================
@@ -380,6 +383,21 @@ export class LLMProjectService {
     await this.projectRepository.save(project);
 
     this.logger.log(`Version activated: ${projectId} v${version.version}`);
+
+    // ── W3: Deploy compiled IR to runtime ───────────────────────────────────
+    if (this.runtimeDeployment && saved.irBinary) {
+      this.runtimeDeployment.deployVersion({
+        id:          saved.id,
+        projectId,
+        version:     saved.version,
+        irBinary:    saved.irBinary,
+        irChecksum:  saved.irChecksum,
+      }).catch(err => {
+        this.logger.warn(
+          `[W3] Runtime deployment of version "${saved.id}" failed — version ACTIVE in DB but not LIVE: ${err?.message}`,
+        );
+      });
+    }
 
     return this.versionToDto(saved);
   }

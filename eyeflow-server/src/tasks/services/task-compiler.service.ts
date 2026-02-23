@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   Inject,
   Logger,
+  Optional,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -44,6 +45,7 @@ import { RuleCompilerService } from './rule-compiler.service';
 import { CompilationFeedbackService } from './compilation-feedback.service';
 import { LLMContextEnricherService } from './llm-context-enricher.service';
 import { LLMSessionService } from './llm-session.service';
+import { WorkflowRuntimeDeploymentService } from '../../compiler/integration/workflow-runtime-deployment.service';
 
 @Injectable()
 export class TaskCompilerService {
@@ -75,6 +77,7 @@ export class TaskCompilerService {
     private readonly compilationFeedback: CompilationFeedbackService,
     private readonly contextEnricher: LLMContextEnricherService,
     private readonly llmSessionService: LLMSessionService,
+    @Optional() private readonly runtimeDeployment: WorkflowRuntimeDeploymentService,
   ) {}
 
   async createTask(userId: string, dto: CreateTaskDto): Promise<TaskCompilationResultDto> {
@@ -422,6 +425,24 @@ export class TaskCompilerService {
       await this.auditLogRepository.save(auditLog);
 
       this.logger.log(`Event rule created successfully: ${ruleId}`);
+
+      // ── W2: Deploy rule to runtime immediately ──────────────────────────
+      if (this.runtimeDeployment) {
+        // Fire-and-forget: deployment failure must not rollback the rule save
+        this.runtimeDeployment.deployRule({
+          id:                  ruleId,
+          name:                saved.name,
+          userId,
+          sourceConnectorType: saved.sourceConnectorType,
+          condition:           saved.condition as any,
+          actions:             (saved.actions as any[]) ?? [],
+          debounceConfig:      saved.debounceConfig as any,
+        }).catch(err => {
+          this.logger.warn(
+            `[W2] Runtime deployment of rule "${ruleId}" failed — rule saved but not yet LIVE: ${err?.message}`,
+          );
+        });
+      }
 
       return {
         id: ruleId,

@@ -9,6 +9,8 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
+  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -107,9 +109,13 @@ export class KafkaEventsController {
   getRule(
     @Headers() headers: any,
     @Param('ruleId') ruleId: string,
-  ): EventRule | null {
+  ): EventRule {
     this.validateUser(headers);
-    return this.rules.get(ruleId) || null;
+    const rule = this.rules.get(ruleId);
+    if (!rule) {
+      throw new NotFoundException(`Rule not found: ${ruleId}`);
+    }
+    return rule;
   }
 
   @Post('rules')
@@ -132,7 +138,7 @@ export class KafkaEventsController {
 
     // Validate rule
     if (!rule.name || !rule.trigger || !rule.action) {
-      throw new Error('Rule must have name, trigger, and action');
+      throw new BadRequestException('Rule must have name, trigger, and action');
     }
 
     // Ensure ID
@@ -163,7 +169,7 @@ export class KafkaEventsController {
 
     const rule = this.rules.get(ruleId);
     if (!rule) {
-      throw new Error(`Rule not found: ${ruleId}`);
+      throw new NotFoundException(`Rule not found: ${ruleId}`);
     }
 
     // Update rule
@@ -227,8 +233,8 @@ export class KafkaEventsController {
     this.validateUser(headers);
 
     const idx = parseInt(exampleId, 10);
-    if (idx < 0 || idx >= EXAMPLE_RULES.length) {
-      throw new Error(`Invalid example index: ${exampleId}`);
+    if (isNaN(idx) || idx < 0 || idx >= EXAMPLE_RULES.length) {
+      throw new NotFoundException(`Example rule not found: ${exampleId}`);
     }
 
     const exampleRule = { ...EXAMPLE_RULES[idx] };

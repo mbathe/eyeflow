@@ -125,6 +125,15 @@ export interface NodeCapabilities {
   baseUrl?: string;
 
   /**
+   * WebSocket URL this node exposes for OUTBOUND connections from CENTRAL.
+   * Used when the node cannot initiate an inbound connection to CENTRAL
+   * (e.g. behind NAT with inbound-only WebSocket on CENTRAL is blocked).
+   * Example: "wss://edge-node-42.internal:4002"
+   * If absent, CENTRAL initiates connections via inbound Socket.io only.
+   */
+  wsUrl?: string;
+
+  /**
    * Whether this node has a Node.js runtime capable of running EMBEDDED_JS.
    * True for CENTRAL and LINUX nodes running Node.js.
    * False for Rust-only LINUX nodes and all MCUs.
@@ -178,6 +187,21 @@ export interface NodeRegistrationPayload {
   label: string;
   tier: NodeTier;
   capabilities: Omit<NodeCapabilities, 'nodeId' | 'label' | 'tier' | 'status' | 'lastSeenAt'>;
+
+  /**
+   * HTTP base URL this node exposes for REST fallback dispatch.
+   * If present, overrides any URL derived from the label.
+   * Example: "http://192.168.1.42:4001"
+   */
+  baseUrl?: string;
+
+  /**
+   * WebSocket URL this node exposes for OUTBOUND connections from CENTRAL.
+   * When provided, CENTRAL will open an outbound WebSocket to this node
+   * if no inbound connection is active.
+   * Example: "wss://edge-node-42.internal:4002"
+   */
+  wsUrl?: string;
 
   /**
    * Custom trigger drivers implemented on this node.

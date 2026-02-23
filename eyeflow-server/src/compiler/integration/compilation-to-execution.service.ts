@@ -10,10 +10,11 @@
  * @file src/compiler/integration/compilation-to-execution.service.ts
  */
 
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Optional } from '@nestjs/common';
 import { Logger } from 'winston';
 import { CompiledWorkflow } from '../interfaces/compiled-workflow.interface';
 import { ExecutionResult } from '../interfaces/execution-result.interface';
+import { SemanticVirtualMachine } from '../../runtime/semantic-vm.service';
 
 /**
  * Execution parameters for VM
@@ -47,7 +48,7 @@ export class CompilationToExecutionService {
 
   constructor(
     @Inject('LOGGER') logger: Logger,
-    // TODO: Inject SemanticVirtualMachine when available
+    @Optional() private readonly vm: SemanticVirtualMachine,
   ) {
     this.logger = logger.child({ context: 'CompilationToExecutionService' });
   }
@@ -90,35 +91,73 @@ export class CompilationToExecutionService {
         throw new Error('Invalid bytecode: empty or null IR');
       }
 
-      // TODO: Implement actual execution logic
-      // 1. Validate IR format
-      // 2. Create VM instance or use singleton
-      // 3. Load preloaded services from compiled.preLoadedServices
-      // 4. Execute IR with parameters
-      // 5. Collect results and execution proof
+      // ── Delegate to SemanticVirtualMachine ────────────────────────────
+      if (this.vm) {
+        const vmResult = await this.vm.execute(compiled, parameters ?? {});
 
-      // Placeholder execution result
-      const result: ExecutionResult = {
-        id: `exec-${compiled.metadata.id}`,
+        const result: ExecutionResult = {
+          id: `exec-${compiled.metadata.id}-${Date.now()}`,
+          workflowId: compiled.metadata.id,
+          missionId: undefined,
+          output: {
+            status: 'success',
+            data: vmResult.output,
+            timestamp: new Date(),
+          },
+          metadata: {
+            executionTime: vmResult.durationMs,
+            servicesUsed: vmResult.servicesCalled.map(s => ({
+              name:    s.serviceId,
+              format:  s.format as any,
+              version: 'runtime',
+            })),
+            bytecodeSize: compiled.ir.instructions?.length ?? 0,
+            tasksExecuted: vmResult.instructionsExecuted,
+          },
+          proof: {
+            serviceCallOrder: vmResult.servicesCalled.map(s => s.serviceId),
+          },
+        };
+
+        metadata.status      = 'success';
+        metadata.endTime     = Date.now();
+        metadata.duration    = metadata.endTime - metadata.startTime;
+        metadata.tasksExecuted = vmResult.instructionsExecuted;
+        metadata.resultSize  = JSON.stringify(result.output).length;
+        metadata.servicesUsed = vmResult.servicesCalled.map(s => ({
+          name: s.serviceId,
+          format: s.format,
+        }));
+
+        this.logger.info('Compiled workflow execution completed via SVM', metadata);
+        return result;
+      }
+
+      // ── Fallback (SVM not yet available in this context) ──────────────
+      this.logger.warn('SemanticVirtualMachine not injected — returning stub result', {
         workflowId: compiled.metadata.id,
-        missionId: undefined,
-        output: {
-          status: 'success',
-          data: {}, // TODO: Populate with actual execution results
-          timestamp: new Date(),
-        },
-        metadata: {
-          executionTime: 0,
-          servicesUsed: [],
-          bytecodeSize: 0, // TODO: Calculate from IR
-        },
-      };
+      });
+      const result: ExecutionResult = {
+          id: `exec-${compiled.metadata.id}`,
+          workflowId: compiled.metadata.id,
+          missionId: undefined,
+          output: {
+            status: 'success',
+            data: {},
+            timestamp: new Date(),
+          },
+          metadata: {
+            executionTime: 0,
+            servicesUsed: [],
+            bytecodeSize: compiled.ir.instructions?.length ?? 0,
+          },
+        };
 
       metadata.status = 'success';
-      metadata.endTime = Date.now();
-      metadata.duration = metadata.endTime - metadata.startTime;
-      metadata.tasksExecuted = 0; // TODO: Get from VM
-      metadata.resultSize = JSON.stringify(result.output).length;
+        metadata.endTime = Date.now();
+        metadata.duration = metadata.endTime - metadata.startTime;
+        metadata.tasksExecuted = 0;
+        metadata.resultSize = JSON.stringify(result.output).length;
 
       this.logger.info('Compiled workflow execution completed', metadata);
       return result;

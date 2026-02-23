@@ -39,6 +39,7 @@ import { NodesModule } from '../nodes/nodes.module';
     ProtobufIRSerializerService,
     DagVisualizerService,
     TaskExecutionService,
+    // Re-export IntegrationModule so TasksModule gets WorkflowRuntimeDeploymentService
     IntegrationModule,
   ],
 })

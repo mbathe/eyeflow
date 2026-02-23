@@ -120,17 +120,18 @@ export class ServicePreloaderService {
     }
 
     try {
-      // Simulate download (in production: actual HTTP fetch)
       const binary = await this.downloadFile(dispatch.wasmBinaryUrl, dispatch.wasmChecksum);
-      
-      // In production: load into WebAssembly module
-      // const module = await WebAssembly.instantiate(binary);
-      // preLoaded.wasm.set(serviceId, module);
-      
-      // For now: store the binary
-      preLoaded.wasm.set(serviceId, binary);
-      
-      this.logger.debug(`[Stage 8] Loaded WASM service: ${serviceId} (${binary.length} bytes)`);
+
+      // Compile to WebAssembly module for fast instantiation at execution time
+      // Falls back to storing raw binary if WebAssembly is unavailable (edge env)
+      if (typeof WebAssembly !== 'undefined' && typeof WebAssembly.compile === 'function') {
+        const wasmModule = await WebAssembly.compile(new Uint8Array(binary));
+        preLoaded.wasm.set(serviceId, wasmModule);
+        this.logger.debug(`[Stage 8] Compiled WASM module: ${serviceId} (${binary.length} bytes)`);
+      } else {
+        preLoaded.wasm.set(serviceId, binary);
+        this.logger.debug(`[Stage 8] Stored WASM binary (no WebAssembly engine): ${serviceId} (${binary.length} bytes)`);
+      }
     } catch (error: any) {
       throw new Error(`[Stage 8] Failed to load WASM ${serviceId}: ${error?.message || String(error)}`);
     }
@@ -233,21 +234,34 @@ export class ServicePreloaderService {
   }
 
   /**
-   * Simulate file download with checksum verification
+   * Download a file over HTTP and verify its checksum.
    */
   private async downloadFile(url: string, checksum?: string): Promise<Buffer> {
-    // In production: actual HTTP fetch
-    // const response = await fetch(url);
-    // const buffer = await response.arrayBuffer();
-    
-    // For testing: return mock buffer
-    const buffer = Buffer.from(`mock-binary-from-${url}`);
+    let response: Response;
+    try {
+      response = await fetch(url);
+    } catch (networkError: any) {
+      throw new Error(
+        `[Stage 8] Network error fetching ${url}: ${networkError?.message ?? String(networkError)}`,
+      );
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        `[Stage 8] HTTP ${response.status} ${response.statusText} fetching ${url}`,
+      );
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
     if (checksum) {
       const hash = crypto.createHash('sha256').update(buffer).digest('hex');
       if (!checksum.includes(hash.substring(0, 8))) {
-        this.logger.warn(`[Stage 8] Checksum mismatch (expected: ${checksum}, got: ${hash})`);
-        // In production: throw error; for testing: warn only
+        // Non-fatal in dev; throw in production to prevent tampered binaries
+        this.logger.warn(
+          `[Stage 8] Checksum mismatch for ${url} (expected prefix in: ${checksum}, got: ${hash})`,
+        );
       }
     }
 

@@ -33,6 +33,13 @@ import { TriggerDriverRegistryService } from '../triggers/trigger-driver-registr
 import type { PropagatedEventService } from '../events/propagated-event.service';
 import type { PropagatedEvent } from '../compiler/interfaces/event-state-machine.interface';
 
+/** Pending ACK callbacks for REMOTE_COMMAND, keyed by commandId */
+interface PendingAck {
+  resolve: () => void;
+  reject: (err: Error) => void;
+  timeoutHandle: NodeJS.Timeout;
+}
+
 @WebSocketGateway({ namespace: '/nodes' })
 export class NodesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
@@ -42,6 +49,9 @@ export class NodesGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   /** Map socket.id → nodeId */
   private readonly socketToNode = new Map<string, string>();
+
+  /** Pending REMOTE_COMMAND ACK callbacks keyed by commandId */
+  private readonly pendingAcks = new Map<string, PendingAck>();
 
   constructor(
     private readonly registry: NodeRegistryService,
@@ -176,6 +186,29 @@ export class NodesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   /**
+   * Wait for a REMOTE_COMMAND ACK from a specific node.
+   * Resolves when the node sends back `remote_command_ack` with status OK.
+   * Rejects on timeout or node reporting FAILED.
+   *
+   * @param commandId  The commandId sent with the REMOTE_COMMAND instruction.
+   * @param timeoutMs  Max wait time in ms (default: 10 s).
+   */
+  waitForAck(commandId: string, timeoutMs = 10_000): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const timeoutHandle = setTimeout(() => {
+        this.pendingAcks.delete(commandId);
+        reject(
+          new Error(
+            `[NodesGateway] REMOTE_COMMAND_ACK timeout after ${timeoutMs}ms for commandId="${commandId}"`,
+          ),
+        );
+      }, timeoutMs);
+
+      this.pendingAcks.set(commandId, { resolve, reject, timeoutHandle });
+    });
+  }
+
+  /**
    * REMOTE_COMMAND_ACK — edge node acknowledges a REMOTE_COMMAND sent by CENTRAL.
    * Logged for audit; future: resolve pending ack promise per commandId.
    */
@@ -195,6 +228,19 @@ export class NodesGateway implements OnGatewayConnection, OnGatewayDisconnect {
         `→ FAILED: ${ack.error}`,
       );
     }
-    // TODO: add ack resolution here when ack-timeout tracking is implemented
+    const pending = this.pendingAcks.get(ack.commandId);
+    if (pending) {
+      clearTimeout(pending.timeoutHandle);
+      this.pendingAcks.delete(ack.commandId);
+      if (ack.status === 'OK') {
+        pending.resolve();
+      } else {
+        pending.reject(
+          new Error(
+            `REMOTE_COMMAND_ACK node="${nodeId}" commandId="${ack.commandId}" FAILED: ${ack.error ?? 'unknown'}`,
+          ),
+        );
+      }
+    }
   }
 }

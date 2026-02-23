@@ -13,6 +13,7 @@
 
 import {
   Injectable,
+  Optional,
   NotFoundException,
   BadRequestException,
   InternalServerErrorException,
@@ -28,6 +29,9 @@ import { ExecutionRecordEntity } from '../entities/execution-record.entity';
 
 import { LLMProjectService } from './llm-project.service';
 import { DAGCompilationService } from './dag-compilation.service';
+import { CompilationToExecutionService } from '../../compiler/integration/compilation-to-execution.service';
+import { CompiledWorkflowImpl, PreLoadedServices } from '../../compiler/interfaces/compiled-workflow.interface';
+import { IROpcode } from '../../compiler/interfaces/ir.interface';
 
 import {
   ExecutionStatus,
@@ -73,6 +77,7 @@ export class LLMProjectExecutionService {
 
     private llmProjectService: LLMProjectService,
     private dagCompilationService: DAGCompilationService,
+    @Optional() private readonly compilationToExecution: CompilationToExecutionService,
   ) {}
 
   /**
@@ -268,7 +273,13 @@ export class LLMProjectExecutionService {
   }
 
   /**
-   * Simulate DAG execution (TODO: replace with actual SVM execution)
+   * Execute compiled workflow via SemanticVirtualMachine.
+   *
+   * Steps:
+   *  1. Decode irBinary (base64 → JSON)
+   *  2. Reconstruct a CompiledWorkflowImpl from the stored IR
+   *  3. Delegate to CompilationToExecutionService → SemanticVirtualMachine
+   *  4. Map ExecutionResult → internal step/output format
    */
   private async simulateExecution(
     version: ProjectVersionEntity,
@@ -280,42 +291,161 @@ export class LLMProjectExecutionService {
     error?: string;
     steps: any[];
   }> {
-    try {
-      // TODO: Deserialize irBinary (base64) → LLM-IR structure
-      // TODO: Execute via CompilationToExecutionService.executeCompiled()
-      // TODO: Collect step-by-step execution trace
+    // ── Real execution path ────────────────────────────────────────────────
+    if (this.compilationToExecution && version.irBinary) {
+      try {
+        const compiled = this.buildCompiledWorkflow(version);
+        const result = await this.compilationToExecution.executeCompiled(
+          compiled,
+          parameters,
+        );
 
-      // For now: mock successful execution
-      return {
-        success: true,
-        output: {
-          message: 'Execution simulated successfully',
-          projectVersionId: version.id,
-          timestamp: new Date(),
-        },
-        steps: [
-          {
-            step_id: 'step-1',
-            name: 'Initialize',
+        const success =
+          result.output.status === 'success' ||
+          result.output.status === 'partial';
+        const servicesUsed = result.metadata?.servicesUsed ?? [];
+        const perStepMs =
+          servicesUsed.length > 0
+            ? Math.round(
+                (result.metadata.executionTime ?? 0) / servicesUsed.length,
+              )
+            : 0;
+
+        return {
+          success,
+          output:
+            result.output.data !== null &&
+            typeof result.output.data === 'object'
+              ? (result.output.data as Record<string, any>)
+              : { data: result.output.data },
+          error: success
+            ? undefined
+            : ((result.output as any).errorMessage ?? result.output.status),
+          steps: servicesUsed.map((s, idx) => ({
+            step_id: `step-${idx + 1}`,
+            name: s.name,
             status: 'completed',
-            duration: 10,
-            output: { initialized: true },
-          },
-          {
-            step_id: 'step-2',
-            name: 'Process',
-            status: 'completed',
-            duration: 50,
-            output: { processed: true },
-          },
-        ],
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : String(error),
-        steps: [],
-      };
+            duration: perStepMs,
+          })),
+        };
+      } catch (error) {
+        this.logger.error(
+          `[${executionId}] SVM execution failed: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : String(error),
+          steps: [],
+        };
+      }
+    }
+
+    // ── Degraded: SVM not available (should not happen in production) ──────
+    this.logger.warn(
+      `[${executionId}] CompilationToExecutionService not injected or no irBinary — cannot execute`,
+      { versionId: version.id, hasIrBinary: !!version.irBinary },
+    );
+    return {
+      success: false,
+      error:
+        'SVM execution service not available — retry after service initialization',
+      steps: [],
+    };
+  }
+
+  /**
+   * Reconstruct a CompiledWorkflowImpl from the stored irBinary.
+   * Handles both LLM-IR format (instructions[]) and DAG format (nodes[]).
+   */
+  private buildCompiledWorkflow(version: ProjectVersionEntity): CompiledWorkflowImpl {
+    const raw = JSON.parse(
+      Buffer.from(version.irBinary, 'base64').toString('utf-8'),
+    ) as Record<string, any>;
+
+    let instructions: any[];
+    if (Array.isArray(raw['instructions'])) {
+      // LLM-IR format from stages 1-9 compiler pipeline
+      instructions = raw['instructions'] as any[];
+    } else if (Array.isArray(raw['nodes'])) {
+      // DAG format from DAGCompilationService — convert each node to an instruction
+      instructions = (raw['nodes'] as any[]).map((node: any, idx: number) => ({
+        index: idx,
+        opcode: this.dagNodeTypeToOpcode(node.type ?? 'llm'),
+        operands: node.config ?? {},
+        serviceId: node.service ?? node.serviceId,
+        targetNodeId: node.placement?.node_id ?? 'CENTRAL',
+      }));
+    } else {
+      instructions = [];
+    }
+
+    const ir: any = {
+      instructions,
+      instructionOrder: instructions.map((_: any, i: number) => i),
+      dependencyGraph: new Map<number, number[]>(),
+      resourceTable: [],
+      parallelizationGroups: [],
+      schemas: [],
+      semanticContext: { embeddings: [], terms: [], relevanceMatrix: [] },
+      inputRegister: 0,
+      outputRegister: Math.max(0, instructions.length - 1),
+      metadata: {
+        compiledAt: version.compiledAt ?? new Date(),
+        compilerVersion: '1.0.0',
+        source: `version:${version.id}`,
+        workflowId: version.id,
+      },
+    };
+
+    const emptyServices: PreLoadedServices = {
+      wasm: new Map(),
+      mcp: new Map(),
+      native: new Map(),
+      docker: new Map(),
+    };
+
+    return new CompiledWorkflowImpl(ir, emptyServices, {
+      id: `compiled-${version.id}`,
+      compiledAt: version.compiledAt ?? new Date(),
+      compilerVersion: '1.0.0',
+      checksum: version.irChecksum ?? '',
+      userId: 'system',
+      workflowName: `Version ${version.version}`,
+    });
+  }
+
+  /**
+   * Map a DAG node type string to the nearest IROpcode.
+   */
+  private dagNodeTypeToOpcode(type: string): IROpcode {
+    switch (type?.toLowerCase()) {
+      case 'llm':
+      case 'llm_call':
+        return IROpcode.LLM_CALL;
+      case 'service':
+      case 'service_call':
+      case 'api':
+        return IROpcode.CALL_SERVICE;
+      case 'condition':
+      case 'if':
+      case 'branch':
+        return IROpcode.BRANCH;
+      case 'loop':
+      case 'for':
+      case 'while':
+        return IROpcode.LOOP;
+      case 'trigger':
+        return IROpcode.TRIGGER;
+      case 'transform':
+        return IROpcode.TRANSFORM;
+      case 'filter':
+        return IROpcode.FILTER;
+      case 'aggregate':
+        return IROpcode.AGGREGATE;
+      default:
+        return IROpcode.LLM_CALL;
     }
   }
 

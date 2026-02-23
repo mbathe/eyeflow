@@ -9,7 +9,7 @@
  * find the best node for each instruction.
  */
 
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, BadRequestException } from '@nestjs/common';
 import {
   NodeCapabilities,
   NodeRegistrationPayload,
@@ -48,6 +48,12 @@ export class NodeRegistryService implements OnModuleInit {
   // ──────────────────────────────────────────────────────────────────────────
 
   register(payload: NodeRegistrationPayload): NodeCapabilities {
+    if (!payload.nodeId || typeof payload.nodeId !== 'string' || !payload.nodeId.trim()) {
+      throw new BadRequestException('nodeId is required and must be a non-empty string');
+    }
+    if (!payload.tier) {
+      throw new BadRequestException('tier is required');
+    }
     const existing = this.nodes.get(payload.nodeId);
 
     const node: NodeCapabilities = {
@@ -57,8 +63,11 @@ export class NodeRegistryService implements OnModuleInit {
       tier: payload.tier,
       status: 'ONLINE',
       lastSeenAt: new Date(),
+      // Accept registration-level URL overrides
+      baseUrl: payload.baseUrl ?? payload.capabilities?.baseUrl,
+      wsUrl: payload.wsUrl ?? payload.capabilities?.wsUrl,
       // Persist custom driver manifests from the registration payload
-      triggerDriverManifests: payload.triggerDrivers ?? payload.capabilities.triggerDriverManifests,
+      triggerDriverManifests: payload.triggerDrivers ?? payload.capabilities?.triggerDriverManifests,
     };
 
     this.nodes.set(payload.nodeId, node);

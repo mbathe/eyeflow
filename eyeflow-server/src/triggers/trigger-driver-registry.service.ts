@@ -28,7 +28,8 @@ export class TriggerDriverRegistryService {
     @Inject(TRIGGER_DRIVER_TOKEN)
     drivers: ITriggerDriver[] | null,
   ) {
-    for (const driver of (drivers ?? [])) {
+    const driverList = Array.isArray(drivers) ? drivers : (drivers ? [drivers as unknown as ITriggerDriver] : []);
+    for (const driver of driverList) {
       if (this.driverMap.has(driver.driverId)) {
         this.logger.warn(
           `[DriverRegistry] Duplicate driverId '${driver.driverId}' — last one wins`,

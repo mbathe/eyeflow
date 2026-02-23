@@ -1,8 +1,9 @@
 import { Injectable, Logger, OnModuleInit, OnModuleDestroy, Optional } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Kafka, Consumer, logLevel } from 'kafkajs';
+import { Kafka, Consumer, Producer, logLevel } from 'kafkajs';
+import axios from 'axios';
 import { CDCEventProcessorService } from './cdc-event-processor.service';
-import { EventRule, KAFKA_TOPICS } from './kafka-events.types';
+import { AgentMission, EventRule, KAFKA_TOPICS } from './kafka-events.types';
 import { OfflineBufferService } from '../runtime/offline-buffer.service';
 
 /**
@@ -20,6 +21,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(KafkaConsumerService.name);
   private kafka!: Kafka;
   private consumer!: Consumer;
+  private producer: Producer | null = null;
   private isConnected = false;
   private rules: EventRule[] = []; // Rules for event routing
 
@@ -113,6 +115,11 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     // Notify offline buffer — buffering mode OFF, flush will be triggered
     this.offlineBuffer?.notifyConnected(true);
 
+    // Create a producer for mission dispatch (lazy, shared across dispatches)
+    this.producer = this.kafka.producer({ allowAutoTopicCreation: true });
+    await this.producer.connect();
+    this.logger.log('✅ Kafka producer ready (mission dispatch)');
+
     // Subscribe to CDC topics
     await this.subscribeToCDCTopics();
 
@@ -173,17 +180,75 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * Dispatch mission to agent execution queue
+   * Dispatch mission to agent execution queue.
+   *
+   * Strategy (in priority order):
+   *  1. Produce to Kafka `agent.commands` topic — consumed by eyeflow-agent workers
+   *  2. If mission.targetConnector is an HTTP/HTTPS URL — also POST directly for
+   *     low-latency processing (fire-and-forget, failure is logged but does not block)
    */
-  private async dispatchMission(mission: any): Promise<void> {
-    // TODO: Implement mission dispatch to agents
-    // This could be:
-    // - Send to Kafka topic (agent.commands)
-    // - Send to RabbitMQ
-    // - Store in database for agent polling
-    // - WebSocket push to connected agents
+  private async dispatchMission(mission: AgentMission): Promise<void> {
+    this.logger.debug(`🚀 Dispatching mission: ${mission.id} (actionType: ${mission.actionType}, priority: ${mission.priority})`);
 
-    this.logger.debug(`🚀 Dispatching mission: ${mission.id}`);
+    // ── 1. Kafka topic (primary path) ─────────────────────────────────────
+    if (this.producer) {
+      try {
+        await this.producer.send({
+          topic: KAFKA_TOPICS.agent.commands,
+          messages: [
+            {
+              key: mission.id,
+              value: JSON.stringify({
+                ...mission,
+                dispatchedAt: new Date().toISOString(),
+              }),
+              headers: {
+                'mission-priority': mission.priority,
+                'action-type': mission.actionType,
+              },
+            },
+          ],
+        });
+        this.logger.log(
+          `📤 Mission ${mission.id} published to ${KAFKA_TOPICS.agent.commands}`,
+        );
+      } catch (kafkaErr) {
+        this.logger.error(
+          `Failed to publish mission ${mission.id} to Kafka: ${
+            kafkaErr instanceof Error ? kafkaErr.message : String(kafkaErr)
+          }`,
+        );
+        // Fall through to HTTP direct path even on Kafka failure
+      }
+    } else {
+      this.logger.warn(
+        `Kafka producer not ready — mission ${mission.id} will only be dispatched via HTTP (if connector URL available)`,
+      );
+    }
+
+    // ── 2. Direct HTTP call (secondary / immediate path) ──────────────────
+    const connectorUrl = mission.targetConnector;
+    if (connectorUrl && (connectorUrl.startsWith('http://') || connectorUrl.startsWith('https://'))) {
+      try {
+        await axios.post(
+          connectorUrl,
+          { mission, dispatchedAt: new Date().toISOString() },
+          {
+            timeout: 5000,
+            headers: { 'Content-Type': 'application/json', 'X-Mission-Id': mission.id },
+            validateStatus: (status) => status < 500, // accept 4xx (agent may reject)
+          },
+        );
+        this.logger.log(`📡 Mission ${mission.id} dispatched directly to ${connectorUrl}`);
+      } catch (httpErr) {
+        // Non-fatal: the Kafka path is the primary delivery mechanism
+        this.logger.warn(
+          `Direct HTTP dispatch to ${connectorUrl} failed for mission ${mission.id}: ${
+            httpErr instanceof Error ? httpErr.message : String(httpErr)
+          }`,
+        );
+      }
+    }
   }
 
   /**
@@ -203,6 +268,10 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
       this.isConnected = false;
       this.offlineBuffer?.notifyConnected(false);
       this.logger.log('✅ Kafka consumer disconnected');
+    }
+    if (this.producer) {
+      await this.producer.disconnect();
+      this.producer = null;
     }
   }
 

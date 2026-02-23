@@ -21,6 +21,8 @@ import { CompilerModule } from './compiler/compiler.module';
 import { RuntimeModule } from './runtime/runtime.module';
 import { TriggersModule } from './triggers/triggers.module';
 import { EventsModule } from './events/events.module';
+import { AuthModule } from './auth/auth.module';
+import { AuthorizationModule } from './authorization/authorization.module';
 
 // Determine which .env file to load based on environment
 const getEnvFile = () => {
@@ -72,6 +74,8 @@ const getEnvFile = () => {
     RuntimeModule,
     TriggersModule,
     EventsModule,
+    AuthModule,
+    AuthorizationModule,
   ],
   controllers: [AppController],
   providers: [

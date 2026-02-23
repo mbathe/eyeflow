@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ComponentValidator } from './component-validator.service';
 import { ComponentRegistry } from './component-registry.service';
 import { CapabilityCatalogBuilder } from './capability-catalog-builder.service';
+import { CatalogVerticalService } from './catalog-vertical.service';
 import { RedisCacheService } from '../services/redis-cache.service';
 
 /**
@@ -17,7 +18,7 @@ import { RedisCacheService } from '../services/redis-cache.service';
  *   imports: [ExtensibilityModule]
  */
 @Module({
-  providers: [ComponentValidator, ComponentRegistry, CapabilityCatalogBuilder, RedisCacheService],
-  exports: [ComponentValidator, ComponentRegistry, CapabilityCatalogBuilder],
+  providers: [ComponentValidator, ComponentRegistry, CatalogVerticalService, CapabilityCatalogBuilder, RedisCacheService],
+  exports: [ComponentValidator, ComponentRegistry, CatalogVerticalService, CapabilityCatalogBuilder],
 })
 export class ExtensibilityModule {}

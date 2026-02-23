@@ -5,6 +5,9 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "moduleNameMapper": {
+    "^chokidar$": "<rootDir>/mocks/chokidar.mock.js"
+  },
   "collectCoverageFrom": [
     "**/*.(t|j)s"
   ],

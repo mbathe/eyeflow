@@ -26,6 +26,7 @@ import {
   ApiNoContentResponse,
 } from '@nestjs/swagger';
 import { LlmConfigService } from './llm-config.service';
+import { Public } from '../auth/decorators/public.decorator';
 import { LlmConfig, LlmHealthCheck } from './llm-config.types';
 import { CreateLlmConfigDto, UpdateLlmConfigDto } from './create-llm-config.dto';
 import { LlmConfigEntity } from './llm-config.entity';
@@ -97,7 +98,9 @@ export class LlmConfigController {
   /**
    * GET /llm-config/default
    * Récupérer la configuration LLM par défaut
+   * @Public() — accessible par le service LLM interne sans token JWT
    */
+  @Public()
   @Get('default')
   @ApiOperation({
     summary: 'Get default LLM configuration',

@@ -13,19 +13,20 @@
  * Future: replace HTTP stub with actual WebSocket TLS connection management.
  */
 
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import axios from 'axios';
+import * as WebSocket from 'ws';
 import { NodeRegistryService } from './node-registry.service';
 import {
   SliceDispatchPayload,
   SliceResultPayload,
 } from '../compiler/interfaces/distributed-execution.interface';
 
-/** In-memory map of nodeId → WebSocket connection (placeholder type) */
-type WsConnection = any; // replace with `WebSocket` from 'ws' when implemented
+/** In-memory map of nodeId → WebSocket connection (Socket.io socket OR outbound ws.WebSocket) */
+type WsConnection = any; // Socket.io Socket (inbound) | ws.WebSocket (outbound)
 
 @Injectable()
-export class NodeDispatcherService {
+export class NodeDispatcherService implements OnModuleDestroy {
   private readonly logger = new Logger(NodeDispatcherService.name);
 
   /** Active WebSocket connections keyed by nodeId */
@@ -36,6 +37,9 @@ export class NodeDispatcherService {
     string,
     { resolve: (r: SliceResultPayload) => void; reject: (e: Error) => void; timeoutHandle: NodeJS.Timeout }
   >();
+
+  /** Track which connections are outbound (owned by us — must be cleaned up on destroy) */
+  private readonly outboundConnections = new Set<string>();
 
   constructor(private readonly nodeRegistry: NodeRegistryService) {}
 
@@ -70,12 +74,112 @@ export class NodeDispatcherService {
       `[Dispatcher] Dispatching slice "${payload.sliceId}" to ${nodeId} (${payload.instructions.length} instructions)`
     );
 
-    const ws = this.wsConnections.get(nodeId);
+    // Try WebSocket first (inbound Socket.io or outbound ws.WebSocket)
+    let ws = this.wsConnections.get(nodeId);
+    if (!ws && node.wsUrl) {
+      // No inbound connection — try to establish outbound TLS WebSocket
+      ws = await this.ensureOutboundConnection(nodeId, node.wsUrl);
+    }
+
     if (ws) {
       return this.dispatchViaWebSocket(nodeId, payload, ws);
     }
 
     return this.dispatchViaHTTP(nodeId, payload);
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // Outbound WebSocket TLS
+  // ──────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Open an outbound WebSocket TLS connection to a node that exposes its own
+   * WS endpoint (e.g. edge nodes that cannot initiate an inbound connection).
+   *
+   * The opened socket is stored in wsConnections and flagged as outbound so
+   * it can be closed when the module is destroyed or the node goes offline.
+   *
+   * Returns the live WebSocket on success, null on failure (fall through to HTTP).
+   */
+  private async ensureOutboundConnection(
+    nodeId: string,
+    wsUrl: string,
+  ): Promise<WebSocket.WebSocket | null> {
+    return new Promise((resolve) => {
+      this.logger.log(
+        `[Dispatcher] Opening outbound WebSocket TLS to ${nodeId} at ${wsUrl}`,
+      );
+
+      const socket = new WebSocket.WebSocket(wsUrl, {
+        handshakeTimeout: 5000,
+        rejectUnauthorized: process.env.NODE_ENV === 'production',
+      });
+
+      const connectTimeout = setTimeout(() => {
+        socket.terminate();
+        this.logger.warn(
+          `[Dispatcher] Outbound WebSocket timeout connecting to ${nodeId} — falling back to HTTP`,
+        );
+        resolve(null);
+      }, 5000);
+
+      socket.once('open', () => {
+        clearTimeout(connectTimeout);
+        this.wsConnections.set(nodeId, socket);
+        this.outboundConnections.add(nodeId);
+        this.logger.log(`[Dispatcher] Outbound WebSocket open to ${nodeId}`);
+
+        // Forward incoming slice results to the standard dispatch callback handler
+        socket.on('message', (data: WebSocket.RawData) => {
+          try {
+            const msg = JSON.parse(
+              typeof data === 'string' ? data : data.toString(),
+            ) as { type?: string; payload?: SliceResultPayload };
+            if (msg.type === 'SLICE_RESULT' && msg.payload) {
+              this.onRemoteResult(msg.payload);
+            }
+          } catch {
+            // Ignore unparseable frames
+          }
+        });
+
+        socket.on('close', () => {
+          this.removeConnection(nodeId);
+          this.logger.warn(`[Dispatcher] Outbound WebSocket closed for ${nodeId}`);
+        });
+
+        socket.on('error', (err) => {
+          this.logger.error(
+            `[Dispatcher] Outbound WebSocket error for ${nodeId}: ${err.message}`,
+          );
+        });
+
+        resolve(socket);
+      });
+
+      socket.once('error', (err) => {
+        clearTimeout(connectTimeout);
+        this.logger.warn(
+          `[Dispatcher] Cannot open outbound WebSocket to ${nodeId} (${err.message}) — falling back to HTTP`,
+        );
+        resolve(null);
+      });
+    });
+  }
+
+  /**
+   * Clean up all outbound WebSocket connections on module shutdown.
+   */
+  onModuleDestroy(): void {
+    for (const nodeId of this.outboundConnections) {
+      const ws = this.wsConnections.get(nodeId);
+      if (ws && typeof ws.terminate === 'function') {
+        ws.terminate();
+      }
+    }
+    this.outboundConnections.clear();
+    this.wsConnections.clear();
+    this.logger.log('[Dispatcher] All outbound WebSocket connections closed');
   }
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -238,16 +342,23 @@ export class NodeDispatcherService {
 
   /**
    * Resolve the HTTP base URL for a node.
-   * Convention: during registration the node sends its base URL.
-   * Stored in the node label as "http://..." when it starts with "http".
+   * Uses the node's registered baseUrl field (preferred).
+   * Legacy fallback: label starting with 'http' (preserved for compatibility).
+   * Environment variable override: NODE_URL_<nodeId>.
    */
   private resolveNodeUrl(nodeId: string): string | null {
     const node = this.nodeRegistry.getNode(nodeId);
     if (!node) return null;
+
+    // Primary: dedicated baseUrl field on NodeCapabilities
+    if (node.baseUrl) return node.baseUrl;
+
+    // Legacy: label used as URL (backward compat with nodes registered before baseUrl existed)
     if (node.label.startsWith('http://') || node.label.startsWith('https://')) {
       return node.label;
     }
-    // Fallback: try env variable NODE_URL_<nodeId>
+
+    // Env override: NODE_URL_NODEID_WITH_DASHES_AS_UNDERSCORES
     const envKey = `NODE_URL_${nodeId.toUpperCase().replace(/-/g, '_')}`;
     return process.env[envKey] ?? null;
   }

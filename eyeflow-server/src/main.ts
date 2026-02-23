@@ -9,8 +9,15 @@ import { QueryExceptionFilter } from './common/query-exception.filter';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // Enable CORS
-  app.enableCors();
+  // ── CORS — configurable via env CORS_ORIGINS (comma-separated) ───────────
+  const rawOrigins = process.env.CORS_ORIGINS || '*';
+  const origins = rawOrigins === '*' ? '*' : rawOrigins.split(',').map(o => o.trim());
+  app.enableCors({
+    origin: origins,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-user-id', 'X-User-ID', 'X-Api-Key'],
+    credentials: origins !== '*',
+  });
 
   // Register global exception filters
   app.useGlobalFilters(new QueryExceptionFilter());
@@ -25,6 +32,12 @@ async function bootstrap() {
     .setTitle('eyeflow API')
     .setDescription('Proactive Agentic OS for Enterprise Automation - Phase 1 API Documentation')
     .setVersion('1.0.0')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', name: 'JWT', in: 'header' },
+      'JWT-auth',
+    )
+    .addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'api-key')
+    .addTag('Auth', 'Authentication & user management')
     .addTag('Connectors', 'Manage 15+ connector types (databases, IoT, communication, files)')
     .addTag('LLM Config', 'Configure local (Ollama) or cloud LLM providers (OpenAI, Anthropic)')
     .addTag('Agents', 'Register and manage intelligent agents')
