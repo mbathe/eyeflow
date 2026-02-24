@@ -79,6 +79,7 @@ async def startup_event():
     context_cache = ContextCacheService(
         nestjs_url=settings.NESTJS_SERVER_URL,
         cache_ttl_minutes=settings.CONTEXT_FETCH_INTERVAL_MINUTES,
+        user_id=settings.USER_ID,
     )
     logger.info(f"✅ Context cache initialized (TTL: {settings.CONTEXT_FETCH_INTERVAL_MINUTES}min)")
 

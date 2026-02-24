@@ -13,8 +13,9 @@ class ContextCacheService:
     Reduces API calls and improves performance.
     """
 
-    def __init__(self, nestjs_url: str, cache_ttl_minutes: int = 60):
+    def __init__(self, nestjs_url: str, cache_ttl_minutes: int = 60, user_id: str = "service"):
         self.nestjs_url = nestjs_url
+        self.user_id = user_id
         self.cache_ttl = timedelta(minutes=cache_ttl_minutes)
         self.cached_context: Optional[Dict[str, Any]] = None
         self.cache_timestamp: Optional[datetime] = None
@@ -39,7 +40,10 @@ class ContextCacheService:
             logger.info(f"🔄 Fetching aggregated context from {endpoint}")
 
             async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.get(endpoint)
+                response = await client.get(
+                    endpoint,
+                    headers={"X-User-ID": self.user_id},
+                )
                 response.raise_for_status()
 
             self.cached_context = response.json()

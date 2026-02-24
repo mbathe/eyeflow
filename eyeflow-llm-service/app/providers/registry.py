@@ -51,6 +51,12 @@ class LLMProviderRegistry:
         provider_type = llm_config.get("provider", "").lower()
         model = llm_config.get("model", "")
 
+        # Common generation params (from DB agent or defaults)
+        temperature: float = float(llm_config.get("temperature") or 0.3)
+        max_tokens: int = int(llm_config.get("max_tokens") or 4096)
+        top_p: Optional[float] = llm_config.get("top_p")
+        system_prompt_prefix: Optional[str] = llm_config.get("system_prompt")
+
         logger.info(f"🔧 Creating LLM provider: {provider_type} (model: {model})")
 
         if provider_type == LLMProviderType.ANTHROPIC:
@@ -64,6 +70,10 @@ class LLMProviderRegistry:
             return AnthropicProviderLangChain(
                 api_key=api_key,
                 model=model or "claude-3-opus-20240229",
+                temperature=temperature,
+                max_tokens=max_tokens,
+                top_p=top_p,
+                system_prompt_prefix=system_prompt_prefix,
             )
 
         elif provider_type == LLMProviderType.OPENAI:
@@ -77,6 +87,10 @@ class LLMProviderRegistry:
             return OpenAIProviderLangChain(
                 api_key=api_key,
                 model=model or "gpt-4-turbo-preview",
+                temperature=temperature,
+                max_tokens=max_tokens,
+                top_p=top_p,
+                system_prompt_prefix=system_prompt_prefix,
             )
 
         elif provider_type in [

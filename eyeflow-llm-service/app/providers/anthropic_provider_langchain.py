@@ -71,23 +71,37 @@ class AnthropicProviderLangChain(ILLMProvider):
     - Integrated error handling and retries via LangChain
     """
 
-    def __init__(self, api_key: str, model: str = "claude-3-opus-20240229"):
+    def __init__(
+        self,
+        api_key: str,
+        model: str = "claude-3-opus-20240229",
+        temperature: float = 0.3,
+        max_tokens: int = 4096,
+        top_p: Optional[float] = None,
+        system_prompt_prefix: Optional[str] = None,
+    ):
         """Initialize with LangChain ChatAnthropic"""
         self.api_key = api_key
         self._model_name = model
         self._name = "anthropic"
         self._total_tokens = 0
+        self._system_prompt_prefix = system_prompt_prefix
 
-        # Initialize Claude via LangChain
-        self.llm = ChatAnthropic(
+        # Build ChatAnthropic kwargs
+        llm_kwargs = dict(
             model=model,
             api_key=api_key,
-            temperature=0.3,
-            max_tokens=4096,
+            temperature=temperature,
+            max_tokens=max_tokens,
             timeout=60.0,
         )
+        if top_p is not None:
+            llm_kwargs["top_p"] = top_p
 
-        logger.info(f"🔧 AnthropicProviderLangChain initialized: {model}")
+        # Initialize Claude via LangChain
+        self.llm = ChatAnthropic(**llm_kwargs)
+
+        logger.info(f"🔧 AnthropicProviderLangChain initialized: {model} (temp={temperature})")
 
     @property
     def name(self) -> str:
@@ -303,7 +317,7 @@ class AnthropicProviderLangChain(ILLMProvider):
 
     def _build_system_prompt(self, context: Dict[str, Any]) -> str:
         """Build comprehensive system prompt from aggregated context"""
-        return f"""You are an expert workflow automation system.
+        base = f"""You are an expert workflow automation system.
 Your task is to generate production-ready workflow rules from user intents.
 
 Available context:
@@ -327,3 +341,8 @@ BEST PRACTICES:
 - Actions are executed sequentially
 - Always set a meaningful priority level
 - Enable rule by default unless otherwise specified"""
+
+        if self._system_prompt_prefix:
+            return f"{self._system_prompt_prefix}\n\n{base}"
+        return base
+
