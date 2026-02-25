@@ -57,7 +57,7 @@ describe('TaskCompilerService - Basic Coverage', () => {
     };
 
     const mockContextBuilder = {
-      buildContext: jest.fn().mockReturnValue({}),
+      buildContext: jest.fn().mockResolvedValue({}),
       exportContextAsJSON: jest.fn().mockReturnValue('{}'),
     };
 

@@ -1,294 +1,284 @@
-/**
- * Service client pour l'API des connecteurs
- */
+import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
-export interface CreateConnectorRequest {
-  name: string;
-  type: string;
-  description?: string;
-  auth: {
-    type: string;
-    credentials: Record<string, any>;
-  };
-  timeout?: number;
-  retryCount?: number;
-  retryDelay?: number;
-  rateLimit?: number;
-}
+export const api = axios.create({
+  baseURL: API_URL,
+  headers: { 'Content-Type': 'application/json' },
+});
 
-export class ConnectorService {
-  /**
-   * Créer un nouveau connecteur
-   */
-  static async createConnector(data: CreateConnectorRequest) {
-    const response = await fetch(`${API_BASE_URL}/connectors`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
+// ─── Request: attach access token + user ID ─────────────────────────────────
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('accessToken');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
 
-    if (!response.ok) {
-      throw new Error(`Failed to create connector: ${response.statusText}`);
-    }
-
-    return response.json();
+  // Attach X-User-ID from persisted auth store
+  try {
+    const authState = JSON.parse(localStorage.getItem('eyeflow-auth') || '{}');
+    const userId: string | undefined = authState?.state?.user?.id;
+    if (userId) config.headers['X-User-ID'] = userId;
+  } catch {
+    // ignore parse errors
   }
 
-  /**
-   * Lister tous les connecteurs
-   */
-  static async listConnectors(filters?: {
-    type?: string;
-    status?: string;
-  }) {
-    const params = new URLSearchParams();
-    if (filters?.type) params.append('type', filters.type);
-    if (filters?.status) params.append('status', filters.status);
+  return config;
+});
 
-    const response = await fetch(
-      `${API_BASE_URL}/connectors?${params.toString()}`,
-    );
+// ─── Response: auto-refresh on 401 ──────────────────────────────────────────
+let isRefreshing = false;
+let queue: Array<{ resolve: (t: string) => void; reject: (e: Error) => void }> = [];
 
-    if (!response.ok) {
-      throw new Error(`Failed to list connectors: ${response.statusText}`);
+api.interceptors.response.use(
+  (res) => res,
+  async (error) => {
+    const original = error.config;
+    if (error.response?.status !== 401 || original._retry) {
+      return Promise.reject(error);
+    }
+    original._retry = true;
+
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        queue.push({ resolve, reject });
+      }).then((token) => {
+        original.headers.Authorization = `Bearer ${token}`;
+        return api(original);
+      });
     }
 
-    return response.json();
-  }
+    isRefreshing = true;
+    const refreshToken = localStorage.getItem('refreshToken');
 
-  /**
-   * Récupérer un connecteur spécifique
-   */
-  static async getConnector(connectorId: string) {
-    const response = await fetch(`${API_BASE_URL}/connectors/${connectorId}`);
-
-    if (!response.ok) {
-      throw new Error(`Failed to get connector: ${response.statusText}`);
+    try {
+      const { data } = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
+      localStorage.setItem('accessToken', data.accessToken);
+      if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
+      queue.forEach((p) => p.resolve(data.accessToken));
+      queue = [];
+      original.headers.Authorization = `Bearer ${data.accessToken}`;
+      return api(original);
+    } catch (err) {
+      queue.forEach((p) => p.reject(err as Error));
+      queue = [];
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      window.location.href = '/login';
+      return Promise.reject(err);
+    } finally {
+      isRefreshing = false;
     }
+  },
+);
 
-    return response.json();
-  }
+// ─── Auth endpoints ──────────────────────────────────────────────────────────
+export const authApi = {
+  login: (email: string, password: string) =>
+    api.post('/auth/login', { email, password }),
+  register: (data: { email: string; password: string; firstName: string; lastName: string }) =>
+    api.post('/auth/register', data),
+  logout: () => api.post('/auth/logout'),
+  me: () => api.get('/auth/me'),
+  forgotPassword: (email: string) => api.post('/auth/forgot-password', { email }),
+  resetPassword: (token: string, newPassword: string) =>
+    api.post('/auth/reset-password', { token, newPassword }),
+  verifyEmail: (token: string) => api.get(`/auth/verify-email?token=${token}`),
+  refresh: (refreshToken: string) => api.post('/auth/refresh', { refreshToken }),
+  resendVerification: () => api.post('/auth/resend-verification'),
+  getPreferences: () => api.get('/auth/preferences'),
+  updatePreferences: (data: Record<string, unknown>) => api.patch('/auth/preferences', data),
+};
 
-  /**
-   * Mettre à jour un connecteur
-   */
-  static async updateConnector(connectorId: string, data: Partial<CreateConnectorRequest>) {
-    const response = await fetch(`${API_BASE_URL}/connectors/${connectorId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
+// ─── Connectors ──────────────────────────────────────────────────────────────
+export const connectorsApi = {
+  list: (params?: Record<string, string>) => api.get('/connectors', { params }),
+  get: (id: string) => api.get(`/connectors/${id}`),
+  create: (data: unknown) => api.post('/connectors', data),
+  update: (id: string, data: unknown) => api.patch(`/connectors/${id}`, data),
+  delete: (id: string) => api.delete(`/connectors/${id}`),
+  test: (id: string) => api.post(`/connectors/${id}/test`),
+  testConfig: (data: { type: string; config: Record<string, unknown> }) =>
+    api.post('/connectors/test-config', data),
+};
 
-    if (!response.ok) {
-      throw new Error(`Failed to update connector: ${response.statusText}`);
-    }
+// ─── Rules / Tasks ────────────────────────────────────────────────────────────
+export const rulesApi = {
+  list: () => api.get('/tasks/rules'),
+  get: (id: string) => api.get(`/tasks/rules/${id}`),
+  create: (data: unknown) => api.post('/tasks/rules', data),
+  update: (id: string, data: unknown) => api.patch(`/tasks/rules/${id}`, data),
+  delete: (id: string) => api.delete(`/tasks/rules/${id}`),
+  generateFromIntent: (intent: string) =>
+    api.post('/tasks/rules/generate-from-intent', { intent }),
+  getDag: (id: string) => api.get(`/tasks/rules/${id}/dag`),
+  forApproval: (id: string) => api.post(`/tasks/rules/${id}/for-approval`),
+  approve: (id: string) => api.post(`/tasks/rules/${id}/approve`),
+  reject: (id: string, reason?: string) =>
+    api.post(`/tasks/rules/${id}/reject`, { reason }),
+  pending: () => api.get('/tasks/rules/pending-approval'),
+  execute: (id: string) => api.post(`/tasks/rules/${id}/execute`),
+  toggle:  (id: string) => api.patch(`/tasks/rules/${id}/toggle`),
+  logs:    (id: string) => api.get(`/tasks/rules/${id}/logs`),
+  generateReport: (id: string) => api.post(`/tasks/rules/${id}/reports`),
+};
 
-    return response.json();
-  }
+// ─── Reports ──────────────────────────────────────────────────────────────────
+export const reportsApi = {
+  list:   (ruleId?: string) => api.get('/tasks/reports', { params: ruleId ? { ruleId } : {} }),
+  get:    (reportId: string) => api.get(`/tasks/reports/${reportId}`),
+  delete: (reportId: string) => api.delete(`/tasks/reports/${reportId}`),
+};
 
-  /**
-   * Tester la connexion avec un connecteur
-   */
-  static async testConnection(connectorId: string) {
-    const response = await fetch(
-      `${API_BASE_URL}/connectors/${connectorId}/test`,
-      { method: 'POST' },
-    );
+// ─── Projects LLM ────────────────────────────────────────────────────────────
+export const projectsApi = {
+  list: () => api.get('/tasks/projects'),
+  get: (id: string) => api.get(`/tasks/projects/${id}`),
+  create: (data: unknown) => api.post('/tasks/projects', data),
+  execute: (id: string, input?: unknown) =>
+    api.post(`/tasks/projects/${id}/execute`, input),
+  executions: (id: string) => api.get(`/tasks/projects/${id}/executions`),
+  versions: (id: string) => api.get(`/tasks/projects/${id}/versions`),
+  activateVersion: (id: string, versionId: string) =>
+    api.post(`/tasks/projects/${id}/versions/${versionId}/activate`),
+};
 
-    if (!response.ok) {
-      throw new Error(`Connection test failed: ${response.statusText}`);
-    }
+// ─── Nodes edge ──────────────────────────────────────────────────────────────
+export const nodesApi = {
+  list: () => api.get('/nodes'),
+  summary: () => api.get('/nodes/summary'),
+  get: (id: string) => api.get(`/nodes/${id}`),
+  healthCheck: (id: string) => api.get(`/nodes/${id}/health-check`),
+  triggerDrivers: (id: string) => api.get(`/nodes/${id}/trigger-drivers`),
+};
 
-    return response.json();
-  }
+// ─── Actions ─────────────────────────────────────────────────────────────────
+export const actionsApi = {
+  list: () => api.get('/actions'),
+  get: (id: string) => api.get(`/actions/${id}`),
+  create: (data: unknown) => api.post('/actions', data),
+  execute: (id: string) => api.post('/jobs', { actionId: id }),
+};
 
-  /**
-   * Supprimer un connecteur
-   */
-  static async deleteConnector(connectorId: string) {
-    const response = await fetch(`${API_BASE_URL}/connectors/${connectorId}`, {
-      method: 'DELETE',
-    });
+// ─── Audit ────────────────────────────────────────────────────────────────────
+export const auditApi = {
+  chain: (workflowId: string) => api.get(`/tasks/audit/chain/${workflowId}`),
+  verify: (workflowId: string) => api.get(`/tasks/audit/chain/${workflowId}/verify`),
+  stats: (workflowId: string) => api.get(`/tasks/audit/chain/${workflowId}/stats`),
+  events: (params?: Record<string, unknown>) => api.get('/audit/events', { params }),
+};
 
-    if (!response.ok) {
-      throw new Error(`Failed to delete connector: ${response.statusText}`);
-    }
-  }
+// ─── LLM Config ──────────────────────────────────────────────────────────────
+export const llmConfigApi = {
+  list: () => api.get('/llm-config'),
+  get: (id: string) => api.get(`/llm-config/${id}`),
+  create: (data: unknown) => api.post('/llm-config', data),
+  update: (id: string, data: unknown) => api.patch(`/llm-config/${id}`, data),
+  delete: (id: string) => api.delete(`/llm-config/${id}`),
+  setDefault: (id: string) => api.post(`/llm-config/${id}/set-default`),
+  getDefault: () => api.get('/llm-config/default'),
+};
 
-  /**
-   * Activer/Désactiver un connecteur
-   */
-  static async setConnectorStatus(connectorId: string, status: string) {
-    const response = await fetch(
-      `${API_BASE_URL}/connectors/${connectorId}/status`,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
-      },
-    );
+// ─── Agents / Jobs ────────────────────────────────────────────────────────────
+export const agentsApi = {
+  list: () => api.get('/agents'),
+  get: (id: string) => api.get(`/agents/${id}`),
+  create: (data: unknown) => api.post('/agents', data),
+  execute: (id: string) => api.post(`/agents/${id}/execute`),
+};
 
-    if (!response.ok) {
-      throw new Error(`Failed to update connector status: ${response.statusText}`);
-    }
+export const jobsApi = {
+  list: () => api.get('/jobs'),
+  get: (id: string) => api.get(`/jobs/${id}`),
+  status: (id: string) => api.get(`/jobs/${id}/status`),
+};
 
-    return response.json();
-  }
+// ─── Manifest ────────────────────────────────────────────────────────────────
+export const manifestApi = {
+  getAggregated:    () => api.get('/tasks/manifest/llm-context/aggregated'),
+  getEnhancedRule:  () => api.get('/tasks/manifest/llm-context/enhanced/rule'),
+  getEnhancedTask:  () => api.get('/tasks/manifest/llm-context/enhanced/task'),
+  getConnectors:    () => api.get('/tasks/manifest/connectors'),
+  getProviders:     () => api.get('/tasks/manifest/llm-context/providers'),
+};
 
-  /**
-   * Récupérer tous les types de connecteurs disponibles
-   */
-  static async getAvailableConnectorTypes() {
-    const response = await fetch(`${API_BASE_URL}/connectors/catalog/available-types`);
+// ─── LLM Service (direct calls to FastAPI on :8000) ─────────────────────────
+const LLM_URL = (import.meta.env.VITE_LLM_SERVICE_URL as string | undefined) ?? 'http://localhost:8000';
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch connector types: ${response.statusText}`);
-    }
+const llmService = axios.create({
+  baseURL: LLM_URL,
+  headers: { 'Content-Type': 'application/json' },
+  timeout: 60_000,
+});
 
-    return response.json();
-  }
-}
+export const llmServiceApi = {
+  health: () =>
+    llmService.get('/health'),
 
-/**
- * Service client pour l'API LLM Config
- */
+  generateRules: (
+    intent: string,
+    filteredContext: Record<string, unknown>,
+  ) =>
+    llmService.post('/api/rules/generate', {
+      user_intent: intent,
+      aggregated_context: filteredContext,
+    }),
 
-export interface CreateLlmConfigRequest {
-  provider: string;
-  model: string;
-  isDefault?: boolean;
-  temperature?: number;
-  maxTokens?: number;
-  topP?: number;
-  frequencyPenalty?: number;
-  presencePenalty?: number;
-  localConfig?: {
-    type: 'ollama' | 'llama_cpp' | 'other';
-    apiUrl: string;
-    gpuEnabled: boolean;
-    gpuModel?: string;
-    cpuThreads: number;
-    contextWindow: number;
-    modelPath?: string;
-    autoDownload: boolean;
-  };
-  apiConfig?: {
-    provider: string;
-    apiKey: string;
-    apiUrl?: string;
-    organization?: string;
-    deployment?: string;
-    apiVersion?: string;
-    requestsPerMinute: number;
-    tokensPerMinute: number;
-  };
-}
+  refineRules: (
+    currentRules: unknown,
+    feedback: string,
+    filteredContext: Record<string, unknown>,
+  ) =>
+    llmService.post('/api/rules/refine', {
+      current_rules: currentRules,
+      feedback,
+      aggregated_context: filteredContext,
+    }),
 
-export class LlmConfigService {
-  /**
-   * Créer une nouvelle configuration LLM
-   */
-  static async createLlmConfig(data: CreateLlmConfigRequest) {
-    const response = await fetch(`${API_BASE_URL}/llm-config`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
+  analyzeIntent: (intent: string) =>
+    llmService.post('/api/intent/analyze', { user_intent: intent }),
 
-    if (!response.ok) {
-      throw new Error(`Failed to create LLM config: ${response.statusText}`);
-    }
+  selectAgent: (taskType: string) =>
+    llmService.get(`/api/agent/select/${taskType}`),
 
-    return response.json();
-  }
+  cacheStatus: () =>
+    llmService.get('/cache/status'),
+};
 
-  /**
-   * Lister toutes les configurations LLM
-   */
-  static async listLlmConfigs() {
-    const response = await fetch(`${API_BASE_URL}/llm-config`);
+// ─── Suggestions ────────────────────────────────────────────────────────────
+export const suggestionsApi = {
+  list:         (status?: string) => api.get('/suggestions', { params: status ? { status } : {} }),
+  listPending:  () => api.get('/suggestions/pending'),
+  countPending: () => api.get('/suggestions/count/pending'),
+  stats:        () => api.get('/suggestions/stats'),
+  get:          (id: string) => api.get(`/suggestions/${id}`),
+  create:       (data: Record<string, unknown>) => api.post('/suggestions', data),
+  decide:       (id: string, decision: string, comment?: string, deferUntil?: string) =>
+    api.post(`/suggestions/${id}/decide`, { decision, comment, deferUntil }),
+  remove:       (id: string) => api.delete(`/suggestions/${id}`),
+  execute:      (id: string, comment?: string) => api.post(`/suggestions/${id}/execute`, { comment }),
+  actionPlan:   (id: string) => api.get(`/suggestions/${id}/action-plan`),
+  // Engine endpoints
+  engineStatus: () => api.get('/suggestions/engine/status'),
+  engineTrigger: () => api.post('/suggestions/engine/trigger'),
+  engineConfig: () => api.get('/suggestions/engine/config'),
+  engineUpdateConfig: (patch: Record<string, unknown>) => api.put('/suggestions/engine/config', patch),
+};
 
-    if (!response.ok) {
-      throw new Error(`Failed to list LLM configs: ${response.statusText}`);
-    }
+// ─── Suggestion Watches ───────────────────────────────────────────────────────
+export const suggestionWatchesApi = {
+  list:            ()                                      => api.get('/suggestions/watches'),
+  get:             (id: string)                            => api.get(`/suggestions/watches/${id}`),
+  create:          (data: Record<string, unknown>)         => api.post('/suggestions/watches', data),
+  update:          (id: string, data: Record<string, unknown>) => api.put(`/suggestions/watches/${id}`, data),
+  remove:          (id: string)                            => api.delete(`/suggestions/watches/${id}`),
+  trigger:         (id: string)                            => api.post(`/suggestions/watches/${id}/trigger`),
+  generatePrompt:  (connectorIds: string[], userHint?: string) =>
+    api.post('/suggestions/watches/generate-prompt', { connectorIds, userHint }),
+};
 
-    return response.json();
-  }
-
-  /**
-   * Récupérer la configuration LLM par défaut
-   */
-  static async getDefaultLlmConfig() {
-    const response = await fetch(`${API_BASE_URL}/llm-config/default`);
-
-    if (!response.ok) {
-      throw new Error(`Failed to get default LLM config: ${response.statusText}`);
-    }
-
-    return response.json();
-  }
-
-  /**
-   * Récupérer une configuration LLM spécifique
-   */
-  static async getLlmConfig(configId: string) {
-    const response = await fetch(`${API_BASE_URL}/llm-config/${configId}`);
-
-    if (!response.ok) {
-      throw new Error(`Failed to get LLM config: ${response.statusText}`);
-    }
-
-    return response.json();
-  }
-
-  /**
-   * Mettre à jour une configuration LLM
-   */
-  static async updateLlmConfig(
-    configId: string,
-    data: Partial<CreateLlmConfigRequest>,
-  ) {
-    const response = await fetch(`${API_BASE_URL}/llm-config/${configId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to update LLM config: ${response.statusText}`);
-    }
-
-    return response.json();
-  }
-
-  /**
-   * Tester la santé d'une configuration LLM
-   */
-  static async healthCheck(configId: string) {
-    const response = await fetch(
-      `${API_BASE_URL}/llm-config/${configId}/health-check`,
-      { method: 'POST' },
-    );
-
-    if (!response.ok) {
-      throw new Error(`Health check failed: ${response.statusText}`);
-    }
-
-    return response.json();
-  }
-
-  /**
-   * Supprimer une configuration LLM
-   */
-  static async deleteLlmConfig(configId: string) {
-    const response = await fetch(`${API_BASE_URL}/llm-config/${configId}`, {
-      method: 'DELETE',
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to delete LLM config: ${response.statusText}`);
-    }
-  }
-}
+// ─── Admin ────────────────────────────────────────────────────────────────────
+export const adminApi = {
+  users: () => api.get('/auth/users'),
+  setRole: (id: string, role: string) => api.patch(`/auth/users/${id}/role`, { role }),
+  unlock: (id: string) => api.post(`/auth/users/${id}/unlock`),
+  deleteUser: (id: string) => api.delete(`/auth/users/${id}`),
+};

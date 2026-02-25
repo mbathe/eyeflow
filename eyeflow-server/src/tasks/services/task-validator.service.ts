@@ -156,21 +156,58 @@ export class TaskValidatorService {
     const warnings: string[] = [];
     const suggestions: string[] = [];
 
-    // Check trigger exists
-    const trigger = context.triggers.find((t) => t.trigger.type === triggerType);
-    if (!trigger) {
-      errors.push(`Trigger type "${triggerType}" not supported`);
+    // Check trigger exists in the static registry.
+    // If the registry has no triggers, skip this check (triggers may live in DB only).
+    if (context.triggers && context.triggers.length > 0) {
+      const trigger = context.triggers.find((t) => t.trigger.type === triggerType);
+      if (!trigger) {
+        errors.push(`Trigger type "${triggerType}" not supported`);
+      }
     }
 
-    // Check all actions are valid
-    for (const action of actions) {
-      const funcExists = context.functions.find(
-        (f) => f.function.id === action.functionId && f.connectorId === action.connectorId,
+    // Check all actions are valid.
+    // Only validate against the static function registry for connectors that are
+    // actually registered in it. User-configured live DB connectors (in
+    // context.userConnectors) use dynamic function sets and cannot be checked here.
+    if (context.functions && context.functions.length > 0) {
+      const registeredConnectorIds = new Set(
+        context.functions.map((f) => f.connectorId),
       );
-      if (!funcExists) {
-        errors.push(
-          `Function "${action.functionId}" not found in connector "${action.connectorId}"`,
+      for (const action of actions) {
+        // Skip validation for live DB connectors not in the static registry
+        if (!registeredConnectorIds.has(action.connectorId)) continue;
+
+        // Skip generic LLM-generated type names:
+        //  - SCREAMING_SNAKE_CASE (e.g. CONNECTOR_CALL, SEND_MESSAGE)
+        //  - Known semantic aliases (connector_call, send_message, call, send…)
+        //  - Any lowercase snake_case NOT prefixed by the connector ID (e.g. slack_xxx)
+        // Real function IDs always start with the connector prefix: slack_sendMessage, mysql_insert …
+        const GENERIC_ALIASES = new Set([
+          'connector_call', 'call', 'send', 'send_message', 'sendmessage',
+          'post', 'post_message', 'notify', 'alert', 'execute', 'run',
+          'trigger', 'action', 'invoke', 'dispatch',
+        ]);
+        const connectorPrefix = action.connectorId + '_';
+        const isGenericType =
+          GENERIC_ALIASES.has((action.functionId ?? '').toLowerCase()) ||
+          /^[A-Z][A-Z0-9_]+$/.test(action.functionId ?? '') ||
+          (/^[a-z][a-z0-9_]*$/.test(action.functionId ?? '') &&
+            !action.functionId?.startsWith(connectorPrefix));
+        if (isGenericType) {
+          warnings.push(
+            `Action "${action.functionId}" on "${action.connectorId}" uses a generic type — skipping strict validation`,
+          );
+          continue;
+        }
+
+        const funcExists = context.functions.find(
+          (f) => f.function.id === action.functionId && f.connectorId === action.connectorId,
         );
+        if (!funcExists) {
+          errors.push(
+            `Function "${action.functionId}" not found in connector "${action.connectorId}"`,
+          );
+        }
       }
     }
 

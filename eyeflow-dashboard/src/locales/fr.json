@@ -1,0 +1,616 @@
+{
+  "common": {
+    "appName": "EyeFlow",
+    "email": "Email",
+    "password": "Mot de passe",
+    "loading": "Chargement…",
+    "save": "Enregistrer",
+    "saved": "Sauvegardé",
+    "reset": "Réinitialiser",
+    "or": "ou",
+    "backToLogin": "Retour à la connexion",
+    "search": "Rechercher…",
+    "filter": "Filtrer",
+    "refresh": "Actualiser",
+    "export": "Exporter",
+    "create": "Créer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non",
+    "all": "Tous",
+    "none": "Aucun",
+    "unknown": "Inconnu",
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "degraded": "Dégradé",
+    "ok": "OK",
+    "warning": "Attention",
+    "critical": "Critique",
+    "infoLabel": "Info",
+    "noData": "Aucune donnée",
+    "noResults": "Aucun résultat",
+    "viewAll": "Voir tout →",
+    "more": "Plus"
+  },
+  "validation": {
+    "emailInvalid": "Email invalide",
+    "passwordRequired": "Mot de passe requis",
+    "passwordMin": "Minimum 8 caractères",
+    "passwordUpper": "Au moins une majuscule",
+    "passwordNumber": "Au moins un chiffre",
+    "passwordMatch": "Les mots de passe ne correspondent pas",
+    "firstNameMin": "Prénom requis (min 2 caractères)",
+    "lastNameMin": "Nom requis (min 2 caractères)"
+  },
+  "auth": {
+    "platformSubtitle": "Plateforme de compilation sémantique déterministe",
+    "login": {
+      "title": "Connexion",
+      "emailPlaceholder": "vous@exemple.com",
+      "passwordLabel": "Mot de passe",
+      "forgotPassword": "Mot de passe oublié ?",
+      "submit": "Se connecter",
+      "googleButton": "Continuer avec Google",
+      "noAccount": "Pas de compte ?",
+      "registerLink": "S'inscrire"
+    },
+    "register": {
+      "title": "Créer un compte",
+      "subtitle": "Rejoignez la plateforme EyeFlow",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "passwordPlaceholder": "Min. 8 car., 1 majuscule, 1 chiffre",
+      "confirmPassword": "Confirmer le mot de passe",
+      "submit": "Créer mon compte",
+      "haveAccount": "Déjà un compte ?",
+      "loginLink": "Se connecter",
+      "emailSent": {
+        "title": "Vérifiez votre email",
+        "sentTo": "Un lien de vérification a été envoyé à",
+        "hint": "Cliquez sur le lien dans l'email pour activer votre compte, puis connectez-vous.",
+        "goToLogin": "Aller à la connexion",
+        "skip": "Continuer sans vérifier →"
+      }
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié",
+      "subtitle": "Entrez votre email pour recevoir un lien de réinitialisation.",
+      "emailLabel": "Adresse email",
+      "emailPlaceholder": "vous@exemple.com",
+      "submit": "Envoyer le lien",
+      "serverError": "Une erreur est survenue. Vérifiez votre adresse e-mail.",
+      "sent": {
+        "title": "Email envoyé",
+        "description": "Si un compte correspond à cet email, vous recevrez un lien de réinitialisation dans quelques minutes."
+      }
+    },
+    "resetPassword": {
+      "title": "Nouveau mot de passe",
+      "subtitle": "Choisissez un mot de passe sécurisé.",
+      "newPasswordLabel": "Nouveau mot de passe",
+      "confirmLabel": "Confirmer",
+      "submit": "Enregistrer le mot de passe",
+      "serverError": "Lien invalide ou expiré. Veuillez recommencer.",
+      "invalidLink": "Lien invalide.",
+      "done": {
+        "title": "Mot de passe mis à jour",
+        "description": "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+        "loginLink": "Se connecter →"
+      }
+    },
+    "verifyEmail": {
+      "title": "Vérifiez votre email",
+      "sentTo": "Un email de vérification a été envoyé à",
+      "notReceived": "Vous n'avez rien reçu ?",
+      "resend": "Renvoyer le lien",
+      "resending": "Envoi en cours…",
+      "resentSuccess": "✓ Nouvel email envoyé !",
+      "resentError": "Erreur. Vérifiez que vous êtes connecté.",
+      "continueToDashboard": "Continuer vers le tableau de bord",
+      "loginToResend": "Connectez-vous pour renvoyer un lien de vérification.",
+      "verifying": "Vérification en cours…",
+      "success": {
+        "title": "Email vérifié !",
+        "description": "Votre adresse a été confirmée. Bienvenue sur EyeFlow !"
+      },
+      "error": {
+        "title": "Lien invalide",
+        "description": "Ce lien est invalide ou a expiré.",
+        "resendButton": "Renvoyer un nouveau lien"
+      },
+      "ctaDashboard": "Tableau de bord",
+      "ctaLogin": "Se connecter",
+      "ctaBackToLogin": "Retour à la connexion"
+    },
+    "googleCallback": {
+      "loading": "Connexion Google en cours…",
+      "errorTitle": "Connexion échouée",
+      "authFailed": "Authentification Google échouée. Veuillez réessayer.",
+      "profileFailed": "Impossible de récupérer le profil. Veuillez vous reconnecter.",
+      "backToLogin": "Retour à la connexion"
+    }
+  },
+  "nav": {
+    "pillarObserve": "Observer",
+    "pillarAnalyze": "Analyser & Décider",
+    "pillarAct": "Agir & Auditer",
+    "pillarManage": "Gérer",
+    "dashboard": "Dashboard",
+    "events": "Événements & Alertes",
+    "analysis": "Analyse & IA",
+    "automations": "Automatisations",
+    "execution": "Exécution & Actions",
+    "audit": "Historique & Audit",
+    "security": "Sécurité & Identités",
+    "configuration": "Configuration",
+    "administration": "Administration",
+    "preferences": "Préférences",
+    "logout": "Déconnexion",
+    "collapse": "Réduire",
+    "dataExplorer": "Données & Exploration",
+    "suggestions": "Suggestions IA"
+  },
+  "header": {
+    "searchPlaceholder": "Règle, connecteur, agent…",
+    "lightMode": "Mode clair",
+    "darkMode": "Mode sombre"
+  },
+  "dashboard": {
+    "greeting": "Bonjour, {{name}}",
+    "subtitle": "Console de pilotage — vue d'ensemble du système",
+    "systemHealth": {
+      "title": "Santé globale",
+      "ok": "Système opérationnel",
+      "degraded": "Système dégradé",
+      "critical": "Système en alerte critique"
+    },
+    "stats": {
+      "rules": "Règles actives",
+      "rulesSub": "workflows compilés",
+      "nodes": "Nœuds connectés",
+      "nodesSub": "edge + serveurs",
+      "jobs": "Jobs en cours",
+      "jobsSub": "exécutions actives",
+      "approvals": "Approbations",
+      "approvalsSub": "décisions en attente"
+    },
+    "recentActivity": "Activité récente",
+    "pendingApprovals": "Approbations en attente",
+    "systemServices": {
+      "title": "Services système",
+      "nestApi": "API NestJS",
+      "kafka": "Bus Kafka",
+      "llmService": "Service LLM",
+      "svmRuntime": "SVM Runtime"
+    },
+    "quickActions": {
+      "title": "Actions rapides",
+      "compileRule": {
+        "title": "Compiler une règle",
+        "description": "Décrivez votre workflow en langage naturel et obtenez un DAG compilé instantanément.",
+        "link": "Ouvrir l'éditeur →"
+      },
+      "auditTrail": {
+        "title": "Audit Trail",
+        "description": "Consultez la chaîne d'audit cryptographique certifiable (IEC 61508, MDR, RGPD).",
+        "link": "Voir l'historique →"
+      }
+    }
+  },
+  "events": {
+    "title": "Événements & Alertes",
+    "subtitle": "Flux en temps réel — activité du système et alertes de sécurité",
+    "table": {
+      "timestamp": "Horodatage",
+      "type": "Type",
+      "severity": "Gravité",
+      "source": "Source",
+      "message": "Message",
+      "details": "Détails"
+    },
+    "severity": {
+      "critical": "Critique",
+      "high": "Élevée",
+      "medium": "Moyenne",
+      "low": "Faible",
+      "info": "Info"
+    },
+    "filters": {
+      "allTypes": "Tous les types",
+      "allSeverities": "Toutes gravités",
+      "last1h": "Dernière heure",
+      "last24h": "Dernières 24h",
+      "last7d": "7 derniers jours"
+    },
+    "noEvents": "Aucun événement enregistré",
+    "loadError": "Impossible de charger les événements"
+  },
+  "analysis": {
+    "title": "Analyse & IA",
+    "subtitle": "Compréhension, corrélation et anticipation — l'IA explique, ne décide pas seule",
+    "generateRule": {
+      "title": "Générer une règle par intention",
+      "placeholder": "Ex : Déclencher une alerte si le CPU dépasse 90% pendant 5 minutes…",
+      "submit": "Générer avec l'IA",
+      "generating": "Génération en cours…",
+      "result": "Règle générée",
+      "saveToAutomations": "Sauvegarder dans Automatisations",
+      "confidence": "Confiance",
+      "explanation": "Explication"
+    },
+    "llmContext": {
+      "title": "Contexte LLM actif",
+      "connectors": "Connecteurs disponibles",
+      "providers": "Fournisseurs LLM"
+    },
+    "noLlmConfig": "Aucune configuration LLM active. Configurez un fournisseur dans Configuration > LLM."
+  },
+  "automations": {
+    "title": "Automatisations",
+    "subtitle": "Règles conditionnelles, playbooks et workflows compilés",
+    "newRule": "Nouvelle règle",
+    "table": {
+      "name": "Nom",
+      "status": "Statut",
+      "mode": "Mode",
+      "createdAt": "Créée le",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "pending": "En attente",
+      "rejected": "Rejetée",
+      "draft": "Brouillon"
+    },
+    "mode": {
+      "auto": "Automatique",
+      "semiAuto": "Semi-auto",
+      "suggest": "Suggestion"
+    },
+    "approvalQueue": {
+      "title": "File d'approbation",
+      "approve": "Approuver",
+      "reject": "Rejeter",
+      "viewDag": "Voir le DAG",
+      "empty": "Aucune règle en attente d'approbation"
+    },
+    "noRules": "Aucune règle créée",
+    "loadError": "Impossible de charger les règles",
+    "simulate": "Simuler",
+    "viewDag": "Voir le DAG"
+  },
+  "execution": {
+    "title": "Exécution & Actions",
+    "subtitle": "Actions disponibles, jobs en cours et résultats d'exécution",
+    "tabs": {
+      "actions": "Actions",
+      "jobs": "Jobs",
+      "agents": "Agents"
+    },
+    "actions": {
+      "name": "Nom",
+      "type": "Type",
+      "status": "Statut",
+      "createdAt": "Créée le",
+      "execute": "Exécuter",
+      "noActions": "Aucune action configurée",
+      "confirmExecute": "Confirmer l'exécution de cette action ?",
+      "consequence": "Cette opération sera enregistrée dans l'audit trail."
+    },
+    "jobs": {
+      "id": "ID",
+      "status": "Statut",
+      "startedAt": "Démarré le",
+      "noJobs": "Aucun job en cours"
+    },
+    "agents": {
+      "name": "Nom",
+      "status": "Statut",
+      "lastSeen": "Vu le",
+      "noAgents": "Aucun agent enregistré"
+    },
+    "status": {
+      "running": "En cours",
+      "success": "Succès",
+      "failed": "Échoué",
+      "pending": "En attente",
+      "idle": "Inactif"
+    }
+  },
+  "security": {
+    "title": "Sécurité & Identités",
+    "subtitle": "Utilisateurs, rôles, permissions et politiques d'accès",
+    "users": {
+      "title": "Utilisateurs",
+      "name": "Nom",
+      "email": "Email",
+      "role": "Rôle",
+      "status": "Statut",
+      "createdAt": "Créé le",
+      "actions": "Actions",
+      "setRole": "Modifier le rôle",
+      "unlock": "Déverrouiller",
+      "delete": "Supprimer",
+      "noUsers": "Aucun utilisateur",
+      "loadError": "Impossible de charger les utilisateurs",
+      "verified": "Vérifié",
+      "unverified": "Non vérifié",
+      "locked": "Verrouillé"
+    },
+    "roles": {
+      "admin": "Administrateur",
+      "user": "Utilisateur",
+      "viewer": "Lecteur"
+    }
+  },
+  "audit": {
+    "title": "Historique & Audit",
+    "subtitle": "Traçabilité complète — toutes les actions, décisions IA et validations humaines",
+    "table": {
+      "timestamp": "Horodatage",
+      "actor": "Acteur",
+      "action": "Action",
+      "target": "Cible",
+      "decision": "Décision",
+      "source": "Source"
+    },
+    "source": {
+      "human": "Humain",
+      "ai": "IA",
+      "auto": "Automatique"
+    },
+    "export": "Exporter CSV",
+    "noEvents": "Aucun événement d'audit",
+    "loadError": "Impossible de charger l'historique",
+    "verify": "Vérifier l'intégrité",
+    "verified": "Chaîne vérifiée ✓",
+    "verifyFailed": "Intégrité compromise !"
+  },
+  "configuration": {
+    "title": "Configuration",
+    "subtitle": "Connecteurs, nœuds edge et paramètres LLM",
+    "tabs": {
+      "connectors": "Connecteurs",
+      "nodes": "Nœuds Edge",
+      "llm": "LLM"
+    },
+    "connectors": {
+      "new": "Nouveau connecteur",
+      "name": "Nom",
+      "type": "Type",
+      "status": "Statut",
+      "test": "Tester",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "noConnectors": "Aucun connecteur configuré",
+      "active": "Actif",
+      "inactive": "Inactif",
+      "error": "Erreur"
+    },
+    "nodes": {
+      "name": "Nom",
+      "status": "Statut",
+      "lastHeartbeat": "Dernier heartbeat",
+      "drivers": "Drivers",
+      "noNodes": "Aucun nœud enregistré"
+    },
+    "llm": {
+      "new": "Nouveau fournisseur",
+      "name": "Nom",
+      "provider": "Fournisseur",
+      "default": "Par défaut",
+      "setDefault": "Définir par défaut",
+      "healthCheck": "Vérifier",
+      "noConfigs": "Aucun fournisseur LLM configuré"
+    }
+  },
+  "administration": {
+    "title": "Administration",
+    "subtitle": "Santé de la plateforme, files d'attente et services internes",
+    "platformHealth": {
+      "title": "Santé de la plateforme",
+      "allOperational": "Tous les services sont opérationnels",
+      "someIssues": "Certains services présentent des anomalies"
+    },
+    "services": {
+      "title": "Services",
+      "nestApi": "API NestJS",
+      "kafka": "Bus Kafka",
+      "llmService": "Service LLM",
+      "svmRuntime": "SVM Runtime",
+      "database": "Base de données"
+    },
+    "nodes": {
+      "title": "Nœuds Edge",
+      "summary": "Résumé",
+      "connected": "connectés",
+      "total": "total"
+    },
+    "metrics": {
+      "title": "Métriques",
+      "totalRules": "Total règles",
+      "totalJobs": "Total jobs",
+      "totalConnectors": "Total connecteurs",
+      "pendingApprovals": "Approbations en attente"
+    }
+  },
+  "preferences": {
+    "title": "Préférences",
+    "subtitle": "Personnalisez votre expérience EyeFlow. Les modifications sont sauvegardées instantanément.",
+    "resetButton": "Réinitialiser",
+    "saveButton": "Enregistrer",
+    "savedButton": "Sauvegardé",
+    "appearance": {
+      "title": "Apparence",
+      "description": "Thème, couleur d'accent et densité de l'interface",
+      "themeMode": "Mode d'affichage",
+      "dark": "Sombre",
+      "light": "Clair",
+      "accentColor": "Couleur d'accent",
+      "selectedColor": "Couleur sélectionnée",
+      "density": "Densité",
+      "comfortable": "Confortable",
+      "comfortableDesc": "Espacement standard, lecture aisée",
+      "compact": "Compact",
+      "compactDesc": "Plus d'éléments visibles à l'écran"
+    },
+    "language": {
+      "title": "Langue & région",
+      "description": "Langue d'affichage de l'interface",
+      "comingSoon": "La traduction complète de l'interface sera disponible dans une prochaine version."
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Canaux et fréquence des alertes",
+      "email": "Notifications par email",
+      "emailDesc": "Résumés d'exécution, alertes critiques",
+      "browser": "Notifications navigateur",
+      "browserDesc": "Alertes en temps réel dans le navigateur"
+    },
+    "dashboardSection": {
+      "title": "Tableau de bord",
+      "description": "Options d'affichage du dashboard",
+      "welcomeBanner": "Message de bienvenue",
+      "welcomeBannerDesc": "Afficher le message de bienvenue personnalisé",
+      "comingSoon": "Widgets personnalisables, ordre des cards, métriques favorites"
+    },
+    "comingSoonBadge": "Bientôt"
+  },
+  "dataExplorer": {
+    "title": "Données & Exploration",
+    "subtitle": "Interrogez vos sources de données en langage naturel — l'IA traduit, vous décidez",
+    "sources": {
+      "title": "Sources de données",
+      "noSources": "Aucune source connectée",
+      "connected": "connectée",
+      "disconnected": "déconnectée",
+      "error": "erreur",
+      "allSources": "Toutes les sources",
+      "loading": "Chargement des sources…"
+    },
+    "history": {
+      "title": "Historique",
+      "empty": "Aucune requête"
+    },
+    "query": {
+      "placeholder": "Ex : Montre-moi les règles actives des 7 derniers jours par connecteur…",
+      "submit": "Analyser",
+      "analyzing": "Analyse en cours…",
+      "reformulation": "Interprétation",
+      "reformulationHint": "Je vais analyser"
+    },
+    "results": {
+      "title": "Résultats",
+      "noData": "Aucune donnée. Posez une question ci-dessus.",
+      "rows": "entrée",
+      "rowsPlural": "entrées",
+      "table": "Tableau",
+      "bar": "Barres",
+      "line": "Courbe",
+      "pie": "Camembert"
+    },
+    "narrative": {
+      "title": "Analyse IA",
+      "generating": "Génération du résumé…",
+      "confidence": "Confiance"
+    },
+    "actions": {
+      "title": "Actions",
+      "createRule": "Créer une règle depuis cette analyse",
+      "createAlert": "Définir une alerte",
+      "exportCsv": "Exporter CSV",
+      "saveReport": "Sauvegarder le rapport"
+    },
+    "empty": {
+      "title": "Aucune source sélectionnée",
+      "hint": "Sélectionnez une source à gauche puis posez une question en langage naturel."
+    },
+    "noLlm": "Aucun fournisseur LLM configuré. L'interface NL ne sera pas disponible."
+  },
+  "suggestions": {
+    "title": "Suggestions IA",
+    "subtitle": "L'IA surveille, analyse et propose — vous décidez",
+    "badge": "en attente",
+    "empty": {
+      "title": "Aucune suggestion en attente",
+      "hint": "Le système va générer des recommandations au fil de l'analyse des événements et des données."
+    },
+    "status": {
+      "pending": "En attente",
+      "accepted": "Acceptée",
+      "rejected": "Rejetée",
+      "deferred": "Reportée",
+      "all": "Toutes"
+    },
+    "priority": {
+      "critical": "Critique",
+      "high": "Haute",
+      "medium": "Moyenne",
+      "low": "Faible"
+    },
+    "source": {
+      "event": "Événement",
+      "analysis": "Analyse",
+      "data_explorer": "Exploration données",
+      "system": "Système",
+      "manual": "Manuel"
+    },
+    "fields": {
+      "title": "Titre",
+      "description": "Description",
+      "priority": "Priorité",
+      "confidence": "Confiance",
+      "impact": "Impact estimé",
+      "source": "Source",
+      "category": "Catégorie",
+      "createdAt": "Créée le",
+      "decidedAt": "Décidée le",
+      "decidedBy": "Décidée par",
+      "comment": "Commentaire"
+    },
+    "actions": {
+      "accept": "Accepter",
+      "reject": "Rejeter",
+      "defer": "Reporter",
+      "deferUntil": "Reporter jusqu'au",
+      "addComment": "Ajouter un commentaire (optionnel)",
+      "confirm": "Confirmer",
+      "cancel": "Annuler",
+      "create": "Nouvelle suggestion",
+      "delete": "Supprimer"
+    },
+    "dialogs": {
+      "acceptTitle": "Accepter cette suggestion ?",
+      "acceptHint": "L'action sera journalisée et marquée comme acceptée. Vous restez responsable de son exécution.",
+      "rejectTitle": "Rejeter cette suggestion ?",
+      "rejectHint": "La suggestion sera archivée. Vous pouvez ajouter un commentaire explicatif.",
+      "deferTitle": "Reporter cette suggestion",
+      "deferHint": "Choisissez une date limite avant de reconsidérer."
+    },
+    "stats": {
+      "total": "Total",
+      "pending": "En attente",
+      "accepted": "Acceptées",
+      "rejected": "Rejetées",
+      "deferred": "Reportées"
+    },
+    "cycle": {
+      "observer": "Observer",
+      "analyser": "Analyser",
+      "proposer": "Proposer",
+      "valider": "Valider"
+    },
+    "createForm": {
+      "title": "Soumettre une suggestion",
+      "titleField": "Titre *",
+      "descriptionField": "Description *",
+      "impactField": "Impact estimé",
+      "categoryField": "Catégorie",
+      "submit": "Soumettre",
+      "success": "Suggestion créée avec succès"
+    }
+  }
+}

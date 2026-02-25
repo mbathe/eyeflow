@@ -391,6 +391,12 @@ export interface ConnectorExecutionDescriptor {
    */
   outputMapping?: Record<string, string>;
 
+  /**
+   * Optional: specific connector instance ID when multiple connectors of the
+   * same type are registered. Matched against ctx.connectorConfigs keys.
+   */
+  connectorInstanceId?: string;
+
   /** Connectors can run on CENTRAL or LINUX (depending on the connector type) */
   compatibleTiers: Array<'CENTRAL' | 'LINUX'>;
 }

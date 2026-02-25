@@ -54,6 +54,7 @@ export interface DeployableRule {
     channel?: string;
     recipients?: string[];
     params?: Record<string, any>;
+    parameters?: Record<string, any>;   // alias used by Python-compiler DTO
   }>;
   debounceConfig?: {
     enabled?: boolean;
@@ -149,15 +150,34 @@ export class WorkflowRuntimeDeploymentService {
       triggeredByMachineId: machineId,
       minSatisfactionLevel: 1.0,
       description:          rule.name,
-      parallelActions: (rule.actions ?? []).map(action => ({
-        type: this._mapActionType(action.name),
-        alertConfig: {
-          channel:    (action.channel as any) ?? 'slack',
-          recipients: action.recipients ?? [],
-          template:   `Rule "${rule.name}" triggered — event matched.`,
-          severity:   'INFO' as const,
-        },
-      })),
+      parallelActions: (rule.actions ?? []).map(action => {
+        // action.parameters (from Python compiler DTO) OR action.params (DeployableRule interface)
+        const params: Record<string, any> =
+          (action as any).parameters ?? action.params ?? {};
+        // Map severity to values expected by EventHandlerAction
+        const rawSeverity = (params['severity'] ?? 'INFO') as string;
+        const severityMap: Record<string, 'INFO' | 'WARNING' | 'CRITICAL' | 'EMERGENCY'> = {
+          INFO: 'INFO', WARNING: 'WARNING', WARN: 'WARNING',
+          CRITICAL: 'CRITICAL', EMERGENCY: 'EMERGENCY', ERROR: 'CRITICAL',
+        };
+        const severity = severityMap[rawSeverity.toUpperCase()] ?? 'INFO';
+        return {
+          type: this._mapActionType(action.name),
+          alertConfig: {
+            channel:    params['channel'] ?? action.channel ?? 'slack',
+            recipients: params['recipients'] ?? action.recipients ?? [],
+            template:   params['message']
+              ?? params['text']
+              ?? `Rule "${rule.name}" triggered — event matched.`,
+            severity,
+          },
+          connectorConfig: Object.keys(params).length > 0 ? {
+            connectorId:   params['connector'] ?? params['connectorId'],
+            functionName:  params['function']  ?? params['functionName'],
+            parameters:    params,
+          } : undefined,
+        };
+      }),
     };
 
     // Ensure at least one action (audit log) so the handler is always valid
@@ -307,9 +327,25 @@ export class WorkflowRuntimeDeploymentService {
     };
   }
 
-  /** Convert connector type like 'SLACK' → driver id 'slack'. */
+  /** Convert connector type like 'ON_SCHEDULE' → actual registered driver id 'cron'. */
   private _normaliseDriverId(connectorType: string): string {
-    return (connectorType ?? 'generic').toLowerCase().replace(/[^a-z0-9-]/g, '-');
+    const KNOWN: Record<string, string> = {
+      ON_SCHEDULE:    'cron',
+      CRON:           'cron',
+      HTTP_WEBHOOK:   'http-webhook',
+      WEBHOOK:        'http-webhook',
+      FILESYSTEM:     'filesystem',
+      FILE:           'filesystem',
+      IMAP:           'imap',
+      EMAIL:          'imap',
+      MQTT:           'mqtt',
+      MODBUS:         'modbus-bridge',
+      OPCUA:          'opcua-bridge',
+      SIGNAL:         'signal',
+      WEBSOCKET:      'websocket',
+    };
+    const upper = (connectorType ?? 'generic').toUpperCase();
+    return KNOWN[upper] ?? (connectorType ?? 'generic').toLowerCase().replace(/[^a-z0-9-]/g, '-');
   }
 
   /** Map rule operator string → ComparisonOperator enum value. */

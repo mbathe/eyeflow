@@ -6,45 +6,59 @@ import {
   UpdateDateColumn,
   Index,
 } from 'typeorm';
-import { LlmProvider, LlmModel, LocalLlmConfig, ApiLlmConfig } from './llm-config.types';
+import { LlmProvider, LocalLlmConfig, ApiLlmConfig, LlmSkillTag, LlmTaskAffinity } from './llm-config.types';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('llm_configs')
 @Index(['userId', 'isDefault'])
 export class LlmConfigEntity {
-  @ApiProperty({ format: 'uuid', description: 'Unique config ID' })
+  @ApiProperty({ format: 'uuid' })
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @ApiProperty({ format: 'uuid', description: 'User ID for data isolation' })
+  @ApiProperty({ format: 'uuid' })
   @Column({ type: 'uuid' })
   userId!: string;
 
-  @ApiProperty({
-    enum: LlmProvider,
-    description: 'LLM provider (openai, anthropic, ollama_local, etc)',
-  })
-  @Column({
-    type: 'enum',
-    enum: LlmProvider,
-  })
-  provider!: LlmProvider;
+  // ── Agent identity ─────────────────────────────────────────────────────────
 
-  @ApiProperty({
-    enum: LlmModel,
-    description: 'Model name',
-  })
-  @Column({
-    type: 'enum',
-    enum: LlmModel,
-  })
-  model!: LlmModel;
+  @ApiProperty({ nullable: true, description: 'Human-readable alias for this LLM agent' })
+  @Column({ type: 'varchar', nullable: true })
+  name?: string;
 
-  @ApiProperty({ default: false, description: 'Is this the default config' })
+  @ApiProperty({ nullable: true, description: 'What this LLM agent is configured for' })
+  @Column({ type: 'text', nullable: true })
+  description?: string;
+
+  @ApiProperty({ nullable: true, description: 'System prompt injected before every call' })
+  @Column({ type: 'text', nullable: true })
+  systemPrompt?: string;
+
+  @ApiProperty({ nullable: true, description: 'Declared skill tags' })
+  @Column({ type: 'jsonb', nullable: true })
+  skills?: LlmSkillTag[];
+
+  @ApiProperty({ nullable: true, description: 'Per-task affinity scores' })
+  @Column({ type: 'jsonb', nullable: true })
+  taskAffinities?: LlmTaskAffinity[];
+
+  // ── Provider / model ───────────────────────────────────────────────────────
+
+  @ApiProperty({ enum: LlmProvider, description: 'LLM provider' })
+  @Column({ type: 'varchar' })
+  provider!: string;
+
+  @ApiProperty({ description: 'Model identifier (free string to support new models)' })
+  @Column({ type: 'varchar' })
+  model!: string;
+
+  @ApiProperty({ default: false })
   @Column({ type: 'boolean', default: false })
   isDefault = false;
 
-  @ApiProperty({ default: 0.7, description: 'Temperature parameter' })
+  // ── Base generation params ─────────────────────────────────────────────────
+
+  @ApiProperty({ default: 0.7, description: 'Temperature 0-2' })
   @Column({ type: 'float', default: 0.7 })
   temperature = 0.7;
 
@@ -52,86 +66,81 @@ export class LlmConfigEntity {
   @Column({ type: 'integer', default: 2000 })
   maxTokens = 2000;
 
-  @ApiProperty({ default: 1, description: 'Top-p parameter' })
-  @Column({ type: 'float', default: 1 })
-  topP = 1;
+  // ── Advanced generation params ─────────────────────────────────────────────
 
-  @ApiProperty({ default: 0, description: 'Frequency penalty parameter' })
-  @Column({ type: 'float', default: 0 })
-  frequencyPenalty = 0;
+  @ApiProperty({ type: Number, nullable: true, description: 'Top-p (nucleus sampling) 0-1' })
+  @Column({ type: 'float', nullable: true })
+  topP?: number;
 
-  @ApiProperty({ default: 0, description: 'Presence penalty parameter' })
-  @Column({ type: 'float', default: 0 })
-  presencePenalty = 0;
+  @ApiProperty({ type: Number, nullable: true, description: 'Frequency penalty -2 to 2' })
+  @Column({ type: 'float', nullable: true })
+  frequencyPenalty?: number;
 
-  @ApiProperty({
-    type: Object,
-    nullable: true,
-    description: 'Local LLM configuration (Ollama, llama.cpp)',
-  })
+  @ApiProperty({ type: Number, nullable: true, description: 'Presence penalty -2 to 2' })
+  @Column({ type: 'float', nullable: true })
+  presencePenalty?: number;
+
+  @ApiProperty({ type: Number, nullable: true, description: 'Seed for reproducibility' })
+  @Column({ type: 'integer', nullable: true })
+  seed?: number;
+
+  @ApiProperty({ nullable: true, description: 'text | json_object' })
+  @Column({ type: 'varchar', nullable: true })
+  responseFormat?: 'text' | 'json_object';
+
+  @ApiProperty({ type: Number, nullable: true, description: 'Context window override (tokens)' })
+  @Column({ type: 'integer', nullable: true })
+  contextWindow?: number;
+
+  @ApiProperty({ nullable: true, description: 'Custom stop sequences' })
+  @Column({ type: 'jsonb', nullable: true })
+  stopSequences?: string[];
+
+  // ── Provider-specific config ───────────────────────────────────────────────
+
+  @ApiProperty({ type: Object, nullable: true, description: 'Local LLM config (Ollama, llama.cpp)' })
   @Column({ type: 'jsonb', nullable: true })
   localConfig?: LocalLlmConfig;
 
-  @ApiProperty({
-    type: String,
-    nullable: true,
-    description: 'Encrypted API configuration',
-  })
+  @ApiProperty({ type: String, nullable: true, description: 'Encrypted API configuration' })
   @Column({ type: 'text', nullable: true })
   encryptedApiConfig?: string;
 
-  @ApiProperty({
-    type: Date,
-    nullable: true,
-    description: 'Last health check timestamp',
-  })
+  // ── Observability ──────────────────────────────────────────────────────────
+
+  @ApiProperty({ type: Date, nullable: true })
   @Column({ type: 'timestamp', nullable: true })
   lastHealthCheckAt?: Date;
 
-  @ApiProperty({
-    default: true,
-    description: 'Last health check result',
-  })
+  @ApiProperty({ default: true })
   @Column({ type: 'boolean', default: true })
   lastHealthCheckSuccessful = true;
 
-  @ApiProperty({
-    type: String,
-    nullable: true,
-    description: 'Last health check error',
-  })
+  @ApiProperty({ type: String, nullable: true })
   @Column({ type: 'text', nullable: true })
   lastHealthCheckError?: string;
 
-  @ApiProperty({ default: 0, description: 'Total inferences made' })
+  @ApiProperty({ default: 0 })
   @Column({ type: 'integer', default: 0 })
   totalInferences = 0;
 
-  @ApiProperty({ default: 0, description: 'Total tokens used' })
+  @ApiProperty({ default: 0 })
   @Column({ type: 'bigint', default: 0 })
   totalTokensUsed = 0;
 
-  @ApiProperty({
-    type: Number,
-    nullable: true,
-    description: 'Estimated cost in USD',
-  })
+  @ApiProperty({ type: Number, nullable: true })
   @Column({ type: 'float', nullable: true })
   estimatedCostUsd?: number;
 
-  @ApiProperty({
-    type: Number,
-    nullable: true,
-    description: 'Average latency in milliseconds',
-  })
+  @ApiProperty({ type: Number, nullable: true })
   @Column({ type: 'float', nullable: true })
   averageLatency?: number;
 
-  @ApiProperty({ description: 'Created timestamp' })
+  @ApiProperty()
   @CreateDateColumn()
   createdAt!: Date;
 
-  @ApiProperty({ description: 'Last updated timestamp' })
+  @ApiProperty()
   @UpdateDateColumn()
   updatedAt!: Date;
 }

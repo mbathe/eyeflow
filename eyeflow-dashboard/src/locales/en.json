@@ -1,0 +1,616 @@
+{
+  "common": {
+    "appName": "EyeFlow",
+    "email": "Email",
+    "password": "Password",
+    "loading": "Loading…",
+    "save": "Save",
+    "saved": "Saved",
+    "reset": "Reset",
+    "or": "or",
+    "backToLogin": "Back to login",
+    "search": "Search…",
+    "filter": "Filter",
+    "refresh": "Refresh",
+    "export": "Export",
+    "create": "Create",
+    "delete": "Delete",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "all": "All",
+    "none": "None",
+    "unknown": "Unknown",
+    "online": "Online",
+    "offline": "Offline",
+    "degraded": "Degraded",
+    "ok": "OK",
+    "warning": "Warning",
+    "critical": "Critical",
+    "infoLabel": "Info",
+    "noData": "No data",
+    "noResults": "No results",
+    "viewAll": "View all →",
+    "more": "More"
+  },
+  "validation": {
+    "emailInvalid": "Invalid email",
+    "passwordRequired": "Password required",
+    "passwordMin": "Minimum 8 characters",
+    "passwordUpper": "At least one uppercase letter",
+    "passwordNumber": "At least one number",
+    "passwordMatch": "Passwords do not match",
+    "firstNameMin": "First name required (min 2 characters)",
+    "lastNameMin": "Last name required (min 2 characters)"
+  },
+  "auth": {
+    "platformSubtitle": "Deterministic semantic compilation platform",
+    "login": {
+      "title": "Sign in",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "forgotPassword": "Forgot password?",
+      "submit": "Sign in",
+      "googleButton": "Continue with Google",
+      "noAccount": "No account?",
+      "registerLink": "Sign up"
+    },
+    "register": {
+      "title": "Create account",
+      "subtitle": "Join the EyeFlow platform",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "passwordPlaceholder": "Min. 8 chars, 1 uppercase, 1 number",
+      "confirmPassword": "Confirm password",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Sign in",
+      "emailSent": {
+        "title": "Check your email",
+        "sentTo": "A verification link has been sent to",
+        "hint": "Click the link in the email to activate your account, then sign in.",
+        "goToLogin": "Go to sign in",
+        "skip": "Continue without verifying →"
+      }
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email to receive a reset link.",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "submit": "Send link",
+      "serverError": "An error occurred. Please check your email address.",
+      "sent": {
+        "title": "Email sent",
+        "description": "If an account matches this email, you will receive a reset link in a few minutes."
+      }
+    },
+    "resetPassword": {
+      "title": "New password",
+      "subtitle": "Choose a secure password.",
+      "newPasswordLabel": "New password",
+      "confirmLabel": "Confirm",
+      "submit": "Save password",
+      "serverError": "Invalid or expired link. Please try again.",
+      "invalidLink": "Invalid link.",
+      "done": {
+        "title": "Password updated",
+        "description": "You can now sign in with your new password.",
+        "loginLink": "Sign in →"
+      }
+    },
+    "verifyEmail": {
+      "title": "Verify your email",
+      "sentTo": "A verification email has been sent to",
+      "notReceived": "Didn't receive it?",
+      "resend": "Resend link",
+      "resending": "Sending…",
+      "resentSuccess": "✓ New email sent!",
+      "resentError": "Error. Make sure you are signed in.",
+      "continueToDashboard": "Continue to dashboard",
+      "loginToResend": "Sign in to resend a verification link.",
+      "verifying": "Verifying…",
+      "success": {
+        "title": "Email verified!",
+        "description": "Your address has been confirmed. Welcome to EyeFlow!"
+      },
+      "error": {
+        "title": "Invalid link",
+        "description": "This link is invalid or has expired.",
+        "resendButton": "Resend a new link"
+      },
+      "ctaDashboard": "Dashboard",
+      "ctaLogin": "Sign in",
+      "ctaBackToLogin": "Back to sign in"
+    },
+    "googleCallback": {
+      "loading": "Signing in with Google…",
+      "errorTitle": "Sign-in failed",
+      "authFailed": "Google authentication failed. Please try again.",
+      "profileFailed": "Unable to retrieve profile. Please sign in again.",
+      "backToLogin": "Back to sign in"
+    }
+  },
+  "nav": {
+    "pillarObserve": "Observe",
+    "pillarAnalyze": "Analyze & Decide",
+    "pillarAct": "Act & Audit",
+    "pillarManage": "Manage",
+    "dashboard": "Dashboard",
+    "events": "Events & Alerts",
+    "analysis": "Analysis & AI",
+    "automations": "Automations",
+    "execution": "Execution & Actions",
+    "audit": "History & Audit",
+    "security": "Security & Identities",
+    "configuration": "Configuration",
+    "administration": "Administration",
+    "preferences": "Preferences",
+    "logout": "Log out",
+    "collapse": "Collapse",
+    "dataExplorer": "Data & Exploration",
+    "suggestions": "AI Suggestions"
+  },
+  "header": {
+    "searchPlaceholder": "Rule, connector, agent…",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode"
+  },
+  "dashboard": {
+    "greeting": "Hello, {{name}}",
+    "subtitle": "Control console — system overview",
+    "systemHealth": {
+      "title": "Global health",
+      "ok": "System operational",
+      "degraded": "System degraded",
+      "critical": "System in critical alert"
+    },
+    "stats": {
+      "rules": "Active rules",
+      "rulesSub": "compiled workflows",
+      "nodes": "Connected nodes",
+      "nodesSub": "edge + servers",
+      "jobs": "Running jobs",
+      "jobsSub": "active executions",
+      "approvals": "Approvals",
+      "approvalsSub": "pending decisions"
+    },
+    "recentActivity": "Recent activity",
+    "pendingApprovals": "Pending approvals",
+    "systemServices": {
+      "title": "System services",
+      "nestApi": "NestJS API",
+      "kafka": "Kafka Bus",
+      "llmService": "LLM Service",
+      "svmRuntime": "SVM Runtime"
+    },
+    "quickActions": {
+      "title": "Quick actions",
+      "compileRule": {
+        "title": "Compile a rule",
+        "description": "Describe your workflow in natural language and get a compiled DAG instantly.",
+        "link": "Open editor →"
+      },
+      "auditTrail": {
+        "title": "Audit Trail",
+        "description": "View the certifiable cryptographic audit chain (IEC 61508, MDR, GDPR).",
+        "link": "View history →"
+      }
+    }
+  },
+  "events": {
+    "title": "Events & Alerts",
+    "subtitle": "Real-time feed — system activity and security alerts",
+    "table": {
+      "timestamp": "Timestamp",
+      "type": "Type",
+      "severity": "Severity",
+      "source": "Source",
+      "message": "Message",
+      "details": "Details"
+    },
+    "severity": {
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "info": "Info"
+    },
+    "filters": {
+      "allTypes": "All types",
+      "allSeverities": "All severities",
+      "last1h": "Last hour",
+      "last24h": "Last 24h",
+      "last7d": "Last 7 days"
+    },
+    "noEvents": "No events recorded",
+    "loadError": "Unable to load events"
+  },
+  "analysis": {
+    "title": "Analysis & AI",
+    "subtitle": "Understanding, correlation and anticipation — AI explains, it doesn't decide alone",
+    "generateRule": {
+      "title": "Generate a rule from intent",
+      "placeholder": "E.g.: Trigger an alert if CPU exceeds 90% for 5 minutes…",
+      "submit": "Generate with AI",
+      "generating": "Generating…",
+      "result": "Generated rule",
+      "saveToAutomations": "Save to Automations",
+      "confidence": "Confidence",
+      "explanation": "Explanation"
+    },
+    "llmContext": {
+      "title": "Active LLM context",
+      "connectors": "Available connectors",
+      "providers": "LLM providers"
+    },
+    "noLlmConfig": "No active LLM configuration. Set up a provider in Configuration > LLM."
+  },
+  "automations": {
+    "title": "Automations",
+    "subtitle": "Conditional rules, playbooks and compiled workflows",
+    "newRule": "New rule",
+    "table": {
+      "name": "Name",
+      "status": "Status",
+      "mode": "Mode",
+      "createdAt": "Created",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "draft": "Draft"
+    },
+    "mode": {
+      "auto": "Automatic",
+      "semiAuto": "Semi-auto",
+      "suggest": "Suggestion"
+    },
+    "approvalQueue": {
+      "title": "Approval queue",
+      "approve": "Approve",
+      "reject": "Reject",
+      "viewDag": "View DAG",
+      "empty": "No rules pending approval"
+    },
+    "noRules": "No rules created",
+    "loadError": "Unable to load rules",
+    "simulate": "Simulate",
+    "viewDag": "View DAG"
+  },
+  "execution": {
+    "title": "Execution & Actions",
+    "subtitle": "Available actions, running jobs and execution results",
+    "tabs": {
+      "actions": "Actions",
+      "jobs": "Jobs",
+      "agents": "Agents"
+    },
+    "actions": {
+      "name": "Name",
+      "type": "Type",
+      "status": "Status",
+      "createdAt": "Created",
+      "execute": "Execute",
+      "noActions": "No actions configured",
+      "confirmExecute": "Confirm execution of this action?",
+      "consequence": "This operation will be recorded in the audit trail."
+    },
+    "jobs": {
+      "id": "ID",
+      "status": "Status",
+      "startedAt": "Started",
+      "noJobs": "No running jobs"
+    },
+    "agents": {
+      "name": "Name",
+      "status": "Status",
+      "lastSeen": "Last seen",
+      "noAgents": "No agents registered"
+    },
+    "status": {
+      "running": "Running",
+      "success": "Success",
+      "failed": "Failed",
+      "pending": "Pending",
+      "idle": "Idle"
+    }
+  },
+  "security": {
+    "title": "Security & Identities",
+    "subtitle": "Users, roles, permissions and access policies",
+    "users": {
+      "title": "Users",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "createdAt": "Created",
+      "actions": "Actions",
+      "setRole": "Change role",
+      "unlock": "Unlock",
+      "delete": "Delete",
+      "noUsers": "No users",
+      "loadError": "Unable to load users",
+      "verified": "Verified",
+      "unverified": "Unverified",
+      "locked": "Locked"
+    },
+    "roles": {
+      "admin": "Administrator",
+      "user": "User",
+      "viewer": "Viewer"
+    }
+  },
+  "audit": {
+    "title": "History & Audit",
+    "subtitle": "Full traceability — all actions, AI decisions and human validations",
+    "table": {
+      "timestamp": "Timestamp",
+      "actor": "Actor",
+      "action": "Action",
+      "target": "Target",
+      "decision": "Decision",
+      "source": "Source"
+    },
+    "source": {
+      "human": "Human",
+      "ai": "AI",
+      "auto": "Automatic"
+    },
+    "export": "Export CSV",
+    "noEvents": "No audit events",
+    "loadError": "Unable to load history",
+    "verify": "Verify integrity",
+    "verified": "Chain verified ✓",
+    "verifyFailed": "Integrity compromised!"
+  },
+  "configuration": {
+    "title": "Configuration",
+    "subtitle": "Connectors, edge nodes and LLM settings",
+    "tabs": {
+      "connectors": "Connectors",
+      "nodes": "Edge Nodes",
+      "llm": "LLM"
+    },
+    "connectors": {
+      "new": "New connector",
+      "name": "Name",
+      "type": "Type",
+      "status": "Status",
+      "test": "Test",
+      "edit": "Edit",
+      "delete": "Delete",
+      "noConnectors": "No connectors configured",
+      "active": "Active",
+      "inactive": "Inactive",
+      "error": "Error"
+    },
+    "nodes": {
+      "name": "Name",
+      "status": "Status",
+      "lastHeartbeat": "Last heartbeat",
+      "drivers": "Drivers",
+      "noNodes": "No nodes registered"
+    },
+    "llm": {
+      "new": "New provider",
+      "name": "Name",
+      "provider": "Provider",
+      "default": "Default",
+      "setDefault": "Set as default",
+      "healthCheck": "Check",
+      "noConfigs": "No LLM provider configured"
+    }
+  },
+  "administration": {
+    "title": "Administration",
+    "subtitle": "Platform health, queues and internal services",
+    "platformHealth": {
+      "title": "Platform health",
+      "allOperational": "All services are operational",
+      "someIssues": "Some services have issues"
+    },
+    "services": {
+      "title": "Services",
+      "nestApi": "NestJS API",
+      "kafka": "Kafka Bus",
+      "llmService": "LLM Service",
+      "svmRuntime": "SVM Runtime",
+      "database": "Database"
+    },
+    "nodes": {
+      "title": "Edge Nodes",
+      "summary": "Summary",
+      "connected": "connected",
+      "total": "total"
+    },
+    "metrics": {
+      "title": "Metrics",
+      "totalRules": "Total rules",
+      "totalJobs": "Total jobs",
+      "totalConnectors": "Total connectors",
+      "pendingApprovals": "Pending approvals"
+    }
+  },
+  "preferences": {
+    "title": "Preferences",
+    "subtitle": "Customize your EyeFlow experience. Changes are saved instantly.",
+    "resetButton": "Reset",
+    "saveButton": "Save",
+    "savedButton": "Saved",
+    "appearance": {
+      "title": "Appearance",
+      "description": "Theme, accent color and interface density",
+      "themeMode": "Display mode",
+      "dark": "Dark",
+      "light": "Light",
+      "accentColor": "Accent color",
+      "selectedColor": "Selected color",
+      "density": "Density",
+      "comfortable": "Comfortable",
+      "comfortableDesc": "Standard spacing, easy reading",
+      "compact": "Compact",
+      "compactDesc": "More items visible on screen"
+    },
+    "language": {
+      "title": "Language & region",
+      "description": "Interface display language",
+      "comingSoon": "Full interface translation will be available in a future version."
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Alert channels and frequency",
+      "email": "Email notifications",
+      "emailDesc": "Execution summaries, critical alerts",
+      "browser": "Browser notifications",
+      "browserDesc": "Real-time alerts in the browser"
+    },
+    "dashboardSection": {
+      "title": "Dashboard",
+      "description": "Dashboard display options",
+      "welcomeBanner": "Welcome message",
+      "welcomeBannerDesc": "Show personalized welcome message",
+      "comingSoon": "Customizable widgets, card order, favorite metrics"
+    },
+    "comingSoonBadge": "Soon"
+  },
+  "dataExplorer": {
+    "title": "Data & Exploration",
+    "subtitle": "Query your data sources in natural language — AI translates, you decide",
+    "sources": {
+      "title": "Data sources",
+      "noSources": "No sources connected",
+      "connected": "connected",
+      "disconnected": "disconnected",
+      "error": "error",
+      "allSources": "All sources",
+      "loading": "Loading sources…"
+    },
+    "history": {
+      "title": "History",
+      "empty": "No queries yet"
+    },
+    "query": {
+      "placeholder": "E.g.: Show me active rules from the last 7 days by connector…",
+      "submit": "Analyze",
+      "analyzing": "Analyzing…",
+      "reformulation": "Interpretation",
+      "reformulationHint": "I will analyze"
+    },
+    "results": {
+      "title": "Results",
+      "noData": "No data. Ask a question above.",
+      "rows": "entry",
+      "rowsPlural": "entries",
+      "table": "Table",
+      "bar": "Bar",
+      "line": "Line",
+      "pie": "Pie"
+    },
+    "narrative": {
+      "title": "AI Analysis",
+      "generating": "Generating summary…",
+      "confidence": "Confidence"
+    },
+    "actions": {
+      "title": "Actions",
+      "createRule": "Create a rule from this analysis",
+      "createAlert": "Define an alert",
+      "exportCsv": "Export CSV",
+      "saveReport": "Save report"
+    },
+    "empty": {
+      "title": "No source selected",
+      "hint": "Select a source on the left then ask a question in natural language."
+    },
+    "noLlm": "No LLM provider configured. Natural language interface will not be available."
+  },
+  "suggestions": {
+    "title": "AI Suggestions",
+    "subtitle": "The AI watches, analyses and proposes — you decide",
+    "badge": "pending",
+    "empty": {
+      "title": "No pending suggestions",
+      "hint": "The system will generate recommendations as it analyses events and data."
+    },
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "deferred": "Deferred",
+      "all": "All"
+    },
+    "priority": {
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "source": {
+      "event": "Event",
+      "analysis": "Analysis",
+      "data_explorer": "Data Explorer",
+      "system": "System",
+      "manual": "Manual"
+    },
+    "fields": {
+      "title": "Title",
+      "description": "Description",
+      "priority": "Priority",
+      "confidence": "Confidence",
+      "impact": "Estimated impact",
+      "source": "Source",
+      "category": "Category",
+      "createdAt": "Created at",
+      "decidedAt": "Decided at",
+      "decidedBy": "Decided by",
+      "comment": "Comment"
+    },
+    "actions": {
+      "accept": "Accept",
+      "reject": "Reject",
+      "defer": "Defer",
+      "deferUntil": "Defer until",
+      "addComment": "Add a comment (optional)",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "create": "New suggestion",
+      "delete": "Delete"
+    },
+    "dialogs": {
+      "acceptTitle": "Accept this suggestion?",
+      "acceptHint": "The action will be logged and marked as accepted. You remain responsible for its execution.",
+      "rejectTitle": "Reject this suggestion?",
+      "rejectHint": "The suggestion will be archived. You may add an explanatory comment.",
+      "deferTitle": "Defer this suggestion",
+      "deferHint": "Choose a deadline before reconsidering."
+    },
+    "stats": {
+      "total": "Total",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "deferred": "Deferred"
+    },
+    "cycle": {
+      "observer": "Observe",
+      "analyser": "Analyse",
+      "proposer": "Propose",
+      "valider": "Validate"
+    },
+    "createForm": {
+      "title": "Submit a suggestion",
+      "titleField": "Title *",
+      "descriptionField": "Description *",
+      "impactField": "Estimated impact",
+      "categoryField": "Category",
+      "submit": "Submit",
+      "success": "Suggestion created successfully"
+    }
+  }
+}

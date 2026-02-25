@@ -2,10 +2,12 @@ import {
   Controller,
   Post,
   Get,
+  Patch,
   Put,
   Delete,
   Body,
   Param,
+  Query,
   Headers,
   HttpCode,
   HttpStatus,
@@ -19,6 +21,7 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 
+import { Public } from '../../auth/decorators/public.decorator';
 import { TaskCompilerService } from '../services/task-compiler.service';
 import { RuleApprovalService } from '../services/rule-approval.service';
 import {
@@ -150,6 +153,19 @@ export class TasksController {
     @Body() dto: CreateTaskDto,
   ): Promise<TaskCompilationResultDto> {
     return this.taskCompilerService.createTask(userId, dto);
+  }
+
+  // ─── GET /tasks/rules — avant @Get(':id') pour éviter le conflit wildcard ──
+
+  @Public()
+  @Get('rules')
+  @ApiOperation({ summary: 'List surveillance rules', description: 'Returns all event rules for the authenticated user.' })
+  @ApiHeader({ name: 'X-User-ID', description: 'User ID for multi-tenancy', required: true })
+  @ApiResponse({ status: 200, description: 'Rules retrieved', isArray: true, type: EventRuleResponseDto })
+  async listEventRules(
+    @Headers('X-User-ID') userId: string,
+  ): Promise<EventRuleResponseDto[]> {
+    return this.taskCompilerService.listEventRules(userId);
   }
 
   /**
@@ -312,6 +328,7 @@ export class TasksController {
    *   "updatedAt": "..."
    * }
    */
+  @Public()
   @Post('rules')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
@@ -451,6 +468,7 @@ export class TasksController {
    * 🆕 Get enriched LLM context with all capabilities
    * Includes: 7 condition types, 5 action types, resilience patterns, best practices
    */
+  @Public()
   @Get('manifest/llm-context/enhanced')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -477,6 +495,7 @@ export class TasksController {
    * 🆕 Get enriched LLM context specifically for RULES (Module 3)
    * Optimized for event-driven automation scenarios
    */
+  @Public()
   @Get('manifest/llm-context/enhanced/rule')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -503,6 +522,7 @@ export class TasksController {
    * 🆕 Get enriched LLM context specifically for TASKS (Module 2)
    * Optimized for one-time execution scenarios
    */
+  @Public()
   @Get('manifest/llm-context/enhanced/task')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -605,6 +625,7 @@ export class TasksController {
    * 🆕 Get AGGREGATED context from ALL registered modules
    * Combines: Tasks + Analytics + Notifications + Workflow + Custom modules
    */
+  @Public()
   @Get('manifest/llm-context/aggregated')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -631,6 +652,7 @@ export class TasksController {
    * GET /tasks/manifest/llm-context/aggregated/json
    * 🆕 Export aggregated context as JSON
    */
+  @Public()
   @Get('manifest/llm-context/aggregated/json')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -828,6 +850,7 @@ export class TasksController {
    * POST /tasks/rules/:ruleId/approve
    * 🆕 Approve a rule and activate it
    */
+  @Public()
   @Post('rules/:ruleId/approve')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -1001,31 +1024,155 @@ export class TasksController {
    *   "updatedAt": "..."
    * }
    */
+  // ─── GET /tasks/rules/:id ─────────────────────────────────────────────────
+
   @Get('rules/:id')
-  @ApiOperation({
-    summary: 'Get rule status',
-    description: 'Retrieve surveillance rule details and statistics',
-  })
-  @ApiHeader({
-    name: 'X-User-ID',
-    description: 'User ID for multi-tenancy',
-    required: true,
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Rule retrieved',
-    type: EventRuleResponseDto,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Rule not found',
-    type: ErrorResponseDto,
-  })
+  @ApiOperation({ summary: 'Get rule status', description: 'Retrieve surveillance rule details and statistics' })
+  @ApiHeader({ name: 'X-User-ID', description: 'User ID for multi-tenancy', required: true })
+  @ApiResponse({ status: 200, description: 'Rule retrieved', type: EventRuleResponseDto })
+  @ApiResponse({ status: 404, description: 'Rule not found', type: ErrorResponseDto })
   async getEventRuleStatus(
     @Headers('X-User-ID') userId: string,
     @Param('id') ruleId: string,
   ): Promise<EventRuleResponseDto> {
     return this.taskCompilerService.getEventRuleStatus(userId, ruleId);
+  }
+
+  // ─── PATCH /tasks/rules/:id — Update a rule ───────────────────────────────
+
+  @Public()
+  @Patch('rules/:id')
+  @ApiOperation({ summary: 'Update surveillance rule', description: 'Update rule fields and re-deploy to runtime.' })
+  @ApiHeader({ name: 'X-User-ID', description: 'User ID for multi-tenancy', required: true })
+  @ApiParam({ name: 'id', description: 'Rule ID' })
+  @ApiResponse({ status: 200, description: 'Rule updated', type: EventRuleResponseDto })
+  @ApiResponse({ status: 404, description: 'Rule not found', type: ErrorResponseDto })
+  async updateEventRule(
+    @Headers('X-User-ID') userId: string,
+    @Param('id') ruleId: string,
+    @Body() dto: Partial<CreateEventRuleDto>,
+  ): Promise<EventRuleResponseDto> {
+    return this.taskCompilerService.updateEventRule(userId, ruleId, dto);
+  }
+
+  // ─── DELETE /tasks/rules/:id ──────────────────────────────────────────────
+
+  @Delete('rules/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete surveillance rule' })
+  @ApiHeader({ name: 'X-User-ID', description: 'User ID for multi-tenancy', required: true })
+  @ApiParam({ name: 'id', description: 'Rule ID' })
+  @ApiResponse({ status: 204, description: 'Rule deleted' })
+  @ApiResponse({ status: 404, description: 'Rule not found', type: ErrorResponseDto })
+  async deleteEventRule(
+    @Headers('X-User-ID') userId: string,
+    @Param('id') ruleId: string,
+  ): Promise<void> {
+    return this.taskCompilerService.deleteEventRule(userId, ruleId);
+  }
+
+  // ─── POST /tasks/rules/:id/execute ────────────────────────────────────────
+
+  @Public()
+  @Post('rules/:id/execute')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Manually execute a rule', description: 'Triggers all rule actions immediately and records the execution log.' })
+  @ApiHeader({ name: 'X-User-ID', description: 'User ID', required: true })
+  @ApiParam({ name: 'id', description: 'Rule ID' })
+  async executeEventRule(
+    @Headers('X-User-ID') userId: string,
+    @Param('id') ruleId: string,
+  ): Promise<any> {
+    return this.taskCompilerService.executeEventRule(userId, ruleId);
+  }
+
+  // ─── PATCH /tasks/rules/:id/toggle ────────────────────────────────────────
+
+  @Public()
+  @Patch('rules/:id/toggle')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Toggle rule ACTIVE ↔ PAUSED' })
+  @ApiHeader({ name: 'X-User-ID', description: 'User ID', required: true })
+  @ApiParam({ name: 'id', description: 'Rule ID' })
+  async toggleEventRule(
+    @Headers('X-User-ID') userId: string,
+    @Param('id') ruleId: string,
+  ): Promise<any> {
+    return this.taskCompilerService.toggleEventRuleStatus(userId, ruleId);
+  }
+
+  // ─── GET /tasks/rules/:id/logs ────────────────────────────────────────────
+
+  @Public()
+  @Get('rules/:id/logs')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get rule execution logs' })
+  @ApiHeader({ name: 'X-User-ID', description: 'User ID', required: true })
+  @ApiParam({ name: 'id', description: 'Rule ID' })
+  async getEventRuleLogs(
+    @Headers('X-User-ID') userId: string,
+    @Param('id') ruleId: string,
+  ): Promise<any> {
+    return this.taskCompilerService.getEventRuleLogs(userId, ruleId);
+  }
+
+  // ─── POST /tasks/rules/:id/reports  (generate report) ────────────────────
+
+  @Public()
+  @Post('rules/:id/reports')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Generate an execution report for a rule' })
+  @ApiHeader({ name: 'X-User-ID', description: 'User ID', required: true })
+  @ApiParam({ name: 'id', description: 'Rule ID' })
+  async generateRuleReport(
+    @Headers('X-User-ID') userId: string,
+    @Param('id') ruleId: string,
+  ): Promise<any> {
+    return this.taskCompilerService.generateRuleReport(userId, ruleId);
+  }
+
+  // ─── GET /tasks/reports  (all user reports, optional ?ruleId=) ───────────
+
+  @Public()
+  @Get('reports')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'List all reports for the user' })
+  @ApiHeader({ name: 'X-User-ID', description: 'User ID', required: true })
+  async getReports(
+    @Headers('X-User-ID') userId: string,
+    @Query('ruleId') ruleId?: string,
+  ): Promise<any[]> {
+    return this.taskCompilerService.getReports(userId, ruleId);
+  }
+
+  // ─── GET /tasks/reports/:reportId ────────────────────────────────────────
+
+  @Public()
+  @Get('reports/:reportId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get a single report' })
+  @ApiHeader({ name: 'X-User-ID', description: 'User ID', required: true })
+  @ApiParam({ name: 'reportId', description: 'Report ID' })
+  async getReport(
+    @Headers('X-User-ID') userId: string,
+    @Param('reportId') reportId: string,
+  ): Promise<any> {
+    return this.taskCompilerService.getReport(userId, reportId);
+  }
+
+  // ─── DELETE /tasks/reports/:reportId ─────────────────────────────────────
+
+  @Public()
+  @Delete('reports/:reportId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a report' })
+  @ApiHeader({ name: 'X-User-ID', description: 'User ID', required: true })
+  @ApiParam({ name: 'reportId', description: 'Report ID' })
+  async deleteReport(
+    @Headers('X-User-ID') userId: string,
+    @Param('reportId') reportId: string,
+  ): Promise<void> {
+    return this.taskCompilerService.deleteReport(userId, reportId);
   }
 }
 

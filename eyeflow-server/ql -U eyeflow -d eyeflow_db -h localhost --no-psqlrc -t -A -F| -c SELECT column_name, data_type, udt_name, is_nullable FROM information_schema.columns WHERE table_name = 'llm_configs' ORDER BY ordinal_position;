@@ -1,0 +1,25 @@
+        column_name        |          data_type          |         udt_name          | is_nullable |     column_default      
+---------------------------+-----------------------------+---------------------------+-------------+-------------------------
+ id                        | uuid                        | uuid                      | NO          | uuid_generate_v4()
+ userId                    | uuid                        | uuid                      | NO          | 
+ provider                  | USER-DEFINED                | llm_configs_provider_enum | NO          | 
+ model                     | USER-DEFINED                | llm_configs_model_enum    | NO          | 
+ isDefault                 | boolean                     | bool                      | NO          | false
+ temperature               | double precision            | float8                    | NO          | '0.7'::double precision
+ maxTokens                 | integer                     | int4                      | NO          | 2000
+ topP                      | double precision            | float8                    | NO          | '1'::double precision
+ frequencyPenalty          | double precision            | float8                    | NO          | '0'::double precision
+ presencePenalty           | double precision            | float8                    | NO          | '0'::double precision
+ localConfig               | jsonb                       | jsonb                     | YES         | 
+ encryptedApiConfig        | text                        | text                      | YES         | 
+ lastHealthCheckAt         | timestamp without time zone | timestamp                 | YES         | 
+ lastHealthCheckSuccessful | boolean                     | bool                      | NO          | true
+ lastHealthCheckError      | text                        | text                      | YES         | 
+ totalInferences           | integer                     | int4                      | NO          | 0
+ totalTokensUsed           | bigint                      | int8                      | NO          | '0'::bigint
+ estimatedCostUsd          | double precision            | float8                    | YES         | 
+ averageLatency            | double precision            | float8                    | YES         | 
+ createdAt                 | timestamp without time zone | timestamp                 | NO          | now()
+ updatedAt                 | timestamp without time zone | timestamp                 | NO          | now()
+(21 rows)
+

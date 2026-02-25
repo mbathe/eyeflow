@@ -23,6 +23,8 @@ import { TriggersModule } from './triggers/triggers.module';
 import { EventsModule } from './events/events.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthorizationModule } from './authorization/authorization.module';
+import { SuggestionsModule } from './suggestions/suggestions.module';
+import { RealtimeModule } from './realtime/realtime.module';
 
 // Determine which .env file to load based on environment
 const getEnvFile = () => {
@@ -76,6 +78,8 @@ const getEnvFile = () => {
     EventsModule,
     AuthModule,
     AuthorizationModule,
+    SuggestionsModule,
+    RealtimeModule,
   ],
   controllers: [AppController],
   providers: [

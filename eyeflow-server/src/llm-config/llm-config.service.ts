@@ -43,10 +43,21 @@ export class LlmConfigService {
     llmConfig.isDefault = config.isDefault || false;
     llmConfig.temperature = config.temperature || 0.7;
     llmConfig.maxTokens = config.maxTokens || 2000;
-    llmConfig.topP = config.topP || 1;
-    llmConfig.frequencyPenalty = config.frequencyPenalty || 0;
-    llmConfig.presencePenalty = config.presencePenalty || 0;
+    llmConfig.topP = config.topP ?? 1;
+    llmConfig.frequencyPenalty = config.frequencyPenalty ?? 0;
+    llmConfig.presencePenalty = config.presencePenalty ?? 0;
     llmConfig.localConfig = config.localConfig;
+    // Agent identity
+    if (config.name) llmConfig.name = config.name;
+    if (config.description) llmConfig.description = config.description;
+    if (config.systemPrompt) llmConfig.systemPrompt = config.systemPrompt;
+    if (config.skills) llmConfig.skills = config.skills as any;
+    if (config.taskAffinities) llmConfig.taskAffinities = config.taskAffinities as any;
+    // Advanced params
+    if (config.seed !== undefined) llmConfig.seed = config.seed;
+    if (config.responseFormat) llmConfig.responseFormat = config.responseFormat as any;
+    if (config.contextWindow !== undefined) llmConfig.contextWindow = config.contextWindow;
+    if (config.stopSequences) llmConfig.stopSequences = config.stopSequences as any;
     if (config.apiConfig) {
       llmConfig.encryptedApiConfig = this.encrypt(config.apiConfig);
     }
@@ -111,6 +122,8 @@ export class LlmConfigService {
       );
     }
 
+    if (updateData.provider !== undefined) config.provider = updateData.provider as any;
+    if (updateData.model !== undefined) config.model = updateData.model as any;
     if (updateData.temperature !== undefined) config.temperature = updateData.temperature;
     if (updateData.maxTokens !== undefined) config.maxTokens = updateData.maxTokens;
     if (updateData.topP !== undefined) config.topP = updateData.topP;
@@ -118,6 +131,17 @@ export class LlmConfigService {
     if (updateData.presencePenalty !== undefined) config.presencePenalty = updateData.presencePenalty;
     if (updateData.localConfig !== undefined) config.localConfig = updateData.localConfig;
     if (updateData.isDefault !== undefined) config.isDefault = updateData.isDefault;
+    // Agent identity
+    if (updateData.name !== undefined) config.name = updateData.name;
+    if (updateData.description !== undefined) config.description = updateData.description;
+    if (updateData.systemPrompt !== undefined) config.systemPrompt = updateData.systemPrompt;
+    if (updateData.skills !== undefined) config.skills = updateData.skills as any;
+    if (updateData.taskAffinities !== undefined) config.taskAffinities = updateData.taskAffinities as any;
+    // Advanced params
+    if (updateData.seed !== undefined) config.seed = updateData.seed;
+    if (updateData.responseFormat !== undefined) config.responseFormat = updateData.responseFormat as any;
+    if (updateData.contextWindow !== undefined) config.contextWindow = updateData.contextWindow;
+    if (updateData.stopSequences !== undefined) config.stopSequences = updateData.stopSequences as any;
 
     if (updateData.apiConfig) {
       config.encryptedApiConfig = this.encrypt(updateData.apiConfig);
@@ -186,6 +210,52 @@ export class LlmConfigService {
   }
 
   /**
+   * Résoudre toutes les configurations pour le service LLM interne.
+   * Retourne les configs avec clés API déchiffrées (usage interne uniquement).
+   */
+  async resolveForService(userId: string): Promise<Record<string, any>[]> {
+    // Internal service endpoint: return ALL active configs (any user), not filtered by userId.
+    // userId is available for audit logging only.
+    const configs = await this.llmConfigRepository.find({
+      order: { isDefault: 'DESC', createdAt: 'DESC' },
+    });
+
+    return configs.map((cfg) => {
+      const apiConfig = cfg.encryptedApiConfig
+        ? (this.decrypt(cfg.encryptedApiConfig) as Record<string, any>)
+        : null;
+
+      return {
+        id: cfg.id,
+        name: cfg.name ?? null,
+        description: cfg.description ?? null,
+        provider: cfg.provider,
+        model: cfg.model,
+        isDefault: cfg.isDefault,
+        temperature: cfg.temperature,
+        maxTokens: cfg.maxTokens,
+        topP: cfg.topP ?? null,
+        frequencyPenalty: cfg.frequencyPenalty ?? null,
+        presencePenalty: cfg.presencePenalty ?? null,
+        seed: cfg.seed ?? null,
+        responseFormat: cfg.responseFormat ?? null,
+        contextWindow: cfg.contextWindow ?? null,
+        stopSequences: cfg.stopSequences ?? null,
+        systemPrompt: cfg.systemPrompt ?? null,
+        skills: cfg.skills ?? [],
+        taskAffinities: cfg.taskAffinities ?? [],
+        // Credentials en clair (usage service interne uniquement)
+        apiKey: apiConfig?.apiKey ?? null,
+        apiUrl: apiConfig?.apiUrl ?? null,
+        organization: apiConfig?.organization ?? null,
+        deployment: apiConfig?.deployment ?? null,
+        apiVersion: apiConfig?.apiVersion ?? null,
+        localConfig: cfg.localConfig ?? null,
+      };
+    });
+  }
+
+  /**
    * ========================
    * HEALTH CHECK HELPERS
    * ========================
@@ -246,7 +316,7 @@ export class LlmConfigService {
   private async testAnthropicHealth(
     apiConfig: ApiLlmConfig,
     startTime: number,
-    model: LlmModel,
+    model: string,
   ): Promise<LlmHealthCheck> {
     try {
       const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -282,7 +352,7 @@ export class LlmConfigService {
   private async testOpenAiHealth(
     apiConfig: ApiLlmConfig,
     startTime: number,
-    model: LlmModel,
+    model: string,
   ): Promise<LlmHealthCheck> {
     try {
       const headers: any = {

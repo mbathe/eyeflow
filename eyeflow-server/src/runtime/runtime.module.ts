@@ -23,6 +23,7 @@ import { PhysicalControlService } from './physical-control.service';
 import { CryptoAuditChainService } from './crypto-audit-chain.service';
 import { OfflineBufferService } from './offline-buffer.service';
 import { CancellationBusService } from './cancellation-bus.service';
+import { ConnectorDriverRegistry } from './connectors/connector-driver-registry.service';
 import { NodesModule } from '../nodes/nodes.module';
 
 const EXECUTORS = [
@@ -41,6 +42,7 @@ const EXECUTORS = [
   imports: [NodesModule],
   providers: [
     ...EXECUTORS,
+    ConnectorDriverRegistry,
     ExecutorRegistryService,
     SemanticVirtualMachine,
     VaultService,
@@ -50,6 +52,7 @@ const EXECUTORS = [
     CancellationBusService,
   ],
   exports: [
+    ConnectorDriverRegistry,
     ExecutorRegistryService,
     SemanticVirtualMachine,
     VaultService,

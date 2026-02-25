@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Google Fonts fallback already loaded via index.html ─── */
+
+@layer base {
+  /* ── Dark theme (default) ── */
+  :root {
+    --background: 222 47% 7%;          /* #0a0f1e */
+    --foreground: 213 31% 91%;         /* #e2e8f0 */
+
+    --card: 223 39% 10%;               /* #111827 */
+    --card-foreground: 213 31% 91%;
+
+    --popover: 224 35% 13%;            /* #1f2937 */
+    --popover-foreground: 213 31% 91%;
+
+    --primary: 217 91% 60%;            /* #3b82f6 */
+    --primary-foreground: 222 47% 7%;
+
+    --secondary: 223 39% 16%;
+    --secondary-foreground: 213 31% 91%;
+
+    --muted: 223 39% 14%;
+    --muted-foreground: 215 20% 45%;   /* #6b7280 */
+
+    --accent: 193 95% 42%;             /* #06b6d4 */
+    --accent-foreground: 222 47% 7%;
+
+    --destructive: 0 84% 60%;          /* #ef4444 */
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 158 64% 40%;            /* #10b981 */
+    --success-foreground: 210 40% 98%;
+
+    --warning: 38 92% 50%;             /* #f59e0b */
+    --warning-foreground: 222 47% 7%;
+
+    --border: 217 33% 20%;             /* #374151 */
+    --input: 217 33% 17%;
+    --ring: 217 91% 60%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar */
+    --sidebar: 222 47% 6%;
+    --sidebar-foreground: 213 31% 91%;
+    --sidebar-border: 217 33% 14%;
+    --sidebar-accent: 217 91% 60%;
+  }
+
+  /* ── Light theme — Slate (Linear / GitHub style) ── */
+  /* fond gris-bleu cendré, cartes blanches, contraste élevé */
+  .light {
+    --background: 220 20% 93%;         /* #e8eaf0 — gris-bleu cendré */
+    --foreground: 222 39% 11%;         /* #1a1f2e — quasi-noir bleuté */
+
+    --card: 0 0% 100%;                 /* #ffffff — cartes blanches qui ressortent */
+    --card-foreground: 222 39% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 39% 11%;
+
+    --primary: 217 91% 50%;            /* #2563eb — bleu légèrement saturé */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 88%;          /* #d4d8e2 — fond secondaire */
+    --secondary-foreground: 222 39% 20%;
+
+    --muted: 220 14% 86%;              /* #cdd2de */
+    --muted-foreground: 220 9% 42%;    /* #636878 — gris lisible */
+
+    --accent: 193 85% 36%;             /* #0891b2 — cyan foncé */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;          /* #dc2626 */
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 158 64% 30%;            /* #0d7a5a */
+    --success-foreground: 0 0% 100%;
+
+    --warning: 32 95% 40%;             /* #c97d0a */
+    --warning-foreground: 0 0% 100%;
+
+    --border: 220 13% 80%;             /* #c2c7d4 — bordures visibles */
+    --input: 0 0% 100%;
+    --ring: 217 91% 50%;
+
+    /* Sidebar plus sombre que le fond — hiérarchie claire */
+    --sidebar: 222 28% 20%;            /* #253148 — sidebar sombre même en light */
+    --sidebar-foreground: 213 31% 88%;
+    --sidebar-border: 222 28% 26%;
+    --sidebar-accent: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground;
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: hsl(var(--primary) / 0.3);
+  }
+}
+
+@layer utilities {
+  /* Status dot utility */
+  .status-dot {
+    @apply inline-block w-2 h-2 rounded-full;
+  }
+  .status-dot-online {
+    @apply bg-success shadow-[0_0_6px_hsl(var(--success))];
+  }
+  .status-dot-offline {
+    @apply bg-muted-foreground;
+  }
+  .status-dot-warning {
+    @apply bg-warning shadow-[0_0_6px_hsl(var(--warning))];
+  }
+  .status-dot-error {
+    @apply bg-destructive shadow-[0_0_6px_hsl(var(--destructive))];
+  }
+
+  /* Glass card */
+  .glass {
+    @apply bg-card/80 backdrop-blur-sm border border-border/50;
+  }
+
+  /* Mono text for hashes, IDs, code */
+  .mono {
+    @apply font-mono text-sm text-muted-foreground;
+  }
+}
+
+/* ─── Accent color overrides (data-accent on <html>) ───────────────────────── */
+/* Each block overrides --primary, --ring and --sidebar-accent only.            */
+/* All other tokens adapt automatically via Tailwind CSS variable references.   */
+
+:root,
+[data-accent="blue"] {
+  --primary: 217 91% 60%;
+  --primary-foreground: 222 47% 7%;
+  --ring: 217 91% 60%;
+  --sidebar-accent: 217 91% 60%;
+}
+
+[data-accent="cyan"] {
+  --primary: 193 95% 42%;
+  --primary-foreground: 222 47% 7%;
+  --ring: 193 95% 42%;
+  --sidebar-accent: 193 95% 42%;
+}
+
+[data-accent="green"] {
+  --primary: 158 64% 40%;
+  --primary-foreground: 222 47% 7%;
+  --ring: 158 64% 40%;
+  --sidebar-accent: 158 64% 40%;
+}
+
+[data-accent="amber"] {
+  --primary: 38 92% 50%;
+  --primary-foreground: 222 47% 7%;
+  --ring: 38 92% 50%;
+  --sidebar-accent: 38 92% 50%;
+}
+
+[data-accent="violet"] {
+  --primary: 258 90% 66%;
+  --primary-foreground: 222 47% 7%;
+  --ring: 258 90% 66%;
+  --sidebar-accent: 258 90% 66%;
+}
+
+[data-accent="rose"] {
+  --primary: 351 95% 60%;
+  --primary-foreground: 210 40% 98%;
+  --ring: 351 95% 60%;
+  --sidebar-accent: 351 95% 60%;
+}
+
+/* ─── Compact density ────────────────────────────────────────────────────────── */
+[data-density="compact"] {
+  --radius: 0.375rem;
+}
+[data-density="compact"] .card-content,
+[data-density="compact"] [class*="CardContent"] {
+  padding: 0.875rem;
+}

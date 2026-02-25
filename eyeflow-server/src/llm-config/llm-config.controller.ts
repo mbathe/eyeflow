@@ -117,6 +117,27 @@ export class LlmConfigController {
   }
 
   /**
+   * GET /llm-config/for-service
+   * Endpoint interne pour le service LLM Python.
+   * Retourne TOUTES les configurations avec clés API déchiffrées.
+   * @Public() — pas de JWT, authentifié uniquement par X-User-ID
+   */
+  @Public()
+  @Get('for-service')
+  @ApiOperation({
+    summary: '[Internal] All LLM configs resolved for LLM service',
+    description:
+      'Returns all LLM agent configs with decrypted API keys. ' +
+      'For internal use by eyeflow-llm-service only.',
+  })
+  @ApiOkResponse({ description: 'Array of resolved LLM agent configs' })
+  async forService(@Headers() headers: any): Promise<Record<string, any>[]> {
+    // Accept any X-User-ID string (not just UUID) for service-to-service calls
+    const userId = (headers['x-user-id'] as string) || 'service';
+    return this.llmConfigService.resolveForService(userId);
+  }
+
+  /**
    * GET /llm-config/:id
    * Récupérer une configuration spécifique
    */
@@ -141,10 +162,10 @@ export class LlmConfigController {
   }
 
   /**
-   * PUT /llm-config/:id
+   * PATCH /llm-config/:id
    * Mettre à jour une configuration
    */
-  @Put(':id')
+  @Patch(':id')
   @ApiOperation({
     summary: 'Update LLM configuration',
     description: 'Update LLM configuration parameters like temperature, max tokens, etc.',

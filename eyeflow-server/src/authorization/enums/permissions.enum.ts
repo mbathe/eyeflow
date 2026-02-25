@@ -53,6 +53,11 @@ export enum Permission {
   KAFKA_PRODUCE     = 'kafka:produce',
   KAFKA_MANAGE      = 'kafka:manage',
 
+  // ── Suggestions (Proactive AI) ─────────────────────────────────────────
+  SUGGESTIONS_READ   = 'suggestions:read',
+  SUGGESTIONS_CREATE = 'suggestions:create',
+  SUGGESTIONS_DECIDE = 'suggestions:decide',
+
   // ── Admin ────────────────────────────────────────────────────────────────
   ADMIN_SYSTEM      = 'admin:system',
 }

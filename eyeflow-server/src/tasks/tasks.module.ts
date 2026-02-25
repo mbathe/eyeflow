@@ -2,10 +2,13 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 // CompilerModule provides WorkflowRuntimeDeploymentService (W2/W3 deployment bridge)
 import { CompilerModule } from '../compiler/compiler.module';
+import { ConnectorsModule } from '../connectors/connectors.module';
+import { LlmConfigModule } from '../llm-config/llm-config.module';
 
 // Entities
 import { GlobalTaskEntity } from './entities/global-task.entity';
 import { EventRuleEntity } from './entities/event-rule.entity';
+import { RuleReportEntity } from './entities/rule-report.entity';
 import { EventRuleExtendedEntity } from './entities/event-rule-extended.entity';
 import { MissionEntity } from './entities/mission.entity';
 import { GlobalTaskStateEntity } from './entities/task-state.entity';
@@ -38,6 +41,7 @@ import { LLMProjectService } from './services/llm-project.service';
 import { LLMProjectExecutionService } from './services/llm-project-execution.service';
 import { AuditQueryService } from './services/audit-query.service';
 import { VersionLifecycleService } from './services/version-lifecycle.service';
+import { LlmAgentSelectorService } from './services/llm-agent-selector.service';
 
 // Providers
 import { AnalyticsProvider } from './services/analytics.provider';
@@ -58,6 +62,7 @@ import { AuditController } from './controllers/audit.controller';
     TypeOrmModule.forFeature([
       GlobalTaskEntity,
       EventRuleEntity,
+      RuleReportEntity,
       EventRuleExtendedEntity,
       MissionEntity,
       GlobalTaskStateEntity,
@@ -74,6 +79,10 @@ import { AuditController } from './controllers/audit.controller';
     WorkflowModule,
     // Gives access to WorkflowRuntimeDeploymentService (deployment bridge W2/W3)
     CompilerModule,
+    // Provides ConnectorsService so LLMContextBuilderService can read user connector instances
+    ConnectorsModule,
+    // Provides LlmConfigService so LLMContextBuilderService can read user LLM agents
+    LlmConfigModule,
   ],
   providers: [
     // Core LLM & Validation
@@ -130,6 +139,8 @@ import { AuditController } from './controllers/audit.controller';
     AuditQueryService,
     // Version lifecycle state machine (spec §11)
     VersionLifecycleService,
+    // Selects best LLM agent for a given task type
+    LlmAgentSelectorService,
   ],
   controllers: [TasksController, LLMSessionsController, ProjectsController, AuditController],
   exports: [
@@ -151,6 +162,7 @@ import { AuditController } from './controllers/audit.controller';
     CompilationProgressGateway,
     AuditQueryService,
     VersionLifecycleService,
+    LlmAgentSelectorService,
     TypeOrmModule,
   ],
 })

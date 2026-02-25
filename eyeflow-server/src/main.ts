@@ -59,7 +59,8 @@ async function bootstrap() {
   });
 
   const port = process.env.PORT || 3000;
-  const host = process.env.HOST || '0.0.0.0';
+  // Use SERVER_HOST to avoid collision with conda's HOST build-triplet env var
+  const host = process.env.SERVER_HOST || process.env.BIND_HOST || '0.0.0.0';
 
   await app.listen(port, host, () => {
     console.log(`

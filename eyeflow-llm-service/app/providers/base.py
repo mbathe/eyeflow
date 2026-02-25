@@ -238,57 +238,99 @@ Always follow these enterprise patterns:
 
 ## 📝 REQUIRED RESPONSE FORMAT
 
-Generate workflow rules as valid JSON matching this schema:
+Generate workflow rules as valid JSON matching this schema.
+
+**CRITICAL**: Every rule MUST include BOTH:
+1. `compilation` — the technical JSON for execution by the engine
+2. `display` — the human-readable visualization block (natural language, no jargon)
 
 {{
   "workflow_name": "descriptive-kebab-case-name",
   "description": "Clear description of what this workflow does",
   "version": "1.0.0",
-  "trigger": "ON_WORKFLOW_START",  // Must be from triggerTypes list
   "rules": [
     {{
       "name": "rule-1-descriptive-name",
       "description": "What this rule does",
-      "condition": "($trigger.priority == high) AND ($workflow_state.status == running)",
-      "then": [
-        {{
-          "action": "EXECUTE_STEP",  // Must be from actionTypes list
-          "params": {{
-            // ONLY use parameters shown in actionTypes specification
-            "step_name": "validate_resources",
-            "timeout_seconds": 60,
-            "on_failure": "retry"
-          }}
-        }},
-        {{
-          "action": "ALERT_ON_ANOMALY",
-          "params": {{
-            "severity": "high",
-            "notification_channels": ["email", "slack"]
-          }}
-        }}
-      ],
-      "resilience": {{
-        "retry": {{
-          "max_attempts": 3,
-          "backoff_factor": 2,
-          "on_errors": ["timeout", "connection_error"]
-        }},
-        "timeout_seconds": 300,
-        "fallback_action": "escalate"
-      }},
-      "compensation": {{
-        "enabled": true,
+
+      "display": {{
+        "title": "Titre court compréhensible par tous (max 8 mots)",
+        "summary": "Une phrase claire décrivant ce que fait cette règle, sans jargon technique.",
+        "trigger_label": "Ce qui déclenche l'action en langage naturel",
+        "data_flow": "Source de données → Traitement → Destination finale",
         "steps": [
           {{
-            "action": "EXECUTE_COMPENSATION",
-            "params": {{
-              "compensation_steps": [
-                {{"name": "revert_changes", "connector": "db"}}
-              ]
+            "type": "trigger",
+            "label": "Déclencheur clair",
+            "detail": "Description précise de ce qui se passe à cette étape"
+          }},
+          {{
+            "type": "sensor",
+            "label": "Capteur / Collecte",
+            "detail": "Quelle donnée est lue, depuis quelle source"
+          }},
+          {{
+            "type": "decision",
+            "label": "Vérification de condition",
+            "condition_natural": "Si [valeur mesurée] [opérateur lisible] [seuil] [durée si applicable]",
+            "then_natural": "Alors : action principale à réaliser",
+            "else_natural": "Sinon : comportement par défaut"
+          }},
+          {{
+            "type": "action",
+            "label": "Action principale",
+            "detail": "Ce qui est exécuté concrètement (connecteur, canal, message)",
+            "connector": "nom-du-connecteur",
+            "on_error": "Que se passe-t-il en cas d'échec"
+          }},
+          {{
+            "type": "notification",
+            "label": "Notification finale",
+            "detail": "Canal et contenu du message envoyé",
+            "connector": "slack"
+          }}
+        ],
+        "constraints": [
+          "Contrainte 1 en langage naturel",
+          "Contrainte 2 (ex: Tentatives max : 3, puis escalade)"
+        ]
+      }},
+
+      "compilation": {{
+        "trigger": {{
+          "type": "ON_SCHEDULE",
+          "config": {{ "cronExpression": "0 0/5 * * * ?" }}
+        }},
+        "conditions": [
+          {{
+            "type": "SIMPLE",
+            "config": {{
+              "connector": "postgres",
+              "node": "SensorReadings",
+              "field": "voltage",
+              "operator": "GT",
+              "value": 240
             }}
           }}
-        ]
+        ],
+        "actions": [
+          {{
+            "type": "CONNECTOR_CALL",
+            "config": {{
+              "connector": "slack",
+              "function": "sendMessage",
+              "params": {{
+                "channel": "alerts",
+                "text": "Voltage exceeded 240V at {{{{$event.timestamp}}}}"
+              }}
+            }}
+          }}
+        ],
+        "resilience": {{
+          "retry": {{ "max_attempts": 3, "backoff_factor": 2 }},
+          "timeout_seconds": 300,
+          "fallback_action": "escalate"
+        }}
       }}
     }}
   ],

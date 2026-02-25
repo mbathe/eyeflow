@@ -165,6 +165,35 @@ export class ConnectorsController {
   }
 
   /**
+   * POST /connectors/test-config
+   * Tester une config sans connecteur sauvegardé (pendant la création)
+   */
+  @Post('test-config')
+  @ApiOperation({
+    summary: 'Test connector config without saving',
+    description: 'Validate and test raw connector credentials before creating the connector',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', example: 'postgresql' },
+        config: { type: 'object', additionalProperties: true },
+      },
+      required: ['type', 'config'],
+    },
+  })
+  @ApiOkResponse({ description: 'Configuration test result' })
+  async testConfig(
+    @Body() body: { type: string; config: Record<string, any> },
+  ): Promise<ConnectorTestResponse> {
+    if (!body.type || !body.config) {
+      throw new BadRequestException('type and config are required');
+    }
+    return this.connectorsService.testConnectionByConfig(body.type, body.config);
+  }
+
+  /**
    * POST /connectors/:id/test
    * Tester la connexion avec un connecteur
    */

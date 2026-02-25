@@ -23,9 +23,11 @@ import { LoginDto } from './dto/login.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { UserRole } from '../authorization/enums/roles.enum';
 import { JwtPayload } from './strategies/jwt.strategy';
 import { GoogleProfile } from './strategies/google.strategy';
+import { UserPreferences, DEFAULT_PREFERENCES } from './entities/user.entity';
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_MINUTES = 15;
@@ -380,6 +382,25 @@ export class AuthService {
 
   private _generateToken(): string {
     return randomBytes(32).toString('hex');
+  }
+
+  // ── User Preferences ───────────────────────────────────────────────────
+
+  async getPreferences(userId: string): Promise<UserPreferences> {
+    const user = await this.userRepo.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    return user.preferences ?? DEFAULT_PREFERENCES;
+  }
+
+  async updatePreferences(
+    userId: string,
+    dto: UpdatePreferencesDto,
+  ): Promise<UserPreferences> {
+    const user = await this.userRepo.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    user.preferences = { ...(user.preferences ?? DEFAULT_PREFERENCES), ...dto };
+    await this.userRepo.save(user);
+    return user.preferences;
   }
 
   async _issueTokens(user: UserEntity) {

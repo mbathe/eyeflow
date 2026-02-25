@@ -360,6 +360,7 @@ export interface ConnectorTestResponse {
   message: string;
   latency?: number;
   error?: string;
+  details?: Record<string, unknown>;
 }
 
 /**

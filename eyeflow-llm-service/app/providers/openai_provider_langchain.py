@@ -239,31 +239,9 @@ class OpenAIProviderLangChain(ILLMProvider):
         return 2000  # Placeholder for OpenAI
 
     def _build_system_prompt(self, context: Dict[str, Any]) -> str:
-        """Build comprehensive system prompt from aggregated context"""
-        base = f"""You are an expert workflow automation system.
-Your task is to generate production-ready workflow rules from user intents.
-
-Available context:
-- Conditions: {len(context.get('conditions', []))} types available
-- Actions: {len(context.get('actions', []))} types available
-- Variables: {len(context.get('variables', []))} available
-- Triggers: {len(context.get('triggers', []))} types available
-- Patterns: {len(context.get('patterns', []))} patterns available
-
-CRITICAL REQUIREMENTS:
-1. Generate ONLY valid JSON matching the GeneratedRules schema
-2. Each rule must have clear trigger, conditions, and actions
-3. Use variable types and action types from available context
-4. Set priority between 0-1000 based on importance
-5. Ensure all rules are production-ready and can be executed
-
-BEST PRACTICES:
-- Keep rule names short and descriptive
-- One trigger per rule
-- Multiple conditions are OR'd together
-- Actions are executed sequentially
-- Always set a meaningful priority level"""
-
-        if self._system_prompt_prefix:
-            return f"{self._system_prompt_prefix}\n\n{base}"
-        return base
+        """Build rich system prompt injecting ALL available capabilities from NestJS context."""
+        # Reuse Anthropic's prompt builder (identical logic) via composition
+        from .anthropic_provider_langchain import AnthropicProviderLangChain
+        tmp = AnthropicProviderLangChain.__new__(AnthropicProviderLangChain)
+        tmp._system_prompt_prefix = self._system_prompt_prefix
+        return tmp._build_system_prompt(context)

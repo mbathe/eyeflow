@@ -9,6 +9,16 @@
             "date": 1771871669867,
             "name": "/home/paul/codes/smart_eneo_server-main/eyeflow/eyeflow-server/logs/combined/combined-2026-02-23.log",
             "hash": "bf32796655c46bd0f848008c3955b4ee492361de878c9d3d1324b3ae9ce7fe99"
+        },
+        {
+            "date": 1771890151031,
+            "name": "/home/paul/codes/smart_eneo_server-main/eyeflow/eyeflow-server/logs/combined/combined-2026-02-24.log",
+            "hash": "67229279d3a71a3028c06063af77c71db1597501ed136f1d49fc82eacd18bde3"
+        },
+        {
+            "date": 1771974083146,
+            "name": "/home/paul/codes/smart_eneo_server-main/eyeflow/eyeflow-server/logs/combined/combined-2026-02-25.log",
+            "hash": "57e3f2f94947ec8c573914f7fbdf14e4301ef8dc3ceaddc2b7dc50b445fbe321"
         }
     ],
     "hashType": "sha256"

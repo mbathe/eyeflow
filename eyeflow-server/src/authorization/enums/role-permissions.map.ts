@@ -19,6 +19,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.NODES_READ, Permission.NODES_MANAGE,
     Permission.KAFKA_READ, Permission.KAFKA_PRODUCE, Permission.KAFKA_MANAGE,
     Permission.USERS_READ,
+    Permission.SUGGESTIONS_READ, Permission.SUGGESTIONS_CREATE, Permission.SUGGESTIONS_DECIDE,
   ],
 
   [UserRole.OPERATOR]: [
@@ -26,6 +27,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.LLM_CONFIG_READ,
     Permission.TASKS_READ, Permission.TASKS_CREATE, Permission.TASKS_EXECUTE,
     Permission.RULES_READ, Permission.RULES_CREATE, Permission.RULES_UPDATE,
+    Permission.SUGGESTIONS_READ, Permission.SUGGESTIONS_CREATE, Permission.SUGGESTIONS_DECIDE,
     Permission.SERVICES_READ,
     Permission.AGENTS_READ,
     Permission.AUDIT_READ,
@@ -43,5 +45,6 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.AUDIT_READ,
     Permission.NODES_READ,
     Permission.KAFKA_READ,
+    Permission.SUGGESTIONS_READ,
   ],
 };

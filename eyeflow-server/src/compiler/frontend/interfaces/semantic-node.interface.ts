@@ -76,13 +76,21 @@ export interface SemanticTree {
   // Input variables from user
   inputs: Map<string, VariableDeclaration>;
 
+  // Conversation/discussion history for restoring chat context
+  conversationHistory?: ConversationEntry[];
+
   // Metadata about the tree
   metadata: {
     name: string;
     description?: string;
     createdAt: Date;
+    updatedAt?: Date;
     parserVersion: string;
     source: 'natural_language' | 'json' | 'api';
+    /** Whether the name was auto-generated or set by user */
+    isAutoNamed?: boolean;
+    /** The workflow rule ID this tree is linked to (for navigation from Automations) */
+    workflowRuleId?: string;
   };
 }
 
@@ -110,6 +118,19 @@ export interface VariableDeclaration {
 }
 
 /**
+ * A single entry in the conversation/discussion history
+ * Used to restore chat context when navigating back to Analysis & AI
+ */
+export interface ConversationEntry {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: Date;
+  /** ID of the SemanticNode produced from this message, if any */
+  producedNodeId?: string;
+}
+
+/**
  * Parse result with diagnostics
  * Returned by NL Parser, consumed by error handling
  */
@@ -122,6 +143,8 @@ export interface ParseResult {
     parsingTime: number; // ms
     inputLength: number;
     nodeCount: number;
+    /** Suggested auto-generated name derived from the first user request */
+    suggestedWorkflowName?: string;
   };
 }
 

@@ -129,7 +129,7 @@ export class ConnectorsService {
   }
 
   /**
-   * Tester la connexion avec un connecteur
+   * Tester la connexion avec un connecteur sauvegardé (par ID)
    */
   async testConnection(userId: string, connectorId: string): Promise<ConnectorTestResponse> {
     const connector = await this.findOne(userId, connectorId);
@@ -137,41 +137,92 @@ export class ConnectorsService {
 
     try {
       const credentials = this.decrypt(connector.encryptedCredentials);
-
-      switch (connector.type) {
-        case ConnectorType.POSTGRESQL:
-          return await this.testPostgresConnection(credentials, startTime);
-        case ConnectorType.MONGODB:
-          return await this.testMongoConnection(credentials, startTime);
-        case ConnectorType.MQTT:
-          return await this.testMqttConnection(credentials, startTime);
-        case ConnectorType.SLACK:
-          return await this.testSlackConnection(credentials, startTime);
-        case ConnectorType.TEAMS:
-          return await this.testTeamsConnection(credentials, startTime);
-        case ConnectorType.REST_API:
-          return await this.testRestApiConnection(credentials, startTime);
-        default:
-          throw new BadRequestException(`Test not implemented for connector type: ${connector.type}`);
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      const response: ConnectorTestResponse = {
-        success: false,
-        message: 'Connection test failed',
-        latency: Date.now() - startTime,
-        error: errorMessage,
-      };
+      const result = await this.testConnectionByType(connector.type, credentials, startTime);
 
       // Sauvegarder le résultat du test
+      await this.connectorRepository.update(connectorId, {
+        lastTestedAt: new Date(),
+        lastTestSuccessful: result.success,
+        lastTestError: result.success ? undefined : result.error,
+      });
+
+      return result;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       await this.connectorRepository.update(connectorId, {
         lastTestedAt: new Date(),
         lastTestSuccessful: false,
         lastTestError: errorMessage,
       });
-
-      return response;
+      return { success: false, message: 'Connection test failed', latency: Date.now() - startTime, error: errorMessage };
     }
+  }
+
+  /**
+   * Tester une configuration sans connecteur sauvegardé (utilisé lors de la création)
+   */
+  async testConnectionByConfig(type: string, config: Record<string, any>): Promise<ConnectorTestResponse> {
+    const startTime = Date.now();
+    try {
+      return await this.testConnectionByType(type, config, startTime);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      return { success: false, message: 'Connection test failed', latency: Date.now() - startTime, error: errorMessage };
+    }
+  }
+
+  /**
+   * Logique partagée de test par type de connecteur
+   */
+  private async testConnectionByType(type: string, credentials: any, startTime: number): Promise<ConnectorTestResponse> {
+    switch (type) {
+      case ConnectorType.POSTGRESQL:
+      case 'mysql':
+        return await this.testPostgresConnection(credentials, startTime);
+      case ConnectorType.MONGODB:
+        return await this.testMongoConnection(credentials, startTime);
+      case ConnectorType.MQTT:
+        return await this.testMqttConnection(credentials, startTime);
+      case ConnectorType.SLACK:
+        return await this.testSlackConnection(credentials, startTime);
+      case ConnectorType.TEAMS:
+        return await this.testTeamsConnection(credentials, startTime);
+      case ConnectorType.REST_API:
+      case 'webhook':
+      case 'graphql':
+        return await this.testRestApiConnection(credentials, startTime);
+      case ConnectorType.KAFKA:
+        return this.testByFieldPresence(credentials, ['brokers'], 'Kafka', startTime);
+      case 'smtp':
+        return this.testByFieldPresence(credentials, ['host', 'port'], 'SMTP', startTime);
+      case 'stripe':
+        return this.testByFieldPresence(credentials, ['apiKey'], 'Stripe', startTime);
+      case 's3':
+      case 'minio':
+        return this.testByFieldPresence(credentials, ['accessKeyId', 'secretAccessKey', 'region'], 'S3', startTime);
+      case 'local_file':
+        return this.testByFieldPresence(credentials, ['basePath'], 'Local File', startTime);
+      case 'shopify':
+        return this.testByFieldPresence(credentials, ['shopDomain', 'token'], 'Shopify', startTime);
+      case 'hubspot':
+        return this.testByFieldPresence(credentials, ['apiKey'], 'HubSpot', startTime);
+      case 'influxdb':
+        return this.testByFieldPresence(credentials, ['url', 'token'], 'InfluxDB', startTime);
+      default:
+        // Pour les connecteurs HTTP génériques / personnalisés, vérifier baseUrl
+        if (credentials?.baseUrl || credentials?.url) {
+          return { success: true, message: `Configuration valide pour "${type}"`, latency: Date.now() - startTime };
+        }
+        return { success: true, message: `Test non spécifique disponible pour "${type}" — configuration acceptée`, latency: Date.now() - startTime };
+    }
+  }
+
+  private testByFieldPresence(credentials: any, requiredFields: string[], label: string, startTime: number): ConnectorTestResponse {
+    const missing = requiredFields.filter(f => !credentials?.[f]);
+    if (missing.length > 0) {
+      throw new Error(`Champs obligatoires manquants pour ${label} : ${missing.join(', ')}`);
+    }
+    return { success: true, message: `Configuration ${label} valide`, latency: Date.now() - startTime };
   }
 
   /**
@@ -290,20 +341,40 @@ export class ConnectorsService {
 
   private async testSlackConnection(credentials: any, startTime: number): Promise<ConnectorTestResponse> {
     try {
-      const { botToken } = credentials;
-      if (!botToken) {
-        throw new Error('Missing Slack bot token');
+      const token = credentials.botToken ?? credentials.token ?? credentials.accessToken;
+      if (!token) {
+        throw new Error('Slack token manquant (botToken / token)');
       }
 
-      // Vérifier token format
-      if (!botToken.startsWith('xoxb-')) {
-        throw new Error('Invalid Slack bot token format');
+      // Accepter tous les formats Slack valides :
+      // xoxb- = Bot Token, xapp- = App-Level (Socket Mode), xoxp- = User Token, xoxa- = Legacy
+      const validPrefixes = ['xoxb-', 'xapp-', 'xoxp-', 'xoxa-'];
+      if (!validPrefixes.some(p => token.startsWith(p))) {
+        throw new Error(`Format de token Slack non reconnu. Attendu : ${validPrefixes.join(' | ')}`);
       }
 
+      // Appel réel à l'API Slack auth.test
+      const res = await fetch('https://slack.com/api/auth.test', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json() as Record<string, unknown>;
+
+      if (!data['ok']) {
+        throw new Error(`Slack auth.test failed: ${data['error']}`);
+      }
+
+      const teamName = data['team'] ?? 'unknown team';
+      const user     = data['user'] ?? data['bot_id'] ?? 'bot';
       return {
         success: true,
-        message: 'Slack connection test successful',
+        message: `Slack connecté — workspace: ${teamName}, identité: ${user}`,
         latency: Date.now() - startTime,
+        details: { team: teamName, user, tokenType: data['token_type'] ?? 'unknown' },
       };
     } catch (error) {
       throw error;

@@ -243,8 +243,8 @@ export class EventRuleResponseDto {
   @ApiPropertyOptional({ description: 'Source connector instance' })
   sourceConnectorId?: string;
 
-  @ApiProperty({ description: 'Condition definition' })
-  condition!: Record<string, any>;
+  @ApiPropertyOptional({ description: 'Condition definition (null = always trigger)' })
+  condition?: Record<string, any> | null;
 
   @ApiProperty({ description: 'Actions to execute' })
   actions!: Record<string, any>[];
@@ -254,6 +254,18 @@ export class EventRuleResponseDto {
 
   @ApiPropertyOptional({ description: 'Last trigger timestamp' })
   lastTriggeredAt?: Date;
+
+  @ApiPropertyOptional({ description: 'Next scheduled check' })
+  nextScheduledCheckAt?: Date;
+
+  @ApiPropertyOptional({ description: 'Last N execution records' })
+  executionLogs?: Array<{
+    ts: string;
+    status: 'success' | 'error' | 'skipped';
+    durationMs: number;
+    message: string;
+    triggeredBy: 'manual' | 'schedule' | 'event';
+  }>;
 
   @ApiProperty({ description: 'Rule creation timestamp' })
   createdAt!: Date;

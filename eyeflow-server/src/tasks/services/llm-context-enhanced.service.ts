@@ -4,6 +4,7 @@ import {
   ILLMContextProvider,
   LLMContextProviderRegistry,
 } from './llm-context-provider.interface';
+import { GLOBAL_SERVICE_MANIFEST } from '../../compiler/manifest';
 
 /**
  * ENRICHED LLM Context Service
@@ -1212,6 +1213,17 @@ export class LLMContextEnhancedService {
         totalContextVariables: Object.values(allContextVars).flat().length,
         totalTriggerTypes: Object.values(allTriggers).flat().length,
       },
+
+      // 🆕 Services manifest (WASM, MCP, Docker, Native services available for rules/tasks)
+      servicesManifest: GLOBAL_SERVICE_MANIFEST.map(s => ({
+        id: s.id,
+        name: s.name,
+        version: s.version,
+        format: s.format,
+        description: s.description,
+        inputs: s.inputs,
+        outputs: s.outputs,
+      })),
     };
   }
 

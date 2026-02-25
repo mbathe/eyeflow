@@ -196,16 +196,34 @@ class ConstrainedGenerationService:
         """
         Extract valid connector IDs, action types, and trigger sources
         from the NestJS aggregated context.
+        Healthy vs unhealthy connectors are tracked separately so the
+        constraint preamble can warn the LLM about unavailable resources.
         """
-        connector_ids: Set[str] = set()
+        connector_ids: Set[str] = set()         # all registered
+        healthy_connector_ids: Set[str] = set() # status == connected/healthy
+        unhealthy_connector_ids: Set[str] = set()
         action_types: Set[str] = set()
         trigger_sources: Set[str] = set()
 
-        # Connectors
+        # Connectors — track health per connector
         for conn in context.get("connectors", []):
             cid = conn.get("id") or conn.get("connector_id") or conn.get("name", "")
-            if cid:
-                connector_ids.add(str(cid))
+            if not cid:
+                continue
+            cid = str(cid)
+            connector_ids.add(cid)
+
+            # Determine health: isHealthy bool OR status string
+            is_healthy = conn.get("isHealthy")
+            status = (conn.get("status") or "").lower()
+            if is_healthy is True or status in ("connected", "active", "ok", "healthy"):
+                healthy_connector_ids.add(cid)
+            elif is_healthy is False or status in ("disconnected", "error", "unavailable", "offline"):
+                unhealthy_connector_ids.add(cid)
+            else:
+                # Status unknown — considered available but flagged
+                healthy_connector_ids.add(cid)
+
             for fn in conn.get("functions", []) or conn.get("actions", []) or []:
                 fname = fn.get("id") or fn.get("name") or fn.get("function_id", "")
                 if fname:
@@ -228,6 +246,8 @@ class ConstrainedGenerationService:
 
         return {
             "connector_ids": connector_ids,
+            "healthy_connector_ids": healthy_connector_ids,
+            "unhealthy_connector_ids": unhealthy_connector_ids,
             "action_types": action_types,
             "trigger_sources": trigger_sources,
         }
@@ -241,9 +261,16 @@ class ConstrainedGenerationService:
         Build the constraint preamble injected at the TOP of the system prompt.
         Strength increases with attempt number (§3.3 progressive tightening).
         """
+        healthy = self._allowlist["healthy_connector_ids"]
+        unhealthy = self._allowlist["unhealthy_connector_ids"]
         connector_list = "\n".join(
-            f"  - {cid}" for cid in sorted(self._allowlist["connector_ids"])
-        ) or "  (none registered)"
+            f"  ✅ {cid}" for cid in sorted(healthy)
+        )
+        if unhealthy:
+            connector_list += "\n" + "\n".join(
+                f"  ❌ {cid}  ← UNAVAILABLE (do NOT use)" for cid in sorted(unhealthy)
+            )
+        connector_list = connector_list or "  (none registered)"
 
         action_list = "\n".join(
             f"  - {a}" for a in sorted(self._allowlist["action_types"])
@@ -358,6 +385,12 @@ No markdown. No prose. Raw JSON only.
                         "field": "action.payload.connector",
                         "value": connector,
                         "message": f"Connector '{connector}' not registered",
+                    })
+                elif connector and self._allowlist.get("unhealthy_connector_ids") and connector in self._allowlist["unhealthy_connector_ids"]:
+                    violations.append({
+                        "field": "action.payload.connector",
+                        "value": connector,
+                        "message": f"Connector '{connector}' is registered but currently UNAVAILABLE",
                     })
 
         return violations

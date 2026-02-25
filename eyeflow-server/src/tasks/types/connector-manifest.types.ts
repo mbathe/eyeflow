@@ -407,8 +407,39 @@ export interface LLMContext {
 
   // User's available connectors (instances they own)
   userConnectors: Array<{
+    /** maps to ConnectorManifest.id, e.g. 'postgres', 'slack' */
     connectorId: string;
+    /** DB primary key (UUID) */
     instanceId: string;
+    /** User-defined name, e.g. "prod-db" or "slack-alerts" */
+    instanceName: string;
+    /** active | inactive | error | testing */
+    status: string;
+    /** ConnectorType enum value, e.g. 'postgresql' */
+    type: string;
+  }>;
+
+  /**
+   * User's configured LLM agents.
+   * The rule generation engine uses this to select the best LLM for each task.
+   * Each entry carries skill tags, task affinities and the system prompt so the
+   * compiler can route tasks (rule generation, DAG compilation, code gen…)
+   * to the most capable available model.
+   */
+  userLlmAgents?: Array<{
+    configId: string;
+    name: string;
+    description?: string;
+    provider: string;
+    model: string;
+    isDefault: boolean;
+    skills: string[];
+    taskAffinities: Array<{ taskType: string; score: number }>;
+    systemPrompt?: string;
+    temperature: number;
+    maxTokens: number;
+    responseFormat?: string;
+    contextWindow?: number;
   }>;
 
   // System capabilities

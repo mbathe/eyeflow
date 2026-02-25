@@ -3,6 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  UpdateDateColumn,
   Index,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
@@ -57,17 +58,23 @@ export class EventRuleEntity {
   // CONDITION DEFINITION (The "IF" clause)
   // ==========================================
 
-  @ApiProperty({ type: Object })
-  @Column({ type: 'jsonb' })
-  condition!: Condition;
+  @ApiProperty({ type: Object, required: false })
+  @Column({ type: 'jsonb', nullable: true, default: null })
+  condition?: Condition | null;
 
   // ==========================================
   // ACTIONS (The "THEN" clause)
   // ==========================================
 
-  @ApiProperty({ type: [String] })
-  @Column({ type: 'text', array: true })
-  actions!: string[];
+  @ApiProperty({ type: [Object] })
+  @Column({ type: 'jsonb', default: '[]' })
+  actions!: Array<{
+    name: string;
+    channel?: string;
+    recipients?: string[];
+    params?: Record<string, any>;
+    parameters?: Record<string, any>;
+  }>;
 
   // ==========================================
   // DEBOUNCE CONFIGURATION (Prevent spam)
@@ -97,6 +104,10 @@ export class EventRuleEntity {
   createdAt!: Date;
 
   @ApiProperty()
+  @UpdateDateColumn()
+  updatedAt!: Date;
+
+  @ApiProperty()
   @Column({ type: 'integer', default: 0 })
   totalTriggers!: number;
 
@@ -107,4 +118,15 @@ export class EventRuleEntity {
   @ApiProperty()
   @Column({ type: 'timestamp', nullable: true })
   nextScheduledCheckAt?: Date;
+
+  /** Last N execution records stored inline **/
+  @ApiProperty({ type: [Object] })
+  @Column({ type: 'jsonb', default: '[]', nullable: true })
+  executionLogs?: Array<{
+    ts: string;
+    status: 'success' | 'error' | 'skipped';
+    durationMs: number;
+    message: string;
+    triggeredBy: 'manual' | 'schedule' | 'event';
+  }>;
 }

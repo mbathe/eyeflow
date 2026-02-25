@@ -12,6 +12,28 @@ import {
 import * as bcrypt from 'bcrypt';
 import { UserRole } from '../../authorization/enums/roles.enum';
 
+export interface UserPreferences {
+  themeMode: 'dark' | 'light';
+  accentColor: 'blue' | 'cyan' | 'green' | 'amber' | 'violet' | 'rose';
+  density: 'comfortable' | 'compact';
+  language: 'fr' | 'en';
+  emailNotifications: boolean;
+  browserNotifications: boolean;
+  sidebarCollapsed: boolean;
+  showWelcomeBanner: boolean;
+}
+
+export const DEFAULT_PREFERENCES: UserPreferences = {
+  themeMode: 'dark',
+  accentColor: 'cyan',
+  density: 'comfortable',
+  language: 'fr',
+  emailNotifications: true,
+  browserNotifications: false,
+  sidebarCollapsed: false,
+  showWelcomeBanner: true,
+};
+
 @Entity('users')
 export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -102,6 +124,11 @@ export class UserEntity {
   @Column({ type: 'varchar', length: 512, nullable: true })
   avatarUrl!: string | null;
 
+  // ── User preferences ─────────────────────────────────────────────────────
+
+  @Column({ type: 'jsonb', nullable: true, default: null })
+  preferences!: UserPreferences | null;
+
   // ── Computed helpers ──────────────────────────────────────────────────────
 
   /** Returns true if the account is currently locked */
@@ -138,6 +165,7 @@ export class UserEntity {
       emailVerified: this.emailVerified,
       avatarUrl: this.avatarUrl,
       isLocked: this.isLocked,
+      preferences: this.preferences ?? DEFAULT_PREFERENCES,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     };

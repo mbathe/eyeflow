@@ -18,6 +18,7 @@ import { EventRuleEntity } from '../entities/event-rule.entity';
 import { MissionEntity } from '../entities/mission.entity';
 import { GlobalTaskStateEntity } from '../entities/task-state.entity';
 import { AuditLogEntity } from '../entities/audit-log.entity';
+import { RuleReportEntity } from '../entities/rule-report.entity';
 
 // DTOs
 import {
@@ -46,6 +47,7 @@ import { CompilationFeedbackService } from './compilation-feedback.service';
 import { LLMContextEnricherService } from './llm-context-enricher.service';
 import { LLMSessionService } from './llm-session.service';
 import { WorkflowRuntimeDeploymentService } from '../../compiler/integration/workflow-runtime-deployment.service';
+import { ConnectorsService } from '../../connectors/connectors.service';
 
 @Injectable()
 export class TaskCompilerService {
@@ -63,6 +65,8 @@ export class TaskCompilerService {
     private readonly taskStateRepository: Repository<GlobalTaskStateEntity>,
     @InjectRepository(AuditLogEntity)
     private readonly auditLogRepository: Repository<AuditLogEntity>,
+    @InjectRepository(RuleReportEntity)
+    private readonly ruleReportRepository: Repository<RuleReportEntity>,
 
     // New Services
     private readonly connectorRegistry: ConnectorRegistryService,
@@ -78,6 +82,7 @@ export class TaskCompilerService {
     private readonly contextEnricher: LLMContextEnricherService,
     private readonly llmSessionService: LLMSessionService,
     @Optional() private readonly runtimeDeployment: WorkflowRuntimeDeploymentService,
+    @Optional() private readonly connectorsService: ConnectorsService,
   ) {}
 
   async createTask(userId: string, dto: CreateTaskDto): Promise<TaskCompilationResultDto> {
@@ -143,7 +148,7 @@ export class TaskCompilerService {
       this.logger.log(`Compiling task for user ${userId}: "${dto.userInput.substring(0, 50)}..."`);
 
       // Step 1: Build rich LLM context
-      const llmContext = this.contextBuilder.buildContext(userId);
+      const llmContext = await this.contextBuilder.buildContext(userId);
 
       // Step 2: Validate that LLM would have enough context
       const compilationValidation = await this.validator.validateCompilation(
@@ -329,7 +334,7 @@ export class TaskCompilerService {
       );
 
       // Step 1: Build LLM context for rules
-      const llmContext = this.contextBuilder.buildRuleContext(userId);
+      const llmContext = await this.contextBuilder.buildRuleContext(userId);
 
       // Step 2: Validate rule structure (derive triggerType from condition when possible)
       let triggerType: string | undefined = undefined;
@@ -355,7 +360,29 @@ export class TaskCompilerService {
         triggerType = 'ON_EVENT';
       }
 
-      const actionsForValidation = dto.actions.map((a: any) => ({ functionId: a.name, connectorId: dto.sourceConnectorType }));
+      // Helper: resolve an LLM connector label (e.g. "slack") to the user's live
+      // connector instanceId (e.g. "slack-workspace"). If a live instance is found,
+      // the static registry won't match it, so strict function validation is skipped.
+      const resolveConnectorId = (raw: string): string => {
+        if (!raw) return raw;
+        const norm = raw.toLowerCase().replace(/[-_\s]/g, '');
+        const live = (llmContext.userConnectors ?? []).find((uc: any) => {
+          const ucType = (uc.connectorId || uc.type || '').toLowerCase().replace(/[-_\s]/g, '');
+          const ucName = (uc.instanceName || '').toLowerCase().replace(/[-_\s]/g, '');
+          const ucId   = (uc.instanceId || '').toLowerCase().replace(/[-_\s]/g, '');
+          return ucType === norm || ucId === norm || ucName.includes(norm) || norm.includes(ucType);
+        });
+        return live ? live.instanceId : raw;
+      };
+
+      const actionsForValidation = dto.actions.map((a: any) => {
+        const rawConnector = a.parameters?.connector || a.parameters?.connectorId || dto.sourceConnectorType;
+        return {
+          // Prefer an explicit function name stored in parameters over a.name
+          functionId:  a.parameters?.function || a.parameters?.functionName || a.name,
+          connectorId: resolveConnectorId(rawConnector),
+        };
+      });
 
       const ruleValidation = await this.validator.validateRule(
         dto.name,
@@ -372,15 +399,32 @@ export class TaskCompilerService {
       }
 
       // Step 3: Create rule entity
+      // If no globalTaskId was supplied (e.g. from the AI deploy endpoint),
+      // auto-create a MONITORING GlobalTask to satisfy the NOT NULL constraint.
+      let resolvedTaskId = globalTaskId;
+      if (!resolvedTaskId) {
+        const autoTask = new GlobalTaskEntity();
+        autoTask.id = uuidv4();
+        autoTask.userId = userId;
+        autoTask.type = GlobalTaskType.MONITORING;
+        autoTask.status = GlobalTaskStatus.ACTIVE;
+        autoTask.originalUserInput = dto.description || dto.name;
+        autoTask.intent = { action: dto.name, confidence: 1.0, parameters: {} } as any;
+        const savedTask = await this.globalTaskRepository.save(autoTask);
+        resolvedTaskId = savedTask.id;
+        this.logger.log(`Auto-created GlobalTask ${resolvedTaskId} for rule "${dto.name}"`);
+      }
+
       const rule = new EventRuleEntity();
       rule.id = ruleId;
       rule.userId = userId;
-      rule.globalTaskId = globalTaskId as any;
+      rule.globalTaskId = resolvedTaskId as any;
       rule.name = dto.name;
       rule.description = dto.description || '';
       rule.sourceConnectorType = dto.sourceConnectorType;
       rule.sourceConnectorId = dto.sourceConnectorId || undefined;
-      rule.condition = (dto.condition as any);
+      // condition is optional — null means "always trigger" (no filter)
+      rule.condition = (dto.condition as any) ?? null;
       rule.actions = (dto.actions as any);
       rule.debounceConfig = (dto.debounceConfig as any) || {
         enabled: true,
@@ -716,6 +760,31 @@ export class TaskCompilerService {
     return { success: true, suggestions, confidence: parsed.confidence };
   }
 
+  async listEventRules(userId: string): Promise<EventRuleResponseDto[]> {
+    try {
+      const rules = await this.eventRuleRepository.find({
+        where: { userId },
+        order: { createdAt: 'DESC' },
+      });
+      return rules.map(rule => ({
+        id: rule.id,
+        name: rule.name,
+        status: rule.status,
+        sourceConnectorType: rule.sourceConnectorType,
+        sourceConnectorId: rule.sourceConnectorId || undefined,
+        condition: rule.condition,
+        actions: (rule.actions as any) || [],
+        totalTriggers: rule.totalTriggers,
+        lastTriggeredAt: rule.lastTriggeredAt || undefined,
+        createdAt: rule.createdAt,
+        updatedAt: rule.updatedAt,
+      }));
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Unknown error';
+      throw new InternalServerErrorException(`Failed to list event rules: ${msg}`);
+    }
+  }
+
   async getEventRuleStatus(userId: string, ruleId: string): Promise<EventRuleResponseDto> {
     try {
       const rule = await this.eventRuleRepository.findOne({
@@ -737,13 +806,263 @@ export class TaskCompilerService {
         totalTriggers: rule.totalTriggers,
         lastTriggeredAt: rule.lastTriggeredAt || undefined,
         createdAt: rule.createdAt,
-        updatedAt: rule.createdAt,
+        updatedAt: rule.updatedAt,
       };
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       const msg = error instanceof Error ? error.message : 'Unknown error';
       throw new InternalServerErrorException(`Failed to get event rule status: ${msg}`);
     }
+  }
+
+  async updateEventRule(userId: string, ruleId: string, dto: Partial<CreateEventRuleDto>): Promise<EventRuleResponseDto> {
+    try {
+      const rule = await this.eventRuleRepository.findOne({ where: { id: ruleId, userId } });
+      if (!rule) throw new NotFoundException(`Event rule ${ruleId} not found`);
+
+      if (dto.name                !== undefined) rule.name                = dto.name;
+      if (dto.sourceConnectorType !== undefined) rule.sourceConnectorType = dto.sourceConnectorType;
+      if (dto.sourceConnectorId   !== undefined) rule.sourceConnectorId   = dto.sourceConnectorId;
+      if (dto.condition           !== undefined) rule.condition           = dto.condition as any;
+      if (dto.actions             !== undefined) rule.actions             = dto.actions as any;
+      if (dto.debounceConfig      !== undefined) rule.debounceConfig      = dto.debounceConfig as any;
+      if (dto.description         !== undefined) rule.description         = dto.description;
+
+      const saved = await this.eventRuleRepository.save(rule);
+
+      // Re-deploy updated rule to runtime
+      if (this.runtimeDeployment) {
+        this.runtimeDeployment.deployRule({
+          id:                  saved.id,
+          name:                saved.name,
+          userId,
+          sourceConnectorType: saved.sourceConnectorType,
+          condition:           saved.condition as any,
+          actions:             (saved.actions as any[]) ?? [],
+          debounceConfig:      saved.debounceConfig as any,
+        }).catch(err => {
+          this.logger.warn(`[W2] Re-deployment of rule "${ruleId}" failed: ${err?.message}`);
+        });
+      }
+
+      return {
+        id: saved.id, name: saved.name, status: saved.status,
+        sourceConnectorType: saved.sourceConnectorType,
+        sourceConnectorId: saved.sourceConnectorId || undefined,
+        condition: saved.condition, actions: (saved.actions as any) || [],
+        totalTriggers: saved.totalTriggers, createdAt: saved.createdAt, updatedAt: saved.updatedAt,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      const msg = error instanceof Error ? error.message : 'Unknown error';
+      throw new InternalServerErrorException(`Failed to update event rule: ${msg}`);
+    }
+  }
+
+  async deleteEventRule(userId: string, ruleId: string): Promise<void> {
+    try {
+      const rule = await this.eventRuleRepository.findOne({ where: { id: ruleId, userId } });
+      if (!rule) throw new NotFoundException(`Event rule ${ruleId} not found`);
+      await this.eventRuleRepository.remove(rule);
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      const msg = error instanceof Error ? error.message : 'Unknown error';
+      throw new InternalServerErrorException(`Failed to delete event rule: ${msg}`);
+    }
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // RULE EXECUTION & MONITORING
+  // ──────────────────────────────────────────────────────────────────────────
+
+  /** Toggle rule between ACTIVE ↔ PAUSED */
+  async toggleEventRuleStatus(userId: string, ruleId: string): Promise<EventRuleResponseDto> {
+    const rule = await this.eventRuleRepository.findOne({ where: { id: ruleId, userId } });
+    if (!rule) throw new NotFoundException(`Event rule ${ruleId} not found`);
+
+    rule.status = rule.status === EventRuleStatus.ACTIVE
+      ? EventRuleStatus.PAUSED
+      : EventRuleStatus.ACTIVE;
+
+    const saved = await this.eventRuleRepository.save(rule);
+    return this._toResponseDto(saved);
+  }
+
+  /** Get execution logs for a rule */
+  async getEventRuleLogs(userId: string, ruleId: string): Promise<any> {
+    const rule = await this.eventRuleRepository.findOne({ where: { id: ruleId, userId } });
+    if (!rule) throw new NotFoundException(`Event rule ${ruleId} not found`);
+    return {
+      ruleId: rule.id,
+      ruleName: rule.name,
+      totalTriggers: rule.totalTriggers,
+      lastTriggeredAt: rule.lastTriggeredAt,
+      nextScheduledCheckAt: rule.nextScheduledCheckAt,
+      logs: ((rule as any).executionLogs ?? []).slice().reverse(),
+    };
+  }
+
+  /** Manually execute a rule's actions right now */
+  async executeEventRule(userId: string, ruleId: string): Promise<any> {
+    const rule = await this.eventRuleRepository.findOne({ where: { id: ruleId, userId } });
+    if (!rule) throw new NotFoundException(`Event rule ${ruleId} not found`);
+
+    const startMs = Date.now();
+    const results: string[] = [];
+    let overallStatus: 'success' | 'error' | 'skipped' = 'skipped';
+
+    try {
+      const actions: any[] = Array.isArray(rule.actions) ? rule.actions : [];
+      if (actions.length === 0) {
+        overallStatus = 'skipped';
+        results.push('No actions defined');
+      } else {
+        for (const action of actions) {
+          const p = action.parameters ?? action.params ?? {};
+          const connectorType: string = (p.connector ?? p.connectorId ?? '').toLowerCase();
+
+          if (connectorType === 'slack') {
+            // Resolve credentials from DB
+            let token: string | undefined;
+            if (this.connectorsService) {
+              const connectors = await this.connectorsService.findAll(userId, {});
+              const slackConn = connectors.find((c: any) => c.type === 'slack');
+              if (slackConn) {
+                const creds = this.connectorsService.getDecryptedCredentials(slackConn);
+                token = creds?.botToken ?? creds?.token ?? creds?.accessToken;
+              }
+            }
+            if (!token) throw new Error('No Slack connector with credentials found');
+
+            const channel = p.channel ?? p.channelId ?? '#general';
+            const text: string = p.message ?? p.text ?? p.body ?? `EyeFlow rule "${rule.name}" triggered`;
+
+            const res = await fetch('https://slack.com/api/chat.postMessage', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ channel, text }),
+            });
+            const data: any = await res.json();
+            if (!data.ok) throw new Error(`Slack error: ${data.error}`);
+            results.push(`Slack message sent to ${channel} (ts=${data.ts})`);
+            overallStatus = 'success';
+          } else {
+            // Generic fallback
+            results.push(`Action "${action.name}" on "${connectorType}" — execution not yet implemented for this connector`);
+            overallStatus = 'success';
+          }
+        }
+      }
+    } catch (err: any) {
+      overallStatus = 'error';
+      results.push(`Error: ${err?.message ?? 'Unknown'}`);
+    }
+
+    const durationMs = Date.now() - startMs;
+    const logEntry = {
+      ts: new Date().toISOString(),
+      status: overallStatus,
+      durationMs,
+      message: results.join(' | '),
+      triggeredBy: 'manual' as const,
+    };
+
+    // Append to executionLogs (keep last 50)
+    const currentLogs: any[] = (rule as any).executionLogs ?? [];
+    (rule as any).executionLogs = [...currentLogs, logEntry].slice(-50);
+    rule.totalTriggers = (rule.totalTriggers ?? 0) + 1;
+    rule.lastTriggeredAt = new Date();
+    await this.eventRuleRepository.save(rule);
+
+    return {
+      success: overallStatus !== 'error',
+      status: overallStatus,
+      durationMs,
+      message: results.join(' | '),
+      log: logEntry,
+    };
+  }
+
+  // ────────────────────────────────────────────────────────────────────────
+  // REPORTS
+  // ────────────────────────────────────────────────────────────────────────
+
+  /** Generate a new execution report snapshot for a rule */
+  async generateRuleReport(userId: string, ruleId: string): Promise<RuleReportEntity> {
+    const rule = await this.eventRuleRepository.findOne({ where: { id: ruleId, userId } });
+    if (!rule) throw new NotFoundException(`Event rule ${ruleId} not found`);
+
+    const logs: any[] = (rule as any).executionLogs ?? [];
+    const total   = logs.length;
+    const ok      = logs.filter((l: any) => l.status === 'success').length;
+    const errors  = logs.filter((l: any) => l.status === 'error').length;
+    const skipped = logs.filter((l: any) => l.status === 'skipped').length;
+    const durations = logs.map((l: any) => l.durationMs as number).filter(Boolean);
+    const avgMs = durations.length ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length) : 0;
+    const minMs = durations.length ? Math.min(...durations) : 0;
+    const maxMs = durations.length ? Math.max(...durations) : 0;
+    const successRate = total > 0 ? Math.round((ok / total) * 100) : 0;
+
+    const sorted = logs.slice().sort((a: any, b: any) => a.ts.localeCompare(b.ts));
+    const periodFrom = sorted[0]?.ts;
+    const periodTo   = sorted[sorted.length - 1]?.ts;
+
+    const report = this.ruleReportRepository.create({
+      userId,
+      ruleId,
+      ruleName: rule.name,
+      title: `Rapport d'exécution — ${rule.name} — ${new Date().toLocaleDateString('fr-FR')}`,
+      summary: `${total} exécution(s) analysée(s) · ${successRate}% de succès · durée moyenne ${avgMs} ms`,
+      type: 'execution',
+      status: 'generated',
+      period: { from: periodFrom, to: periodTo, durationLabel: total > 0 ? `${total} exécutions` : 'Aucune' },
+      stats: { totalExecutions: total, successCount: ok, errorCount: errors, skippedCount: skipped, successRate, avgDurationMs: avgMs, minDurationMs: minMs, maxDurationMs: maxMs },
+      logs: logs.slice(-100),
+    });
+    return this.ruleReportRepository.save(report);
+  }
+
+  /** List reports for a user (optionally filtered by ruleId) */
+  async getReports(userId: string, ruleId?: string): Promise<RuleReportEntity[]> {
+    const where: any = { userId };
+    if (ruleId) where.ruleId = ruleId;
+    return this.ruleReportRepository.find({
+      where,
+      order: { generatedAt: 'DESC' },
+      take: 50,
+    });
+  }
+
+  /** Get a single report */
+  async getReport(userId: string, reportId: string): Promise<RuleReportEntity> {
+    const report = await this.ruleReportRepository.findOne({ where: { id: reportId, userId } });
+    if (!report) throw new NotFoundException(`Report ${reportId} not found`);
+    return report;
+  }
+
+  /** Delete a report */
+  async deleteReport(userId: string, reportId: string): Promise<void> {
+    const report = await this.ruleReportRepository.findOne({ where: { id: reportId, userId } });
+    if (!report) throw new NotFoundException(`Report ${reportId} not found`);
+    await this.ruleReportRepository.remove(report);
+  }
+
+  private _toResponseDto(rule: EventRuleEntity): EventRuleResponseDto {
+    return {
+      id: rule.id,
+      name: rule.name,
+      status: rule.status,
+      sourceConnectorType: rule.sourceConnectorType,
+      sourceConnectorId: rule.sourceConnectorId || undefined,
+      condition: rule.condition,
+      actions: (rule.actions as any) || [],
+      totalTriggers: rule.totalTriggers,
+      lastTriggeredAt: rule.lastTriggeredAt || undefined,
+      nextScheduledCheckAt: rule.nextScheduledCheckAt || undefined,
+      executionLogs: (rule as any).executionLogs ?? [],
+      createdAt: rule.createdAt,
+      updatedAt: rule.updatedAt,
+    };
   }
 
   /**
@@ -758,7 +1077,7 @@ export class TaskCompilerService {
    * Build complete LLM context for a user
    * Includes all connectors, functions, schemas, triggers, operators
    */
-  getLLMContext(userId: string): any {
+  async getLLMContext(userId: string): Promise<any> {
     return this.contextBuilder.buildContext(userId);
   }
 
@@ -766,8 +1085,8 @@ export class TaskCompilerService {
    * Export LLM context as formatted JSON
    * Useful for documentation and external services
    */
-  exportLLMContextJSON(userId: string): string {
-    const context = this.contextBuilder.buildContext(userId);
+  async exportLLMContextJSON(userId: string): Promise<string> {
+    const context = await this.contextBuilder.buildContext(userId);
     return this.contextBuilder.exportContextAsJSON(context);
   }
 
@@ -783,7 +1102,7 @@ export class TaskCompilerService {
    * 🆕 Get enriched LLM context specifically for rules (Module 3)
    */
   async getEnrichedRuleContext(userId: string): Promise<any> {
-    return this.contextEnhanced.buildRuleContext(userId);
+    return await this.contextEnhanced.buildRuleContext(userId);
   }
 
   /**

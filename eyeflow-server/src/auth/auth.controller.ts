@@ -11,7 +11,7 @@ import {
   HttpStatus,
   UseGuards,
   UnauthorizedException,
-  Redirect,
+  Res,
   Req,
 } from '@nestjs/common';
 import {
@@ -22,7 +22,7 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -30,6 +30,7 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { Public } from './decorators/public.decorator';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
@@ -123,11 +124,26 @@ export class AuthController {
   @Get('google/callback')
   @Public()
   @UseGuards(GoogleAuthGuard)
-  @ApiOperation({ summary: 'Google OAuth callback — returns JWT tokens' })
-  @ApiResponse({ status: 200, description: 'Tokens returned after Google login' })
-  async googleCallback(@CurrentUser() profile: GoogleProfile) {
-    if (!profile) throw new UnauthorizedException('Google authentication failed');
-    return this.authService.googleLogin(profile);
+  @ApiOperation({ summary: 'Google OAuth callback — redirects to frontend with JWT tokens' })
+  @ApiResponse({ status: 302, description: 'Redirects to frontend /auth/callback with tokens' })
+  async googleCallback(
+    @CurrentUser() profile: GoogleProfile,
+    @Res() res: Response,
+  ) {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    if (!profile) {
+      return res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
+    }
+    try {
+      const tokens = await this.authService.googleLogin(profile);
+      const params = new URLSearchParams({
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      });
+      return res.redirect(`${frontendUrl}/auth/callback?${params.toString()}`);
+    } catch {
+      return res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
+    }
   }
 
   // ── Protected: token management ───────────────────────────────────────────
@@ -167,6 +183,28 @@ export class AuthController {
   async resendVerification(@CurrentUser() user: AuthenticatedUser) {
     if (!user) throw new UnauthorizedException();
     return this.authService.resendVerification(user.id);
+  }
+
+  // ── Preferences ─────────────────────────────────────────────────────────
+
+  @Get('preferences')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current user preferences' })
+  async getPreferences(@CurrentUser() user: AuthenticatedUser) {
+    if (!user) throw new UnauthorizedException();
+    return this.authService.getPreferences(user.id);
+  }
+
+  @Patch('preferences')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update current user preferences' })
+  async updatePreferences(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: UpdatePreferencesDto,
+  ) {
+    if (!user) throw new UnauthorizedException();
+    return this.authService.updatePreferences(user.id, dto);
   }
 
   // ── Admin: user management ────────────────────────────────────────────────

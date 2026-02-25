@@ -1,0 +1,9 @@
+                  id                  |         name          | status |                userId                |                                                                                             actions                                                                                             
+--------------------------------------+-----------------------+--------+--------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ ffa54024-5db7-4718-8eee-ddb2a61b03ed | Alerte Slack EyeFlow  | ACTIVE | 94abc128-5a90-4fe0-b876-49d6a6e64e6c | [{"name": "sendMessage", "parameters": {"channel": "#general", "message": "EyeFlow fonctionne correctement.", "function": "sendMessage", "connector": "b69545ad-1cc7-4425-9dd7-2846f3c9aff6"}}]
+ a7924d7f-0f63-4eba-89a6-12b551108e86 | Test propre           | ACTIVE | 00000000-0000-0000-0000-000000000001 | []
+ 1ee24dfe-d09b-4a07-aa56-d02cec9f2021 | Unnamed Workflow Rule | ACTIVE | 71b658aa-5b37-45f8-8506-925f06c183aa | []
+ 2064b4b5-3a86-4a6c-80cc-8a36768aa57c | Alerte tension réseau | ACTIVE | 00000000-0000-0000-0000-000000000001 | []
+ 8df5c5b9-7ddb-4c13-8724-b11ba11deee3 | Test workflow         | ACTIVE | 00000000-0000-0000-0000-000000000001 | []
+(5 rows)
+
